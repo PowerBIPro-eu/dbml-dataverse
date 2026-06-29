@@ -31,12 +31,25 @@ jobs:
         working-directory: packages/dv-tools
         run: |
           TAG_VERSION="${GITHUB_REF#refs/tags/dv-tools/v}"
-          npm version "$TAG_VERSION" --no-git-tag-version --allow-same-version
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            pkg.version = '${TAG_VERSION}';
+            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+          "
+          echo "Publishing version ${TAG_VERSION}"
 
       - name: Set version from input
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''
         working-directory: packages/dv-tools
-        run: npm version "${{ github.event.inputs.version }}" --no-git-tag-version
+        run: |
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            pkg.version = '${{ github.event.inputs.version }}';
+            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+          "
+          echo "Publishing version ${{ github.event.inputs.version }}"
 
       - name: Install dependencies
         working-directory: packages/dv-tools
@@ -48,6 +61,6 @@ jobs:
 
       - name: Publish to GitHub Packages
         working-directory: packages/dv-tools
-        run: npm publish --access public
+        run: npm publish --access public --legacy-peer-deps
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
