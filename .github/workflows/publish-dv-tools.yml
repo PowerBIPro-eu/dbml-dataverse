@@ -52,8 +52,7 @@ jobs:
           echo "Publishing version ${{ github.event.inputs.version }}"
 
       - name: Install dependencies
-        working-directory: packages/dv-tools
-        run: npm install --legacy-peer-deps
+        run: npm install --legacy-peer-deps --ignore-scripts
 
       - name: Build
         working-directory: packages/dv-tools
