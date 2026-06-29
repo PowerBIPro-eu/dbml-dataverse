@@ -74,6 +74,11 @@ export interface Database {
   externals: DatabaseExternals;
   diagramViews: DiagramView[];
   token?: TokenPosition;
+  // Dataverse additions
+  optionSets: OptionSet[];
+  stateOptionSets: StateOptionSet[];
+  statusOptionSets: StatusOptionSet[];
+  bitOptionSets: BitOptionSet[];
 }
 
 // Multifile project
@@ -95,6 +100,21 @@ export interface Table {
     value: string;
     token: TokenPosition;
   };
+  // Dataverse additions (all optional)
+  displayName?: string;
+  entitySetName?: string;
+  ownership?: string;
+  primaryImage?: string;
+  isActivity?: boolean;
+  isActivityParty?: boolean;
+  isAuditEnabled?: boolean;
+  changeTrackingEnabled?: boolean;
+  isQuickCreateEnabled?: boolean;
+  isValidForQueue?: boolean;
+  isAvailableOffline?: boolean;
+  description?: string;
+  introducedVersion?: string;
+  sourceSolution?: string;
 }
 
 export interface Note {
@@ -135,6 +155,23 @@ export interface Column {
     value: string;
     token: TokenPosition;
   };
+  // Dataverse additions (all optional)
+  displayName?: string;
+  required?: string;
+  sourceType?: string;
+  format?: string;
+  autoNumber?: string;
+  formulaFile?: string;
+  isPrimaryName?: boolean;
+  readonlyInUI?: boolean;
+  minValue?: number | string;
+  maxValue?: number | string;
+  targets?: string;
+  isLocalizable?: boolean;
+  precision?: number;
+  description?: string;
+  optionSetName?: string;  // logical name of the linked OptionSet/StateOptionSet/StatusOptionSet/BitOptionSet
+  sourceSolution?: string;
 }
 
 export interface Index {
@@ -177,6 +214,81 @@ export interface Ref {
   onUpdate?: string;
   inactive?: boolean;
   token: TokenPosition;
+  // Dataverse additions (all optional)
+  cascadeAssign?: string;
+  cascadeArchive?: string;
+  cascadeReparent?: string;
+  cascadeShare?: string;
+  cascadeUnshare?: string;
+  cascadeRollupView?: string;
+  isHierarchical?: boolean;
+  navMany?: string;
+  navOne?: string;
+  navPaneDisplay?: string;
+  navPaneArea?: string;
+  navPaneOrder?: number;
+  intersectEntity?: string;
+  navManyLeft?: string;
+  navManyRight?: string;
+  sourceSolution?: string;
+}
+
+// Dataverse — OptionSet element types
+export interface OptionSet {
+  name: string;
+  schemaName: string | null;
+  displayName?: string;
+  description?: string;
+  isGlobal?: boolean;  // true = solution-level global; false/absent = local to one entity
+  token: TokenPosition;
+  values: OptionSetValue[];
+  sourceSolution?: string;
+}
+
+export interface OptionSetValue {
+  value: number;
+  token: TokenPosition;
+  label?: string;
+  color?: string;
+}
+
+export interface StateOptionSet {
+  name: string;
+  schemaName: string | null;
+  token: TokenPosition;
+  values: StateOptionSetValue[];
+}
+
+export interface StateOptionSetValue {
+  value: number;
+  token: TokenPosition;
+  label?: string;
+  invariantName?: string;
+  defaultStatus?: number;
+}
+
+export interface StatusOptionSet {
+  name: string;
+  schemaName: string | null;
+  token: TokenPosition;
+  values: StatusOptionSetValue[];
+}
+
+export interface StatusOptionSetValue {
+  value: number;
+  token: TokenPosition;
+  label?: string;
+  state?: number;
+  color?: string;
+}
+
+export interface BitOptionSet {
+  name: string;
+  schemaName: string | null;
+  displayName?: string;
+  token: TokenPosition;
+  trueLabel?: string;
+  falseLabel?: string;
 }
 
 export type RefEndpointPair = [RefEndpoint, RefEndpoint];
@@ -305,4 +417,11 @@ export type SchemaElement =
   | TablePartial
   | TablePartialInjection
   | TableRecord
-  | RecordValue;
+  | RecordValue
+  | OptionSet
+  | OptionSetValue
+  | StateOptionSet
+  | StateOptionSetValue
+  | StatusOptionSet
+  | StatusOptionSetValue
+  | BitOptionSet;

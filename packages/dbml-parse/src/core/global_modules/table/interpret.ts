@@ -159,6 +159,42 @@ export class TableInterpreter {
       token: getTokenPosition(noteNode),
     };
 
+    // Dataverse — extract table settings
+    const extractStr = (key: string): string | undefined => {
+      const attr = settingMap[key]?.at(0);
+      if (!attr) return undefined;
+      const qs = extractQuotedStringToken(attr.value);
+      if (qs !== undefined) return qs;
+      return extractVariableFromExpression(attr.value) ?? undefined;
+    };
+    const extractBool = (key: string): boolean | undefined => {
+      const attr = settingMap[key]?.at(0);
+      if (!attr) return undefined;
+      if (attr.value === undefined) return true;
+      const v = extractVariableFromExpression(attr.value);
+      return v?.toLowerCase() === 'true' ? true : v?.toLowerCase() === 'false' ? false : undefined;
+    };
+
+    this.table.displayName = extractStr(SettingName.DisplayName);
+    this.table.entitySetName = extractStr(SettingName.EntitySetName);
+    this.table.description = extractStr(SettingName.Description);
+    this.table.introducedVersion = extractStr(SettingName.IntroducedVersion);
+    this.table.primaryImage = extractStr(SettingName.PrimaryImage);
+
+    const ownershipAttr = settingMap[SettingName.Ownership]?.at(0);
+    if (ownershipAttr) {
+      this.table.ownership = extractVariableFromExpression(ownershipAttr.value) ?? undefined;
+    }
+
+    this.table.isActivity = extractBool(SettingName.IsActivity);
+    this.table.isActivityParty = extractBool(SettingName.IsActivityParty);
+    this.table.isAuditEnabled = extractBool(SettingName.IsAuditEnabled);
+    this.table.changeTrackingEnabled = extractBool(SettingName.ChangeTrackingEnabled);
+    this.table.isQuickCreateEnabled = extractBool(SettingName.IsQuickCreateEnabled);
+    this.table.isValidForQueue = extractBool(SettingName.IsValidForQueue);
+    this.table.isAvailableOffline = extractBool(SettingName.IsAvailableOffline);
+    this.table.sourceSolution = extractStr(SettingName.SourceSolution);
+
     return [];
   }
 
@@ -320,6 +356,60 @@ export class TableInterpreter {
         expression,
       };
     });
+
+    // Dataverse — extract column settings
+    const extractColStr = (key: string): string | undefined => {
+      const attr = settingMap[key]?.at(0);
+      if (!attr) return undefined;
+      const qs = extractQuotedStringToken(attr.value);
+      if (qs !== undefined) return qs;
+      return extractVariableFromExpression(attr.value) ?? undefined;
+    };
+    const extractColBool = (key: string): boolean | undefined => {
+      const attr = settingMap[key]?.at(0);
+      if (!attr) return undefined;
+      if (attr.value === undefined) return true;
+      const v = extractVariableFromExpression(attr.value);
+      return v?.toLowerCase() === 'true' ? true : v?.toLowerCase() === 'false' ? false : undefined;
+    };
+
+    column.displayName = extractColStr(SettingName.DisplayName);
+    column.description = extractColStr(SettingName.Description);
+    column.format = extractColStr(SettingName.Format);
+    column.autoNumber = extractColStr(SettingName.AutoNumber);
+    column.formulaFile = extractColStr(SettingName.FormulaFile);
+    column.targets = extractColStr(SettingName.Targets);
+    column.optionSetName = extractColStr(SettingName.OptionSetName);
+    column.sourceSolution = extractColStr(SettingName.SourceSolution);
+
+    const requiredAttr = settingMap[SettingName.Required]?.at(0);
+    if (requiredAttr) {
+      column.required = extractVariableFromExpression(requiredAttr.value) ?? undefined;
+    }
+    const sourceTypeAttr = settingMap[SettingName.SourceType]?.at(0);
+    if (sourceTypeAttr) {
+      column.sourceType = extractVariableFromExpression(sourceTypeAttr.value) ?? undefined;
+    }
+
+    column.isPrimaryName = extractColBool(SettingName.IsPrimaryName);
+    column.readonlyInUI = extractColBool(SettingName.ReadonlyInUI);
+    column.isLocalizable = extractColBool(SettingName.IsLocalizable);
+
+    const minValAttr = settingMap[SettingName.MinValue]?.at(0);
+    if (minValAttr?.value) {
+      const qs = extractQuotedStringToken(minValAttr.value);
+      column.minValue = qs ?? extractVariableFromExpression(minValAttr.value) ?? undefined;
+    }
+    const maxValAttr = settingMap[SettingName.MaxValue]?.at(0);
+    if (maxValAttr?.value) {
+      const qs = extractQuotedStringToken(maxValAttr.value);
+      column.maxValue = qs ?? extractVariableFromExpression(maxValAttr.value) ?? undefined;
+    }
+    const precisionAttr = settingMap[SettingName.Precision]?.at(0);
+    if (precisionAttr?.value) {
+      const v = extractVariableFromExpression(precisionAttr.value);
+      if (v !== undefined) column.precision = parseInt(v, 10) || undefined;
+    }
 
     this.table.fields!.push(column as Column);
     if (column.pk) {

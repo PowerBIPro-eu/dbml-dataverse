@@ -7,9 +7,9 @@ import {
 } from '@/core/types/nodes';
 import Report from '@/core/types/report';
 import { SyntaxTokenKind } from '@/core/types/tokens';
-import { destructureComplexVariableTuple, extractStringFromIdentifierStream } from '@/core/utils/expression';
+import { destructureComplexVariableTuple, extractStringFromIdentifierStream, extractVariableFromExpression } from '@/core/utils/expression';
 import {
-  Settings, aggregateSettingList, isSimpleName, isValidColor, isBinaryRelationship, isEqualTupleOperands, isExpressionAVariableNode,
+  Settings, aggregateSettingList, isSimpleName, isValidColor, isBinaryRelationship, isEqualTupleOperands, isExpressionAVariableNode, isExpressionAQuotedString,
 } from '@/core/utils/validate';
 
 export default class RefValidator {
@@ -70,12 +70,10 @@ export default class RefValidator {
   }
 
   private validateSettingList (settingList?: ListExpressionNode): CompileError[] {
+    // Allow element-level settings on Ref for Dataverse cascade/nav settings
     if (settingList) {
-      return [
-        new CompileError(CompileErrorCode.UNEXPECTED_SETTINGS, 'A Ref shouldn\'t have a setting list', settingList),
-      ];
+      return validateFieldSettings(settingList).getErrors();
     }
-
     return [];
   }
 
@@ -193,11 +191,17 @@ function isValidPolicy (value?: SyntaxNode): boolean {
 
   if (extractedString) {
     switch (extractedString.toLowerCase()) {
+      // Standard DBML values
       case 'cascade':
       case 'no action':
       case 'set null':
       case 'set default':
       case 'restrict':
+      // Dataverse values (PascalCase accepted)
+      case 'nocascade':
+      case 'active':
+      case 'userowned':
+      case 'removelink':
         return true;
       default:
         return false;
@@ -230,6 +234,56 @@ export function validateFieldSettings (settings: ListExpressionNode): Report<Set
         });
         clean[name] = attrs;
         break;
+      // Dataverse — cascade behaviors (accept both standard and Dataverse values)
+      case SettingName.CascadeAssign:
+      case SettingName.CascadeArchive:
+      case SettingName.CascadeReparent:
+      case SettingName.CascadeShare:
+      case SettingName.CascadeUnshare:
+      case SettingName.CascadeRollupView:
+        if (attrs.length > 1) {
+          attrs.forEach((attr) => errors.push(new CompileError(CompileErrorCode.DUPLICATE_REF_SETTING, `'${name}' can only appear once`, attr)));
+        }
+        attrs.forEach((attr) => {
+          if (!isValidDvCascadePolicy(attr.value)) {
+            errors.push(new CompileError(CompileErrorCode.INVALID_REF_SETTING_VALUE, `'${name}' must be one of: Cascade, NoCascade, Active, UserOwned, RemoveLink, Restrict`, attr));
+          }
+        });
+        clean[name] = attrs;
+        break;
+      // Dataverse — boolean flag
+      case SettingName.IsHierarchical:
+        if (attrs.length > 1) {
+          attrs.forEach((attr) => errors.push(new CompileError(CompileErrorCode.DUPLICATE_REF_SETTING, '\'is_hierarchical\' can only appear once', attr)));
+        }
+        clean[name] = attrs;
+        break;
+      // Dataverse — navigation property names and pane settings (quoted strings)
+      case SettingName.NavMany:
+      case SettingName.NavOne:
+      case SettingName.NavPaneDisplay:
+      case SettingName.NavPaneArea:
+      case SettingName.IntersectEntity:
+      case SettingName.NavManyLeft:
+      case SettingName.NavManyRight:
+      case SettingName.SourceSolution:
+        if (attrs.length > 1) {
+          attrs.forEach((attr) => errors.push(new CompileError(CompileErrorCode.DUPLICATE_REF_SETTING, `'${name}' can only appear once`, attr)));
+        }
+        attrs.forEach((attr) => {
+          if (!isExpressionAVariableNode(attr.value) && !isExpressionAQuotedString(attr.value)) {
+            errors.push(new CompileError(CompileErrorCode.INVALID_REF_SETTING_VALUE, `'${name}' must be a string or identifier`, attr));
+          }
+        });
+        clean[name] = attrs;
+        break;
+      // Dataverse — nav pane order (integer)
+      case SettingName.NavPaneOrder:
+        if (attrs.length > 1) {
+          attrs.forEach((attr) => errors.push(new CompileError(CompileErrorCode.DUPLICATE_REF_SETTING, '\'nav_pane_order\' can only appear once', attr)));
+        }
+        clean[name] = attrs;
+        break;
       case SettingName.Color:
         if (attrs.length > 1) {
           errors.push(...attrs.map((attr) => new CompileError(CompileErrorCode.DUPLICATE_REF_SETTING, '\'color\' can only appear once', attr)));
@@ -257,4 +311,27 @@ export function validateFieldSettings (settings: ListExpressionNode): Report<Set
     }
   }
   return new Report(clean, errors);
+}
+
+// ── Dataverse helpers ──────────────────────────────────────────────────────
+
+function isValidDvCascadePolicy (value?: SyntaxNode): boolean {
+  let extractedString: string | undefined;
+  if (value instanceof IdentifierStreamNode) {
+    extractedString = extractStringFromIdentifierStream(value) || '';
+  } else {
+    extractedString = extractVariableFromExpression(value as SyntaxNode);
+  }
+  if (!extractedString) return false;
+  switch (extractedString.toLowerCase()) {
+    case 'cascade':
+    case 'nocascade':
+    case 'active':
+    case 'userowned':
+    case 'removelink':
+    case 'restrict':
+      return true;
+    default:
+      return false;
+  }
 }
