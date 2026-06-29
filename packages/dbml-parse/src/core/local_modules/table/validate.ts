@@ -130,6 +130,50 @@ export default class TableValidator {
             }
           });
           break;
+        // Dataverse — string settings
+        case SettingName.DisplayName:
+        case SettingName.EntitySetName:
+        case SettingName.Description:
+        case SettingName.IntroducedVersion:
+        case SettingName.PrimaryImage:
+        case SettingName.SourceSolution:
+          if (attrs.length > 1) {
+            errors.push(...attrs.map((attr) => new CompileError(CompileErrorCode.DUPLICATE_TABLE_SETTING, `'${name}' can only appear once`, attr)));
+          }
+          attrs.forEach((attr) => {
+            if (!isExpressionAQuotedString(attr.value)) {
+              errors.push(new CompileError(CompileErrorCode.INVALID_TABLE_SETTING_VALUE, `'${name}' must be a string literal`, attr.value || attr.name!));
+            }
+          });
+          break;
+        // Dataverse — ownership enum
+        case SettingName.Ownership:
+          if (attrs.length > 1) {
+            errors.push(...attrs.map((attr) => new CompileError(CompileErrorCode.DUPLICATE_TABLE_SETTING, '\'ownership\' can only appear once', attr)));
+          }
+          attrs.forEach((attr) => {
+            if (!isValidOwnership(attr.value)) {
+              errors.push(new CompileError(CompileErrorCode.INVALID_TABLE_SETTING_VALUE, '\'ownership\' must be one of: UserOwned, TeamOwned, OrganizationOwned, None', attr.value || attr.name!));
+            }
+          });
+          break;
+        // Dataverse — boolean flag settings
+        case SettingName.IsActivity:
+        case SettingName.IsActivityParty:
+        case SettingName.IsAuditEnabled:
+        case SettingName.ChangeTrackingEnabled:
+        case SettingName.IsQuickCreateEnabled:
+        case SettingName.IsValidForQueue:
+        case SettingName.IsAvailableOffline:
+          if (attrs.length > 1) {
+            errors.push(...attrs.map((attr) => new CompileError(CompileErrorCode.DUPLICATE_TABLE_SETTING, `'${name}' can only appear once`, attr)));
+          }
+          attrs.forEach((attr) => {
+            if (attr.value !== undefined && !isValidBooleanLiteral(attr.value)) {
+              errors.push(new CompileError(CompileErrorCode.INVALID_TABLE_SETTING_VALUE, `'${name}' must be true or false`, attr.value || attr.name!));
+            }
+          });
+          break;
         default:
           errors.push(...attrs.map((attr) => new CompileError(CompileErrorCode.UNKNOWN_TABLE_SETTING, `Unknown '${name}' setting`, attr)));
       }
@@ -361,6 +405,64 @@ export default class TableValidator {
           });
           break;
 
+        // Dataverse — string-valued settings (private method copy)
+        case SettingName.DisplayName:
+        case SettingName.Description:
+        case SettingName.FormulaFile:
+        case SettingName.AutoNumber:
+        case SettingName.Format:
+        case SettingName.Targets:
+        case SettingName.OptionSetName:
+        case SettingName.SourceSolution:
+          if (attrs.length > 1) {
+            errors.push(...attrs.map((attr) => new CompileError(CompileErrorCode.DUPLICATE_COLUMN_SETTING, `'${name}' can only appear once`, attr)));
+          }
+          attrs.forEach((attr) => {
+            if (!isExpressionAQuotedString(attr.value)) {
+              errors.push(new CompileError(CompileErrorCode.INVALID_COLUMN_SETTING_VALUE, `'${name}' must be a string literal`, attr.value || attr.name!));
+            }
+          });
+          break;
+        case SettingName.Required:
+          if (attrs.length > 1) {
+            errors.push(...attrs.map((attr) => new CompileError(CompileErrorCode.DUPLICATE_COLUMN_SETTING, '\'required\' can only appear once', attr)));
+          }
+          attrs.forEach((attr) => {
+            if (!isValidRequiredLevel(attr.value)) {
+              errors.push(new CompileError(CompileErrorCode.INVALID_COLUMN_SETTING_VALUE, '\'required\' must be one of: none, required, applicationrequired, systemrequired', attr.value || attr.name!));
+            }
+          });
+          break;
+        case SettingName.SourceType:
+          if (attrs.length > 1) {
+            errors.push(...attrs.map((attr) => new CompileError(CompileErrorCode.DUPLICATE_COLUMN_SETTING, '\'source_type\' can only appear once', attr)));
+          }
+          attrs.forEach((attr) => {
+            if (!isValidSourceType(attr.value)) {
+              errors.push(new CompileError(CompileErrorCode.INVALID_COLUMN_SETTING_VALUE, '\'source_type\' must be one of: simple, calculated, rollup, formula', attr.value || attr.name!));
+            }
+          });
+          break;
+        case SettingName.IsPrimaryName:
+        case SettingName.ReadonlyInUI:
+        case SettingName.IsLocalizable:
+          if (attrs.length > 1) {
+            errors.push(...attrs.map((attr) => new CompileError(CompileErrorCode.DUPLICATE_COLUMN_SETTING, `'${name}' can only appear once`, attr)));
+          }
+          attrs.forEach((attr) => {
+            if (attr.value !== undefined && !isValidBooleanLiteral(attr.value)) {
+              errors.push(new CompileError(CompileErrorCode.INVALID_COLUMN_SETTING_VALUE, `'${name}' must be true or false`, attr.value || attr.name!));
+            }
+          });
+          break;
+        case SettingName.MinValue:
+        case SettingName.MaxValue:
+        case SettingName.Precision:
+          if (attrs.length > 1) {
+            errors.push(...attrs.map((attr) => new CompileError(CompileErrorCode.DUPLICATE_COLUMN_SETTING, `'${name}' can only appear once`, attr)));
+          }
+          break;
+
         default:
           attrs.forEach((attr) => errors.push(new CompileError(CompileErrorCode.UNKNOWN_COLUMN_SETTING, `Unknown column setting '${name}'`, attr)));
       }
@@ -411,6 +513,22 @@ export function validateTableSettings (settingList?: ListExpressionNode): Report
             errors.push(new CompileError(CompileErrorCode.INVALID_TABLE_SETTING_VALUE, '\'note\' must be a string literal', attr.value || attr.name!));
           }
         });
+        break;
+      // Dataverse — pass-through string and flag settings (validated fully in TableValidator.validateSettingList)
+      case SettingName.DisplayName:
+      case SettingName.EntitySetName:
+      case SettingName.Description:
+      case SettingName.IntroducedVersion:
+      case SettingName.PrimaryImage:
+      case SettingName.SourceSolution:
+      case SettingName.Ownership:
+      case SettingName.IsActivity:
+      case SettingName.IsActivityParty:
+      case SettingName.IsAuditEnabled:
+      case SettingName.ChangeTrackingEnabled:
+      case SettingName.IsQuickCreateEnabled:
+      case SettingName.IsValidForQueue:
+      case SettingName.IsAvailableOffline:
         break;
       default:
         errors.push(...attrs.map((attr) => new CompileError(CompileErrorCode.UNKNOWN_TABLE_SETTING, `Unknown '${name}' setting`, attr)));
@@ -576,9 +694,122 @@ export function validateFieldSetting (parts: ExpressionNode[]): Report<Settings>
         });
         break;
 
+      // Dataverse — string-valued settings
+      case SettingName.DisplayName:
+      case SettingName.Description:
+      case SettingName.FormulaFile:
+      case SettingName.AutoNumber:
+      case SettingName.Format:
+      case SettingName.Targets:
+      case SettingName.OptionSetName:
+      case SettingName.SourceSolution:
+        if (attrs.length > 1) {
+          errors.push(...attrs.map((attr) => new CompileError(CompileErrorCode.DUPLICATE_COLUMN_SETTING, `'${name}' can only appear once`, attr)));
+        }
+        attrs.forEach((attr) => {
+          if (!isExpressionAQuotedString(attr.value)) {
+            errors.push(new CompileError(CompileErrorCode.INVALID_COLUMN_SETTING_VALUE, `'${name}' must be a string literal`, attr.value || attr.name!));
+          }
+        });
+        break;
+      // Dataverse — required level
+      case SettingName.Required:
+        if (attrs.length > 1) {
+          errors.push(...attrs.map((attr) => new CompileError(CompileErrorCode.DUPLICATE_COLUMN_SETTING, '\'required\' can only appear once', attr)));
+        }
+        attrs.forEach((attr) => {
+          if (!isValidRequiredLevel(attr.value)) {
+            errors.push(new CompileError(CompileErrorCode.INVALID_COLUMN_SETTING_VALUE, '\'required\' must be one of: none, required, applicationrequired, systemrequired', attr.value || attr.name!));
+          }
+        });
+        break;
+      // Dataverse — source type
+      case SettingName.SourceType:
+        if (attrs.length > 1) {
+          errors.push(...attrs.map((attr) => new CompileError(CompileErrorCode.DUPLICATE_COLUMN_SETTING, '\'source_type\' can only appear once', attr)));
+        }
+        attrs.forEach((attr) => {
+          if (!isValidSourceType(attr.value)) {
+            errors.push(new CompileError(CompileErrorCode.INVALID_COLUMN_SETTING_VALUE, '\'source_type\' must be one of: simple, calculated, rollup, formula', attr.value || attr.name!));
+          }
+        });
+        break;
+      // Dataverse — boolean flag column settings
+      case SettingName.IsPrimaryName:
+      case SettingName.ReadonlyInUI:
+      case SettingName.IsLocalizable:
+        if (attrs.length > 1) {
+          errors.push(...attrs.map((attr) => new CompileError(CompileErrorCode.DUPLICATE_COLUMN_SETTING, `'${name}' can only appear once`, attr)));
+        }
+        attrs.forEach((attr) => {
+          if (attr.value !== undefined && !isValidBooleanLiteral(attr.value)) {
+            errors.push(new CompileError(CompileErrorCode.INVALID_COLUMN_SETTING_VALUE, `'${name}' must be true or false`, attr.value || attr.name!));
+          }
+        });
+        break;
+      // Dataverse — numeric settings (bounds checked at import time)
+      case SettingName.MinValue:
+      case SettingName.MaxValue:
+      case SettingName.Precision:
+        if (attrs.length > 1) {
+          errors.push(...attrs.map((attr) => new CompileError(CompileErrorCode.DUPLICATE_COLUMN_SETTING, `'${name}' can only appear once`, attr)));
+        }
+        break;
+
       default:
         attrs.forEach((attr) => errors.push(new CompileError(CompileErrorCode.UNKNOWN_COLUMN_SETTING, `Unknown column setting '${name}'`, attr)));
     }
   });
   return new Report(settingMap, errors);
+}
+
+// ── Dataverse helpers ──────────────────────────────────────────────────────
+
+function isValidOwnership (value?: SyntaxNode): boolean {
+  const v = extractVariableFromExpression(value as SyntaxNode);
+  if (!v) return false;
+  switch (v.toLowerCase()) {
+    case 'userowned':
+    case 'teamowned':
+    case 'organizationowned':
+    case 'none':
+      return true;
+    default:
+      return false;
+  }
+}
+
+export function isValidBooleanLiteral (value?: SyntaxNode): boolean {
+  const v = extractVariableFromExpression(value as SyntaxNode);
+  if (!v) return false;
+  return v.toLowerCase() === 'true' || v.toLowerCase() === 'false';
+}
+
+function isValidRequiredLevel (value?: SyntaxNode): boolean {
+  const v = extractVariableFromExpression(value as SyntaxNode);
+  if (!v) return false;
+  switch (v.toLowerCase()) {
+    case 'none':
+    case 'required':
+    case 'applicationrequired':
+    case 'systemrequired':
+    case 'recommended':
+      return true;
+    default:
+      return false;
+  }
+}
+
+function isValidSourceType (value?: SyntaxNode): boolean {
+  const v = extractVariableFromExpression(value as SyntaxNode);
+  if (!v) return false;
+  switch (v.toLowerCase()) {
+    case 'simple':
+    case 'calculated':
+    case 'rollup':
+    case 'formula':
+      return true;
+    default:
+      return false;
+  }
 }

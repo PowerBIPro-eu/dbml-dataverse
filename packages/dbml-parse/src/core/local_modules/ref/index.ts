@@ -53,14 +53,9 @@ export const refModule: LocalModule = {
 
   nodeSettings (compiler: Compiler, node: SyntaxNode): Report<Settings> | Report<PassThrough> {
     if (isElementNode(node, ElementKind.Ref)) {
+      // Allow element-level settings on Ref for Dataverse cascade/nav style
       if (node.attributeList) {
-        return new Report({}, [
-          new CompileError(
-            CompileErrorCode.UNEXPECTED_SETTINGS,
-            'A Ref shouldn\'t have a setting list',
-            node.attributeList,
-          ),
-        ]);
+        return validateFieldSettings(node.attributeList);
       }
       return new Report({});
     }

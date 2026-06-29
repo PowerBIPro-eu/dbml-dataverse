@@ -1,6 +1,6 @@
 import {
   destructureComplexVariable, extractVariableFromExpression,
-  getBody,
+  getBody, extractQuotedStringToken,
 } from '@/core/utils/expression';
 import { aggregateSettingList } from '@/core/utils/validate';
 import { extractStringFromIdentifierStream } from '@/core/utils/expression';
@@ -11,6 +11,10 @@ import {
   IdentifierStreamNode,
   type ListExpressionNode,
   AttributeNode,
+  type SyntaxNode,
+  PrimaryExpressionNode,
+  LiteralNode,
+  PrefixExpressionNode,
 } from '@/core/types/nodes';
 import type { Ref } from '@/core/types/schemaJson';
 import {
@@ -22,9 +26,27 @@ import {
   extractColor,
   getTokenPosition,
 } from '@/core/utils/interpret';
+import { extractNumber } from '@/core/utils/numbers';
 import Report from '@/core/types/report';
 import { getMultiplicities } from '../utils';
 import { zip } from 'lodash-es';
+
+function extractQuotedStringFromAttr (value?: SyntaxNode): string | undefined {
+  if (!value) return undefined;
+  return extractQuotedStringToken(value);
+}
+
+function extractIntOrIdent (value?: SyntaxNode): string | number | undefined {
+  if (!value) return undefined;
+  if (value instanceof PrimaryExpressionNode && value.expression instanceof LiteralNode) {
+    const v = value.expression.literal?.value;
+    if (v !== undefined) return parseInt(v, 10);
+  }
+  if (value instanceof PrefixExpressionNode) {
+    return extractNumber(value);
+  }
+  return extractVariableFromExpression(value) ?? undefined;
+}
 
 export class RefInterpreter {
   private compiler: Compiler;
@@ -133,9 +155,18 @@ export class RefInterpreter {
 
     const field = getBody(this.declarationNode)[0] as FunctionApplicationNode;
 
-    if (field.args[0]) {
-      const settingMap = aggregateSettingList(field.args[0] as ListExpressionNode).getValue();
+    // Merge element-level [settings] (Dataverse style) with inline field [settings] (standard style)
+    const elementSettingMap = aggregateSettingList(
+      (this.declarationNode as ElementDeclarationNode).attributeList as ListExpressionNode | undefined,
+    ).getValue();
+    const inlineSettingMap = field?.args?.[0]
+      ? aggregateSettingList(field.args[0] as ListExpressionNode).getValue()
+      : {};
 
+    // Element-level settings take precedence; inline settings are fallback
+    const settingMap: Record<string, any[]> = { ...inlineSettingMap, ...elementSettingMap };
+
+    {
       const deleteSetting = settingMap.delete?.at(0)?.value;
       this.ref.onDelete = deleteSetting instanceof IdentifierStreamNode
         ? extractStringFromIdentifierStream(deleteSetting)
@@ -149,7 +180,49 @@ export class RefInterpreter {
       this.ref.color = settingMap.color?.length ? extractColor(settingMap.color?.at(0)?.value as any) : undefined;
 
       this.ref.inactive = settingMap.inactive?.length ? true : undefined;
-    }
+
+      // Dataverse — cascade and nav settings
+      const extractDvStr = (key: string): string | undefined => {
+        const attr = settingMap[key]?.at(0);
+        if (!attr?.value) return undefined;
+        const qs = extractQuotedStringFromAttr(attr.value);
+        if (qs !== undefined) return qs;
+        return extractVariableFromExpression(attr.value) ?? undefined;
+      };
+
+      this.ref.cascadeAssign = extractDvStr('cascade_assign');
+      this.ref.cascadeArchive = extractDvStr('cascade_archive');
+      this.ref.cascadeReparent = extractDvStr('cascade_reparent');
+      this.ref.cascadeShare = extractDvStr('cascade_share');
+      this.ref.cascadeUnshare = extractDvStr('cascade_unshare');
+      this.ref.cascadeRollupView = extractDvStr('cascade_rollupview');
+
+      const hierAttr = settingMap['is_hierarchical']?.at(0);
+      if (hierAttr) {
+        if (hierAttr.value === undefined) {
+          this.ref.isHierarchical = true;
+        } else {
+          const v = extractVariableFromExpression(hierAttr.value);
+          this.ref.isHierarchical = v?.toLowerCase() === 'true' ? true : v?.toLowerCase() === 'false' ? false : undefined;
+        }
+      }
+
+      this.ref.navMany = extractDvStr('nav_many');
+      this.ref.navOne = extractDvStr('nav_one');
+      this.ref.navPaneDisplay = extractDvStr('nav_pane_display');
+      this.ref.navPaneArea = extractDvStr('nav_pane_area');
+      this.ref.intersectEntity = extractDvStr('intersect_entity');
+      this.ref.navManyLeft = extractDvStr('nav_many_left');
+      this.ref.navManyRight = extractDvStr('nav_many_right');
+      this.ref.sourceSolution = extractDvStr('source_solution');
+
+      const navPaneOrderAttr = settingMap['nav_pane_order']?.at(0);
+      if (navPaneOrderAttr?.value) {
+        const v = extractIntOrIdent(navPaneOrderAttr.value);
+        if (typeof v === 'number') this.ref.navPaneOrder = v;
+        else if (typeof v === 'string') this.ref.navPaneOrder = parseInt(v, 10) || undefined;
+      }
+    } // end merged settingMap block
 
     return [];
   }

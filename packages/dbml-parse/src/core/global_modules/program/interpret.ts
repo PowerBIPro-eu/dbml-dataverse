@@ -6,7 +6,7 @@ import { UNHANDLED } from '@/core/types/module';
 import { ProgramNode } from '@/core/types/nodes';
 import Report from '@/core/types/report';
 import type {
-  Alias, Database, DiagramView, Enum, Note, Project, Ref, RefEndpoint, SchemaElement, Table, TableGroup, TablePartial, TableRecord,
+  Alias, BitOptionSet, Database, DiagramView, Enum, Note, OptionSet, Project, Ref, RefEndpoint, SchemaElement, StateOptionSet, StatusOptionSet, Table, TableGroup, TablePartial, TableRecord,
 } from '@/core/types/schemaJson';
 import { AliasKind } from '@/core/types/schemaJson';
 import {
@@ -64,6 +64,11 @@ export default class ProgramInterpreter {
         tablePartials: [],
         notes: [],
       },
+      // Dataverse additions
+      optionSets: [],
+      stateOptionSets: [],
+      statusOptionSets: [],
+      bitOptionSets: [],
     };
   }
 
@@ -405,6 +410,18 @@ export default class ProgramInterpreter {
         break;
       case SymbolKind.DiagramView:
         this.db.diagramViews.push(value as DiagramView);
+        break;
+      case SymbolKind.OptionSet:
+        this.db.optionSets.push(value as OptionSet);
+        break;
+      case SymbolKind.StateOptionSet:
+        this.db.stateOptionSets.push(value as StateOptionSet);
+        break;
+      case SymbolKind.StatusOptionSet:
+        this.db.statusOptionSets.push(value as StatusOptionSet);
+        break;
+      case SymbolKind.BitOptionSet:
+        this.db.bitOptionSets.push(value as BitOptionSet);
         break;
       default: break;
     }

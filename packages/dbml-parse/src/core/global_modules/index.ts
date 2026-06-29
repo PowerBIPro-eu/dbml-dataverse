@@ -23,6 +23,7 @@ import { tableGroupModule } from './tableGroup';
 import { tablePartialModule } from './tablePartial';
 import type { GlobalModule } from './types';
 import { useModule } from './use';
+import { optionSetGlobalModule, stateOptionSetGlobalModule, statusOptionSetGlobalModule, bitOptionSetGlobalModule } from './optionset';
 
 // Registry of all element modules; the dispatcher tries each in order until one claims the node.
 // Each time you add a new element, register its module here.
@@ -41,6 +42,10 @@ export const modules: GlobalModule[] = [
   schemaModule,
   diagramViewModule,
   programModule,
+  optionSetGlobalModule,
+  stateOptionSetGlobalModule,
+  statusOptionSetGlobalModule,
+  bitOptionSetGlobalModule,
 ];
 
 // Chain-of-responsibility: iterate modules until one handles the node (returns non-PASS_THROUGH)

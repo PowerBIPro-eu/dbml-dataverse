@@ -19,6 +19,10 @@ import { tableGroupModule } from './tableGroup';
 import { tablePartialModule } from './tablePartial';
 import type { LocalModule, Settings } from './types';
 import { useModule } from './use';
+import { optionSetModule } from './optionset';
+import { stateOptionSetModule } from './stateoptionset';
+import { statusOptionSetModule } from './statusoptionset';
+import { bitOptionSetModule } from './bitoptionset';
 
 // Each time you add a new element, register its module here.
 export const modules: LocalModule[] = [
@@ -35,6 +39,10 @@ export const modules: LocalModule[] = [
   diagramViewModule,
   programModule,
   useModule,
+  optionSetModule,
+  stateOptionSetModule,
+  statusOptionSetModule,
+  bitOptionSetModule,
   customModule,
 ];
 

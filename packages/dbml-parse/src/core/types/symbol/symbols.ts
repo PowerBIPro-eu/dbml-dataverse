@@ -50,6 +50,12 @@ export enum SymbolKind {
   DiagramViewSchema = 'DiagramView schema',
 
   Program = 'Program',
+
+  // Dataverse — option set kinds
+  OptionSet = 'OptionSet',
+  StateOptionSet = 'StateOptionSet',
+  StatusOptionSet = 'StatusOptionSet',
+  BitOptionSet = 'BitOptionSet',
 }
 
 // Allowable import kinds for use declaration
@@ -1067,4 +1073,38 @@ export class InjectedColumnSymbol extends ColumnSymbol {
     this.injectionDeclaration = injectionDeclaration;
     this.name = name;
   }
+}
+
+// ── Dataverse option set symbols ──────────────────────────────────────────
+
+export class OptionSetSymbol extends NodeSymbol {
+  constructor ({ declaration, name }: { declaration?: SyntaxNode; name?: string }, id: NodeSymbolId, filepath: Filepath) {
+    super({ kind: SymbolKind.OptionSet, declaration, name }, id, filepath);
+  }
+  override get canBeImported (): boolean { return false; }
+  override get originalSymbol (): NodeSymbol { return this; }
+}
+
+export class StateOptionSetSymbol extends NodeSymbol {
+  constructor ({ declaration, name }: { declaration?: SyntaxNode; name?: string }, id: NodeSymbolId, filepath: Filepath) {
+    super({ kind: SymbolKind.StateOptionSet, declaration, name }, id, filepath);
+  }
+  override get canBeImported (): boolean { return false; }
+  override get originalSymbol (): NodeSymbol { return this; }
+}
+
+export class StatusOptionSetSymbol extends NodeSymbol {
+  constructor ({ declaration, name }: { declaration?: SyntaxNode; name?: string }, id: NodeSymbolId, filepath: Filepath) {
+    super({ kind: SymbolKind.StatusOptionSet, declaration, name }, id, filepath);
+  }
+  override get canBeImported (): boolean { return false; }
+  override get originalSymbol (): NodeSymbol { return this; }
+}
+
+export class BitOptionSetSymbol extends NodeSymbol {
+  constructor ({ declaration, name }: { declaration?: SyntaxNode; name?: string }, id: NodeSymbolId, filepath: Filepath) {
+    super({ kind: SymbolKind.BitOptionSet, declaration, name }, id, filepath);
+  }
+  override get canBeImported (): boolean { return false; }
+  override get originalSymbol (): NodeSymbol { return this; }
 }
