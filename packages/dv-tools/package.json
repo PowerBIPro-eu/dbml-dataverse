@@ -21,13 +21,12 @@
     "build": "vite build",
     "prepublishOnly": "npm run build"
   },
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
     "@dbml/core": "^8.3.0",
     "@dbml/parse": "^8.3.0",
-    "fast-xml-parser": "^5.9.3"
-  },
-  "devDependencies": {
     "@types/node": "^20.8.8",
+    "fast-xml-parser": "^5.9.3",
     "typescript": "^5.9.3",
     "vite": "^6.3.5"
   }
