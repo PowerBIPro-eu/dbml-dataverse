@@ -94,6 +94,23 @@ function parseInlineOptionSet(osEl: any, fallbackType: string): LocalOptionSet |
   return { name, type: 'picklist', displayName, description, values };
 }
 
+// ── Required level normalizer ─────────────────────────────────────────────
+
+// Dataverse XML stores RequiredLevel as either a string name or a numeric code.
+// DBML expects one of the five lowercase string tokens.
+type RequiredLevel = 'none' | 'required' | 'applicationrequired' | 'systemrequired' | 'recommended';
+
+function normalizeRequiredLevel(raw: string): RequiredLevel {
+  switch (raw.toLowerCase()) {
+    case 'none':                case '0': return 'none';
+    case 'systemrequired':      case '1': return 'systemrequired';
+    case 'applicationrequired': case '2': return 'applicationrequired';
+    case 'required':            case '3': return 'required';
+    case 'recommended':         case '4': return 'recommended';
+    default: return 'none';
+  }
+}
+
 // ── Entity XML parser ──────────────────────────────────────────────────────
 
 export function parseEntityXml(filePath: string): Entity | null {
@@ -129,7 +146,7 @@ export function parseEntityXml(filePath: string): Entity | null {
     if (!logicalName || EXCLUDED_COLUMNS.has(logicalName)) continue;
 
     const attrType: string = String(attr.Type ?? '');
-    const requiredLevel: string = String(attr.RequiredLevel ?? 'none');
+    const requiredLevel: RequiredLevel = normalizeRequiredLevel(String(attr.RequiredLevel ?? '0'));
     const sourceType: string = SOURCE_TYPE_MAP[String(attr.SourceType ?? '0')] ?? 'simple';
     const autoNumber: string = String(attr.AutoNumberFormat ?? '').trim();
     const fmt: string = String(attr.Format ?? '').trim();
