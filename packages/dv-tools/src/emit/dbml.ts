@@ -146,16 +146,20 @@ export function emitRef(rel: AnyRelationship, pkMap: Map<string, string>): strin
     const pkFirst = pkMap.get(mn.first) ?? `${mn.first.toLowerCase()}id`;
     const pkSecond = pkMap.get(mn.second) ?? `${mn.second.toLowerCase()}id`;
     const relName = mn.name || `${mn.first}_${mn.second}`;
-    const lines = [`Ref ${relName} [`];
-    if (mn.intersect) lines.push(`  intersect_entity: '${mn.intersect}'`);
-    if (mn.sourceSolution) lines.push(`  source_solution: '${q(mn.sourceSolution)}'`);
-    // Remove trailing comma if only one setting
-    if (lines.length === 2) {
-      lines[1] = lines[1];
-      lines.push(`]: ${mn.first}.${pkFirst} <> ${mn.second}.${pkSecond}`);
-    } else {
-      lines.push(`]: ${mn.first}.${pkFirst} <> ${mn.second}.${pkSecond}`);
+    const endpoint = `${mn.first}.${pkFirst} <> ${mn.second}.${pkSecond}`;
+    const settingLines: string[] = [];
+    if (mn.intersect) settingLines.push(`  intersect_entity: '${q(mn.intersect)}'`);
+    if (mn.sourceSolution) settingLines.push(`  source_solution: '${q(mn.sourceSolution)}'`);
+
+    if (!settingLines.length) {
+      return `Ref ${relName}: ${endpoint}\n\n`;
     }
+
+    const lines = [`Ref ${relName} [`];
+    for (let i = 0; i < settingLines.length; i++) {
+      lines.push(settingLines[i] + (i < settingLines.length - 1 ? ',' : ''));
+    }
+    lines.push(`]: ${endpoint}`);
     lines.push('');
     return lines.join('\n');
   }
