@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package",
   "name": "@powerbipro-eu/dv-tools",
-  "version": "1.0.0",
+  "version": "1.0.4",
   "description": "Dataverse solution XML → .dv.dbml and model.json converter CLI",
   "author": "DDSol",
   "license": "UNLICENSED",
@@ -12,13 +12,15 @@
   },
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "CHANGELOG.md"
   ],
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
     "build": "vite build",
+    "test": "vitest run",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {},
@@ -28,6 +30,7 @@
     "@types/node": "^20.8.8",
     "fast-xml-parser": "^5.9.3",
     "typescript": "^5.9.3",
-    "vite": "^6.3.5"
+    "vite": "^6.3.5",
+    "vitest": "^4.1.8"
   }
 }

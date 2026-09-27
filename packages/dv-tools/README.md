@@ -28,10 +28,10 @@ Requires **Node.js ≥ 18** and a GitHub account that is a member of the **Power
 npm install -g @powerbipro-eu/dv-tools --registry=https://npm.pkg.github.com
 ```
 
-Verify it installed correctly:
+Verify it installed correctly (prints the installed version):
 
 ```bash
-dv-convert --help
+dv-convert --version
 ```
 
 ---
@@ -96,6 +96,7 @@ Options:
   --colors <file>              JSON file mapping entity names to hex colors
   --solution-names <n1,n2,...> Override solution names (comma-separated, in order)
   --no-dbml                    Skip .dv.dbml files, write only model.json
+  --version                    Print the dv-tools version and exit
   --help, -h                   Show this help
 ```
 
@@ -144,5 +145,8 @@ are locked to the base layer.
 
 ```bash
 npm install -g @powerbipro-eu/dv-tools@latest --registry=https://npm.pkg.github.com
+dv-convert --version
 ```
+
+See [CHANGELOG.md](CHANGELOG.md) for what changed in each release.
 
