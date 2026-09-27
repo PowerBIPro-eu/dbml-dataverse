@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Synthetic fixture: fully defined platform table without our columns (kept, as in 1.0.x). -->
+<Entity xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name LocalizedName="Account" OriginalName="Account">Account</Name>
+  <EntityInfo>
+    <entity Name="Account">
+      <LocalizedNames>
+        <LocalizedName description="Account" languagecode="1033" />
+      </LocalizedNames>
+      <Descriptions>
+        <Description description="Business that represents a customer or potential customer." languagecode="1033" />
+      </Descriptions>
+      <attributes>
+        <attribute PhysicalName="AccountId">
+          <Type>primarykey</Type>
+          <Name>accountid</Name>
+          <LogicalName>accountid</LogicalName>
+          <RequiredLevel>systemrequired</RequiredLevel>
+          <IsCustomField>0</IsCustomField>
+          <SourceType>0</SourceType>
+          <displaynames>
+            <displayname description="Account" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="Unique identifier of the account." languagecode="1033" />
+          </Descriptions>
+        </attribute>
+        <attribute PhysicalName="Name">
+          <Type>nvarchar</Type>
+          <Name>name</Name>
+          <LogicalName>name</LogicalName>
+          <RequiredLevel>required</RequiredLevel>
+          <IsCustomField>0</IsCustomField>
+          <SourceType>0</SourceType>
+          <Format>text</Format>
+          <MaxLength>160</MaxLength>
+          <displaynames>
+            <displayname description="Account Name" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="Type the company or business name." languagecode="1033" />
+          </Descriptions>
+        </attribute>
+      </attributes>
+      <EntitySetName>accounts</EntitySetName>
+      <IsBPFEntity>0</IsBPFEntity>
+      <OwnershipTypeMask>UserOwned</OwnershipTypeMask>
+      <IsAuditEnabled>1</IsAuditEnabled>
+      <IsActivity>0</IsActivity>
+      <IsActivityParty>1</IsActivityParty>
+      <IntroducedVersion>5.0.0.0</IntroducedVersion>
+    </entity>
+  </EntityInfo>
+</Entity>

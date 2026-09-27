@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Synthetic fixture: custom table with an added status reason, a removed default status reason,
+     a changed default status, custom Yes/No labels, long descriptions and lookups to platform tables. -->
+<Entity xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name LocalizedName="Project" OriginalName="Project">dvt_project</Name>
+  <EntityInfo>
+    <entity Name="dvt_project">
+      <LocalizedNames>
+        <LocalizedName description="Project" languagecode="1033" />
+      </LocalizedNames>
+      <LocalizedCollectionNames>
+        <LocalizedCollectionName description="Projects" languagecode="1033" />
+      </LocalizedCollectionNames>
+      <Descriptions>
+        <Description description="A piece of work we deliver.&#xA;Owned by one business unit." languagecode="1033" />
+      </Descriptions>
+      <attributes>
+        <attribute PhysicalName="dvt_accountid">
+          <Type>lookup</Type>
+          <Name>dvt_accountid</Name>
+          <LogicalName>dvt_accountid</LogicalName>
+          <RequiredLevel>none</RequiredLevel>
+          <IsCustomField>1</IsCustomField>
+          <SourceType>0</SourceType>
+          <LookupStyle>single</LookupStyle>
+          <LookupTypes />
+          <displaynames>
+            <displayname description="Customer" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="Customer the project is for" languagecode="1033" />
+          </Descriptions>
+        </attribute>
+        <attribute PhysicalName="dvt_contactid">
+          <Type>lookup</Type>
+          <Name>dvt_contactid</Name>
+          <LogicalName>dvt_contactid</LogicalName>
+          <RequiredLevel>none</RequiredLevel>
+          <IsCustomField>1</IsCustomField>
+          <SourceType>0</SourceType>
+          <LookupStyle>single</LookupStyle>
+          <LookupTypes />
+          <displaynames>
+            <displayname description="Sponsor" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="" languagecode="1033" />
+          </Descriptions>
+        </attribute>
+        <attribute PhysicalName="dvt_description">
+          <Type>ntext</Type>
+          <Name>dvt_description</Name>
+          <LogicalName>dvt_description</LogicalName>
+          <RequiredLevel>none</RequiredLevel>
+          <IsCustomField>1</IsCustomField>
+          <SourceType>0</SourceType>
+          <Format>textarea</Format>
+          <MaxLength>2000</MaxLength>
+          <displaynames>
+            <displayname description="Description" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="What the project delivers.&#xA;Shown on the project form; keep it short so that it fits the summary card (scope &amp; goals)." languagecode="1033" />
+          </Descriptions>
+        </attribute>
+        <attribute PhysicalName="dvt_isactive">
+          <Type>bit</Type>
+          <Name>dvt_isactive</Name>
+          <LogicalName>dvt_isactive</LogicalName>
+          <RequiredLevel>none</RequiredLevel>
+          <IsCustomField>1</IsCustomField>
+          <SourceType>0</SourceType>
+          <AppDefaultValue>1</AppDefaultValue>
+          <optionset Name="dvt_project_dvt_isactive">
+            <OptionSetType>bit</OptionSetType>
+            <displaynames>
+              <displayname description="Running" languagecode="1033" />
+            </displaynames>
+            <Descriptions>
+              <Description description="" languagecode="1033" />
+            </Descriptions>
+            <options>
+              <option value="1" ExternalValue="" IsHidden="0">
+                <labels>
+                  <label description="Running" languagecode="1033" />
+                </labels>
+              </option>
+              <option value="0" ExternalValue="" IsHidden="0">
+                <labels>
+                  <label description="Stopped" languagecode="1033" />
+                </labels>
+              </option>
+            </options>
+          </optionset>
+          <displaynames>
+            <displayname description="Running" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="Running or stopped.&#xA;Set by the project owner." languagecode="1033" />
+          </Descriptions>
+        </attribute>
+        <attribute PhysicalName="dvt_name">
+          <Type>nvarchar</Type>
+          <Name>dvt_name</Name>
+          <LogicalName>dvt_name</LogicalName>
+          <RequiredLevel>required</RequiredLevel>
+          <DisplayMask>PrimaryName|ValidForAdvancedFind|ValidForForm|ValidForGrid|RequiredForForm</DisplayMask>
+          <IsCustomField>1</IsCustomField>
+          <SourceType>0</SourceType>
+          <Format>text</Format>
+          <MaxLength>100</MaxLength>
+          <displaynames>
+            <displayname description="Name" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="Short name of the project" languagecode="1033" />
+          </Descriptions>
+        </attribute>
+        <attribute PhysicalName="dvt_priority">
+          <Type>picklist</Type>
+          <Name>dvt_priority</Name>
+          <LogicalName>dvt_priority</LogicalName>
+          <RequiredLevel>none</RequiredLevel>
+          <IsCustomField>1</IsCustomField>
+          <SourceType>0</SourceType>
+          <OptionSetName>dvt_priority</OptionSetName>
+          <displaynames>
+            <displayname description="Priority" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="" languagecode="1033" />
+          </Descriptions>
+        </attribute>
+        <attribute PhysicalName="dvt_projectId">
+          <Type>primarykey</Type>
+          <Name>dvt_projectid</Name>
+          <LogicalName>dvt_projectid</LogicalName>
+          <RequiredLevel>systemrequired</RequiredLevel>
+          <IsCustomField>0</IsCustomField>
+          <SourceType>0</SourceType>
+          <displaynames>
+            <displayname description="Project" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="Unique identifier for entity instances" languagecode="1033" />
+          </Descriptions>
+        </attribute>
+        <attribute PhysicalName="dvt_reviewerid">
+          <Type>lookup</Type>
+          <Name>dvt_reviewerid</Name>
+          <LogicalName>dvt_reviewerid</LogicalName>
+          <RequiredLevel>none</RequiredLevel>
+          <IsCustomField>1</IsCustomField>
+          <SourceType>0</SourceType>
+          <LookupStyle>single</LookupStyle>
+          <LookupTypes />
+          <displaynames>
+            <displayname description="Reviewer" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="" languagecode="1033" />
+          </Descriptions>
+        </attribute>
+        <attribute PhysicalName="OwnerId">
+          <Type>owner</Type>
+          <Name>ownerid</Name>
+          <LogicalName>ownerid</LogicalName>
+          <RequiredLevel>systemrequired</RequiredLevel>
+          <IsCustomField>0</IsCustomField>
+          <SourceType>0</SourceType>
+          <LookupTypes>
+            <LookupType id="00000000-0000-0000-0000-000000000000">8</LookupType>
+            <LookupType id="00000000-0000-0000-0000-000000000000">9</LookupType>
+          </LookupTypes>
+          <displaynames>
+            <displayname description="Owner" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="Owner Id" languagecode="1033" />
+          </Descriptions>
+        </attribute>
+        <attribute PhysicalName="OwningBusinessUnit">
+          <Type>lookup</Type>
+          <Name>owningbusinessunit</Name>
+          <LogicalName>owningbusinessunit</LogicalName>
+          <RequiredLevel>none</RequiredLevel>
+          <IsCustomField>0</IsCustomField>
+          <SourceType>0</SourceType>
+          <LookupStyle>single</LookupStyle>
+          <LookupTypes />
+          <displaynames>
+            <displayname description="Owning Business Unit" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="Unique identifier for the business unit that owns the record" languagecode="1033" />
+          </Descriptions>
+        </attribute>
+        <attribute PhysicalName="statecode">
+          <Type>state</Type>
+          <Name>statecode</Name>
+          <LogicalName>statecode</LogicalName>
+          <RequiredLevel>systemrequired</RequiredLevel>
+          <IsCustomField>0</IsCustomField>
+          <SourceType>0</SourceType>
+          <optionset Name="dvt_project_statecode">
+            <OptionSetType>state</OptionSetType>
+            <displaynames>
+              <displayname description="Status" languagecode="1033" />
+            </displaynames>
+            <Descriptions>
+              <Description description="Status of the Project" languagecode="1033" />
+            </Descriptions>
+            <states>
+              <state value="0" defaultstatus="1" invariantname="Active">
+                <labels>
+                  <label description="Active" languagecode="1033" />
+                </labels>
+              </state>
+              <state value="1" defaultstatus="123450001" invariantname="Inactive">
+                <labels>
+                  <label description="Inactive" languagecode="1033" />
+                </labels>
+              </state>
+            </states>
+          </optionset>
+          <displaynames>
+            <displayname description="Status" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="Status of the Project" languagecode="1033" />
+          </Descriptions>
+        </attribute>
+        <attribute PhysicalName="statuscode">
+          <Type>status</Type>
+          <Name>statuscode</Name>
+          <LogicalName>statuscode</LogicalName>
+          <RequiredLevel>none</RequiredLevel>
+          <IsCustomField>0</IsCustomField>
+          <SourceType>0</SourceType>
+          <optionset Name="dvt_project_statuscode">
+            <OptionSetType>status</OptionSetType>
+            <displaynames>
+              <displayname description="Status Reason" languagecode="1033" />
+            </displaynames>
+            <Descriptions>
+              <Description description="Reason for the status of the Project" languagecode="1033" />
+            </Descriptions>
+            <statuses>
+              <status value="1" state="0" Color="#F3F2F1">
+                <labels>
+                  <label description="Active" languagecode="1033" />
+                </labels>
+              </status>
+              <status value="123450000" state="0" Color="#FFF4CC">
+                <labels>
+                  <label description="On Hold" languagecode="1033" />
+                </labels>
+              </status>
+              <status value="123450001" state="1" Color="#DFF6DD">
+                <labels>
+                  <label description="Closed" languagecode="1033" />
+                </labels>
+              </status>
+            </statuses>
+          </optionset>
+          <displaynames>
+            <displayname description="Status Reason" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="Reason for the status of the Project" languagecode="1033" />
+          </Descriptions>
+        </attribute>
+      </attributes>
+      <EntitySetName>dvt_projects</EntitySetName>
+      <IsBPFEntity>0</IsBPFEntity>
+      <OwnershipTypeMask>UserOwned</OwnershipTypeMask>
+      <IsAuditEnabled>1</IsAuditEnabled>
+      <IsActivity>0</IsActivity>
+      <IsActivityParty>0</IsActivityParty>
+      <IntroducedVersion>1.0.0.0</IntroducedVersion>
+      <EntityKeys>
+        <EntityKey>
+          <Name>dvt_project_name_key</Name>
+          <EntityKeyAttributes>
+            <AttributeName>dvt_name</AttributeName>
+          </EntityKeyAttributes>
+        </EntityKey>
+        <EntityKey>
+          <Name>dvt_project_account_key</Name>
+          <EntityKeyAttributes>
+            <AttributeName>dvt_accountid</AttributeName>
+            <AttributeName>dvt_name</AttributeName>
+          </EntityKeyAttributes>
+        </EntityKey>
+      </EntityKeys>
+    </entity>
+  </EntityInfo>
+</Entity>

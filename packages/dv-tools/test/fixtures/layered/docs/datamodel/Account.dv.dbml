@@ -1,0 +1,23 @@
+// Generated from Dataverse solution XML
+// Entity: Account
+
+Table Account [display_name: 'Account', ownership: UserOwned, is_audit_enabled: true, is_activity_party: true, description: 'Business that represents a customer or potential customer.', source_solution: 'Core', headercolor: #175e7a] {
+  accountid primarykey [pk, display_name: 'Account', required: systemrequired, note: 'Unique identifier of the account.', source_solution: 'Core']
+  name nvarchar(160) [display_name: 'Account Name', required: required, format: 'text', note: 'Type the company or business name.', source_solution: 'Core']
+}
+
+Ref dvt_account_dvt_project [
+  delete: RemoveLink,
+  cascade_assign: NoCascade,
+  cascade_archive: RemoveLink,
+  cascade_reparent: NoCascade,
+  cascade_share: NoCascade,
+  cascade_unshare: NoCascade,
+  cascade_rollupview: NoCascade,
+  nav_many: 'dvt_AccountId',
+  nav_one: 'dvt_account_dvt_project',
+  nav_pane_display: UseCollectionName,
+  nav_pane_area: Details,
+  nav_pane_order: 10000,
+  source_solution: 'Core'
+]: Account.accountid < dvt_project.dvt_accountid

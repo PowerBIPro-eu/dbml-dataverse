@@ -1,0 +1,1245 @@
+{
+  "modelSchema": 2,
+  "provenance": {
+    "generator": {
+      "name": "@powerbipro-eu/dv-tools",
+      "version": "1.1.0"
+    },
+    "config": "dv-convert.json",
+    "layers": [
+      {
+        "order": 1,
+        "name": "Core",
+        "path": "../../solutions/Core",
+        "uniqueName": "DvtCore",
+        "displayName": "DVT Core",
+        "version": "1.0.0.3",
+        "publisher": {
+          "uniqueName": "dvtools",
+          "customizationPrefix": "dvt",
+          "optionValuePrefix": 12345
+        }
+      },
+      {
+        "order": 2,
+        "name": "Sales",
+        "path": "../../solutions/Sales",
+        "uniqueName": "DvtSales",
+        "displayName": "DVT Sales",
+        "version": "2.1",
+        "publisher": {
+          "uniqueName": "dvtools",
+          "customizationPrefix": "dvt",
+          "optionValuePrefix": 12345
+        }
+      }
+    ]
+  },
+  "schemas": [],
+  "tables": [
+    {
+      "name": "Account",
+      "logicalName": "account",
+      "isCustom": false,
+      "schemaName": null,
+      "alias": null,
+      "fields": [
+        {
+          "name": "accountid",
+          "isCustom": false,
+          "type": {
+            "schemaName": null,
+            "type_name": "primarykey",
+            "args": null
+          },
+          "pk": true,
+          "unique": false,
+          "note": {
+            "value": "Unique identifier of the account."
+          },
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Account",
+          "description": "Unique identifier of the account.",
+          "sourceSolution": "Core",
+          "required": "systemrequired"
+        },
+        {
+          "name": "name",
+          "isCustom": false,
+          "type": {
+            "schemaName": null,
+            "type_name": "nvarchar(160)",
+            "args": "160"
+          },
+          "pk": false,
+          "unique": false,
+          "note": {
+            "value": "Type the company or business name."
+          },
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Account Name",
+          "description": "Type the company or business name.",
+          "format": "text",
+          "sourceSolution": "Core",
+          "required": "required"
+        }
+      ],
+      "indexes": [],
+      "partials": [],
+      "checks": [],
+      "headerColor": "#175e7a",
+      "displayName": "Account",
+      "description": "Business that represents a customer or potential customer.",
+      "ownership": "UserOwned",
+      "isActivityParty": true,
+      "isAuditEnabled": true,
+      "sourceSolution": "Core"
+    },
+    {
+      "name": "dvt_invoice",
+      "logicalName": "dvt_invoice",
+      "isCustom": true,
+      "schemaName": null,
+      "alias": null,
+      "fields": [
+        {
+          "name": "dvt_amount",
+          "isCustom": true,
+          "type": {
+            "schemaName": null,
+            "type_name": "money",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Amount",
+          "sourceSolution": "Sales",
+          "required": "required"
+        },
+        {
+          "name": "dvt_categorycode",
+          "isCustom": true,
+          "type": {
+            "schemaName": null,
+            "type_name": "picklist",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Category",
+          "optionSetName": "dvt_category",
+          "sourceSolution": "Sales",
+          "required": "none"
+        },
+        {
+          "name": "dvt_invoiceid",
+          "isCustom": false,
+          "type": {
+            "schemaName": null,
+            "type_name": "primarykey",
+            "args": null
+          },
+          "pk": true,
+          "unique": false,
+          "note": {
+            "value": "Unique identifier for entity instances"
+          },
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Invoice",
+          "description": "Unique identifier for entity instances",
+          "sourceSolution": "Sales",
+          "required": "systemrequired"
+        },
+        {
+          "name": "dvt_projectid",
+          "isCustom": true,
+          "type": {
+            "schemaName": null,
+            "type_name": "lookup",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Project",
+          "targets": "dvt_project",
+          "sourceSolution": "Sales",
+          "required": "required"
+        },
+        {
+          "name": "statecode",
+          "isCustom": false,
+          "type": {
+            "schemaName": null,
+            "type_name": "state",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Status",
+          "optionSetName": "dvt_invoice_statecode",
+          "sourceSolution": "Sales",
+          "required": "systemrequired"
+        },
+        {
+          "name": "statuscode",
+          "isCustom": false,
+          "type": {
+            "schemaName": null,
+            "type_name": "status",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Status Reason",
+          "optionSetName": "dvt_invoice_statuscode",
+          "sourceSolution": "Sales",
+          "required": "none"
+        }
+      ],
+      "indexes": [],
+      "partials": [],
+      "checks": [],
+      "headerColor": "#175e7a",
+      "displayName": "Invoice",
+      "ownership": "OrganizationOwned",
+      "sourceSolution": "Sales"
+    },
+    {
+      "name": "dvt_meeting",
+      "logicalName": "dvt_meeting",
+      "isCustom": true,
+      "schemaName": null,
+      "alias": null,
+      "fields": [
+        {
+          "name": "activityid",
+          "isCustom": false,
+          "type": {
+            "schemaName": null,
+            "type_name": "primarykey",
+            "args": null
+          },
+          "pk": true,
+          "unique": false,
+          "note": {
+            "value": "Unique identifier of the activity."
+          },
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Meeting",
+          "description": "Unique identifier of the activity.",
+          "sourceSolution": "Core",
+          "required": "systemrequired"
+        },
+        {
+          "name": "dvt_agenda",
+          "isCustom": true,
+          "type": {
+            "schemaName": null,
+            "type_name": "nvarchar(500)",
+            "args": "500"
+          },
+          "pk": false,
+          "unique": false,
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Agenda",
+          "format": "textarea",
+          "sourceSolution": "Core",
+          "required": "none"
+        },
+        {
+          "name": "dvt_projectid",
+          "isCustom": true,
+          "type": {
+            "schemaName": null,
+            "type_name": "lookup",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Project",
+          "targets": "dvt_project",
+          "sourceSolution": "Core",
+          "required": "none"
+        },
+        {
+          "name": "statecode",
+          "isCustom": false,
+          "type": {
+            "schemaName": null,
+            "type_name": "state",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Activity Status",
+          "optionSetName": "dvt_meeting_statecode",
+          "sourceSolution": "Core",
+          "required": "systemrequired"
+        },
+        {
+          "name": "statuscode",
+          "isCustom": false,
+          "type": {
+            "schemaName": null,
+            "type_name": "status",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Status Reason",
+          "optionSetName": "dvt_meeting_statuscode",
+          "sourceSolution": "Core",
+          "required": "none"
+        }
+      ],
+      "indexes": [],
+      "partials": [],
+      "checks": [],
+      "headerColor": "#175e7a",
+      "displayName": "Meeting",
+      "ownership": "UserOwned",
+      "isActivity": true,
+      "sourceSolution": "Core"
+    },
+    {
+      "name": "dvt_project",
+      "logicalName": "dvt_project",
+      "isCustom": true,
+      "schemaName": null,
+      "alias": null,
+      "fields": [
+        {
+          "name": "dvt_accountid",
+          "isCustom": true,
+          "type": {
+            "schemaName": null,
+            "type_name": "lookup",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "note": {
+            "value": "Customer the project is for"
+          },
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Customer",
+          "description": "Customer the project is for",
+          "targets": "Account",
+          "sourceSolution": "Core",
+          "required": "none"
+        },
+        {
+          "name": "dvt_contactid",
+          "isCustom": true,
+          "type": {
+            "schemaName": null,
+            "type_name": "lookup",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Sponsor",
+          "targets": "Contact",
+          "sourceSolution": "Core",
+          "required": "none"
+        },
+        {
+          "name": "dvt_description",
+          "isCustom": true,
+          "type": {
+            "schemaName": null,
+            "type_name": "ntext",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Description",
+          "description": "What the project delivers.\nShown on the project form; keep it short so that it fits the summary card (scope & goals).",
+          "format": "textarea",
+          "sourceSolution": "Core",
+          "required": "none"
+        },
+        {
+          "name": "dvt_isactive",
+          "isCustom": true,
+          "type": {
+            "schemaName": null,
+            "type_name": "bit",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "note": {
+            "value": "Running or stopped.&#xA;Set by the project owner."
+          },
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Running",
+          "description": "Running or stopped.\nSet by the project owner.",
+          "optionSetName": "dvt_project_dvt_isactive",
+          "sourceSolution": "Core",
+          "required": "none"
+        },
+        {
+          "name": "dvt_name",
+          "isCustom": true,
+          "type": {
+            "schemaName": null,
+            "type_name": "nvarchar(100)",
+            "args": "100"
+          },
+          "pk": false,
+          "unique": false,
+          "note": {
+            "value": "Short name of the project"
+          },
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Name",
+          "description": "Short name of the project",
+          "format": "text",
+          "sourceSolution": "Core",
+          "required": "required"
+        },
+        {
+          "name": "dvt_priority",
+          "isCustom": true,
+          "type": {
+            "schemaName": null,
+            "type_name": "picklist",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Priority",
+          "optionSetName": "dvt_priority",
+          "sourceSolution": "Core",
+          "required": "none"
+        },
+        {
+          "name": "dvt_projectid",
+          "isCustom": false,
+          "type": {
+            "schemaName": null,
+            "type_name": "primarykey",
+            "args": null
+          },
+          "pk": true,
+          "unique": false,
+          "note": {
+            "value": "Unique identifier for entity instances"
+          },
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Project",
+          "description": "Unique identifier for entity instances",
+          "sourceSolution": "Core",
+          "required": "systemrequired"
+        },
+        {
+          "name": "dvt_reviewerid",
+          "isCustom": true,
+          "type": {
+            "schemaName": null,
+            "type_name": "lookup",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Reviewer",
+          "targets": "SystemUser",
+          "sourceSolution": "Core",
+          "required": "none"
+        },
+        {
+          "name": "owningbusinessunit",
+          "isCustom": false,
+          "type": {
+            "schemaName": null,
+            "type_name": "lookup",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "note": {
+            "value": "Unique identifier for the business unit that owns the record"
+          },
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Owning Business Unit",
+          "description": "Unique identifier for the business unit that owns the record",
+          "targets": "BusinessUnit",
+          "sourceSolution": "Core",
+          "required": "none"
+        },
+        {
+          "name": "statecode",
+          "isCustom": false,
+          "type": {
+            "schemaName": null,
+            "type_name": "state",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "note": {
+            "value": "Status of the Project"
+          },
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Status",
+          "description": "Status of the Project",
+          "optionSetName": "dvt_project_statecode",
+          "sourceSolution": "Core",
+          "required": "systemrequired"
+        },
+        {
+          "name": "statuscode",
+          "isCustom": false,
+          "isModified": true,
+          "modifications": [
+            "statusReasons"
+          ],
+          "type": {
+            "schemaName": null,
+            "type_name": "status",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "note": {
+            "value": "Reason for the status of the Project"
+          },
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Status Reason",
+          "description": "Reason for the status of the Project",
+          "optionSetName": "dvt_project_statuscode",
+          "sourceSolution": "Core",
+          "required": "none"
+        },
+        {
+          "name": "dvt_budget",
+          "isCustom": true,
+          "type": {
+            "schemaName": null,
+            "type_name": "money",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "note": {
+            "value": "Approved budget"
+          },
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Budget",
+          "description": "Approved budget",
+          "sourceSolution": "Sales",
+          "required": "none"
+        }
+      ],
+      "indexes": [
+        {
+          "columns": [
+            {
+              "value": "dvt_accountid",
+              "type": "column"
+            },
+            {
+              "value": "dvt_name",
+              "type": "column"
+            }
+          ],
+          "unique": true,
+          "name": "dvt_project_account_key"
+        },
+        {
+          "columns": [
+            {
+              "value": "dvt_name",
+              "type": "column"
+            }
+          ],
+          "unique": true,
+          "name": "dvt_project_name_key"
+        }
+      ],
+      "partials": [],
+      "checks": [],
+      "headerColor": "#aa3366",
+      "displayName": "Project",
+      "description": "A piece of work we deliver.&#xA;Owned by one business unit.",
+      "ownership": "UserOwned",
+      "isAuditEnabled": true,
+      "sourceSolution": "Core"
+    },
+    {
+      "name": "SystemUser",
+      "logicalName": "systemuser",
+      "isCustom": false,
+      "isPartial": true,
+      "schemaName": null,
+      "alias": null,
+      "fields": [
+        {
+          "name": "systemuserid",
+          "isCustom": false,
+          "type": {
+            "schemaName": null,
+            "type_name": "primarykey",
+            "args": null
+          },
+          "pk": true,
+          "unique": false,
+          "inline_refs": [],
+          "checks": [],
+          "required": "systemrequired"
+        },
+        {
+          "name": "dvt_employeeno",
+          "isCustom": true,
+          "type": {
+            "schemaName": null,
+            "type_name": "nvarchar(20)",
+            "args": "20"
+          },
+          "pk": false,
+          "unique": false,
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Employee No.",
+          "format": "text",
+          "sourceSolution": "Core",
+          "required": "none"
+        }
+      ],
+      "indexes": [],
+      "partials": [],
+      "checks": [],
+      "headerColor": "#175e7a",
+      "sourceSolution": "Core"
+    },
+    {
+      "name": "Task",
+      "logicalName": "task",
+      "isCustom": false,
+      "isPartial": true,
+      "schemaName": null,
+      "alias": null,
+      "fields": [
+        {
+          "name": "activityid",
+          "isCustom": false,
+          "type": {
+            "schemaName": null,
+            "type_name": "primarykey",
+            "args": null
+          },
+          "pk": true,
+          "unique": false,
+          "inline_refs": [],
+          "checks": [],
+          "required": "systemrequired"
+        },
+        {
+          "name": "dvt_effort",
+          "isCustom": true,
+          "type": {
+            "schemaName": null,
+            "type_name": "int",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "note": {
+            "value": "Planned effort in hours"
+          },
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Effort (hours)",
+          "description": "Planned effort in hours",
+          "format": "none",
+          "sourceSolution": "Core",
+          "required": "none"
+        },
+        {
+          "name": "dvt_projectid",
+          "isCustom": true,
+          "type": {
+            "schemaName": null,
+            "type_name": "lookup",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Project",
+          "targets": "dvt_project",
+          "sourceSolution": "Core",
+          "required": "none"
+        },
+        {
+          "name": "statuscode",
+          "isCustom": false,
+          "isModified": true,
+          "modifications": [
+            "statusReasons"
+          ],
+          "type": {
+            "schemaName": null,
+            "type_name": "status",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "note": {
+            "value": "Select the task's status."
+          },
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Status Reason",
+          "description": "Select the task's status.",
+          "optionSetName": "task_statuscode",
+          "sourceSolution": "Core",
+          "required": "none"
+        }
+      ],
+      "indexes": [],
+      "partials": [],
+      "checks": [],
+      "headerColor": "#336699",
+      "isActivity": true,
+      "sourceSolution": "Core"
+    }
+  ],
+  "notes": [],
+  "refs": [
+    {
+      "name": "dvt_account_dvt_project",
+      "schemaName": null,
+      "endpoints": [
+        {
+          "schemaName": null,
+          "tableName": "Account",
+          "fieldNames": [
+            "accountid"
+          ],
+          "relation": "1"
+        },
+        {
+          "schemaName": null,
+          "tableName": "dvt_project",
+          "fieldNames": [
+            "dvt_accountid"
+          ],
+          "relation": "*"
+        }
+      ],
+      "onDelete": "RemoveLink",
+      "cascadeAssign": "NoCascade",
+      "cascadeArchive": "RemoveLink",
+      "cascadeReparent": "NoCascade",
+      "cascadeShare": "NoCascade",
+      "cascadeUnshare": "NoCascade",
+      "cascadeRollupView": "NoCascade",
+      "navMany": "dvt_AccountId",
+      "navOne": "dvt_account_dvt_project",
+      "navPaneDisplay": "UseCollectionName",
+      "navPaneArea": "Details",
+      "sourceSolution": "Core",
+      "navPaneOrder": 10000
+    },
+    {
+      "name": "dvt_dvt_project_dvt_invoice",
+      "schemaName": null,
+      "endpoints": [
+        {
+          "schemaName": null,
+          "tableName": "dvt_project",
+          "fieldNames": [
+            "dvt_projectid"
+          ],
+          "relation": "1"
+        },
+        {
+          "schemaName": null,
+          "tableName": "dvt_invoice",
+          "fieldNames": [
+            "dvt_projectid"
+          ],
+          "relation": "*"
+        }
+      ],
+      "onDelete": "Restrict",
+      "cascadeAssign": "NoCascade",
+      "cascadeArchive": "RemoveLink",
+      "cascadeReparent": "NoCascade",
+      "cascadeShare": "NoCascade",
+      "cascadeUnshare": "NoCascade",
+      "cascadeRollupView": "NoCascade",
+      "navMany": "dvt_ProjectId_dvt_invoice",
+      "navOne": "dvt_dvt_project_dvt_invoice",
+      "navPaneDisplay": "UseCollectionName",
+      "navPaneArea": "Details",
+      "sourceSolution": "Sales",
+      "navPaneOrder": 10000
+    },
+    {
+      "name": "dvt_dvt_project_dvt_meeting",
+      "schemaName": null,
+      "endpoints": [
+        {
+          "schemaName": null,
+          "tableName": "dvt_project",
+          "fieldNames": [
+            "dvt_projectid"
+          ],
+          "relation": "1"
+        },
+        {
+          "schemaName": null,
+          "tableName": "dvt_meeting",
+          "fieldNames": [
+            "dvt_projectid"
+          ],
+          "relation": "*"
+        }
+      ],
+      "onDelete": "Cascade",
+      "cascadeAssign": "NoCascade",
+      "cascadeArchive": "RemoveLink",
+      "cascadeReparent": "NoCascade",
+      "cascadeShare": "NoCascade",
+      "cascadeUnshare": "NoCascade",
+      "cascadeRollupView": "NoCascade",
+      "navMany": "dvt_ProjectId_dvt_meeting",
+      "navOne": "dvt_dvt_project_dvt_meeting",
+      "navPaneDisplay": "UseCollectionName",
+      "navPaneArea": "Details",
+      "sourceSolution": "Core",
+      "navPaneOrder": 10000
+    },
+    {
+      "name": "dvt_dvt_project_task",
+      "schemaName": null,
+      "endpoints": [
+        {
+          "schemaName": null,
+          "tableName": "dvt_project",
+          "fieldNames": [
+            "dvt_projectid"
+          ],
+          "relation": "1"
+        },
+        {
+          "schemaName": null,
+          "tableName": "Task",
+          "fieldNames": [
+            "dvt_projectid"
+          ],
+          "relation": "*"
+        }
+      ],
+      "onDelete": "RemoveLink",
+      "cascadeAssign": "NoCascade",
+      "cascadeArchive": "RemoveLink",
+      "cascadeReparent": "NoCascade",
+      "cascadeShare": "NoCascade",
+      "cascadeUnshare": "NoCascade",
+      "cascadeRollupView": "NoCascade",
+      "navMany": "dvt_ProjectId_Task",
+      "navOne": "dvt_dvt_project_task",
+      "navPaneDisplay": "UseCollectionName",
+      "navPaneArea": "Details",
+      "sourceSolution": "Core",
+      "navPaneOrder": 10000
+    },
+    {
+      "name": "dvt_project_meeting_attendees",
+      "schemaName": null,
+      "endpoints": [
+        {
+          "schemaName": null,
+          "tableName": "dvt_project",
+          "fieldNames": [
+            "dvt_projectid"
+          ],
+          "relation": "*"
+        },
+        {
+          "schemaName": null,
+          "tableName": "dvt_meeting",
+          "fieldNames": [
+            "activityid"
+          ],
+          "relation": "*"
+        }
+      ],
+      "intersectEntity": "dvt_project_meeting_attendees",
+      "sourceSolution": "Core"
+    },
+    {
+      "name": "dvt_project_meeting_reviewers",
+      "schemaName": null,
+      "endpoints": [
+        {
+          "schemaName": null,
+          "tableName": "dvt_project",
+          "fieldNames": [
+            "dvt_projectid"
+          ],
+          "relation": "*"
+        },
+        {
+          "schemaName": null,
+          "tableName": "dvt_meeting",
+          "fieldNames": [
+            "activityid"
+          ],
+          "relation": "*"
+        }
+      ],
+      "intersectEntity": "dvt_project_meeting_reviewers",
+      "sourceSolution": "Core"
+    },
+    {
+      "name": "dvt_project_systemuser",
+      "schemaName": null,
+      "endpoints": [
+        {
+          "schemaName": null,
+          "tableName": "dvt_project",
+          "fieldNames": [
+            "dvt_projectid"
+          ],
+          "relation": "*"
+        },
+        {
+          "schemaName": null,
+          "tableName": "SystemUser",
+          "fieldNames": [
+            "systemuserid"
+          ],
+          "relation": "*"
+        }
+      ],
+      "intersectEntity": "dvt_project_systemuser",
+      "sourceSolution": "Core"
+    },
+    {
+      "name": "dvt_systemuser_dvt_project_reviewerid",
+      "schemaName": null,
+      "endpoints": [
+        {
+          "schemaName": null,
+          "tableName": "SystemUser",
+          "fieldNames": [
+            "systemuserid"
+          ],
+          "relation": "1"
+        },
+        {
+          "schemaName": null,
+          "tableName": "dvt_project",
+          "fieldNames": [
+            "dvt_reviewerid"
+          ],
+          "relation": "*"
+        }
+      ],
+      "onDelete": "RemoveLink",
+      "cascadeAssign": "NoCascade",
+      "cascadeArchive": "RemoveLink",
+      "cascadeReparent": "NoCascade",
+      "cascadeShare": "NoCascade",
+      "cascadeUnshare": "NoCascade",
+      "cascadeRollupView": "NoCascade",
+      "navMany": "dvt_ReviewerId",
+      "navOne": "dvt_systemuser_dvt_project_reviewerid",
+      "navPaneDisplay": "UseCollectionName",
+      "navPaneArea": "Details",
+      "sourceSolution": "Core",
+      "navPaneOrder": 10000
+    }
+  ],
+  "enums": [],
+  "tableGroups": [],
+  "aliases": [],
+  "tablePartials": [],
+  "records": [],
+  "diagramViews": [],
+  "externals": {
+    "tables": [],
+    "enums": [],
+    "tableGroups": [],
+    "tablePartials": [],
+    "notes": []
+  },
+  "optionSets": [
+    {
+      "name": "dvt_category",
+      "schemaName": null,
+      "values": [
+        {
+          "value": 123450000,
+          "label": "Service"
+        },
+        {
+          "value": 123450001,
+          "label": "Licence"
+        }
+      ],
+      "displayName": "Category",
+      "description": "Invoice category",
+      "sourceSolution": "Core",
+      "isGlobal": true
+    },
+    {
+      "name": "dvt_priority",
+      "schemaName": null,
+      "values": [
+        {
+          "value": 123450000,
+          "label": "Low"
+        },
+        {
+          "value": 123450001,
+          "label": "High"
+        }
+      ],
+      "displayName": "Priority",
+      "sourceSolution": "Core",
+      "isGlobal": true
+    }
+  ],
+  "stateOptionSets": [
+    {
+      "name": "dvt_invoice_statecode",
+      "schemaName": null,
+      "values": [
+        {
+          "value": 0,
+          "label": "Active",
+          "invariantName": "Active",
+          "defaultStatus": 1
+        },
+        {
+          "value": 1,
+          "label": "Inactive",
+          "invariantName": "Inactive",
+          "defaultStatus": 2
+        }
+      ]
+    },
+    {
+      "name": "dvt_meeting_statecode",
+      "schemaName": null,
+      "values": [
+        {
+          "value": 0,
+          "label": "Open",
+          "invariantName": "Open",
+          "defaultStatus": 1
+        },
+        {
+          "value": 1,
+          "label": "Completed",
+          "invariantName": "Completed",
+          "defaultStatus": 2
+        },
+        {
+          "value": 2,
+          "label": "Canceled",
+          "invariantName": "Canceled",
+          "defaultStatus": 3
+        },
+        {
+          "value": 3,
+          "label": "Scheduled",
+          "invariantName": "Scheduled",
+          "defaultStatus": 4
+        }
+      ]
+    },
+    {
+      "name": "dvt_project_statecode",
+      "schemaName": null,
+      "values": [
+        {
+          "value": 0,
+          "label": "Active",
+          "invariantName": "Active",
+          "defaultStatus": 1
+        },
+        {
+          "value": 1,
+          "label": "Inactive",
+          "invariantName": "Inactive",
+          "defaultStatus": 123450001
+        }
+      ]
+    }
+  ],
+  "statusOptionSets": [
+    {
+      "name": "dvt_invoice_statuscode",
+      "schemaName": null,
+      "values": [
+        {
+          "value": 1,
+          "label": "Active",
+          "state": 0
+        },
+        {
+          "value": 2,
+          "label": "Inactive",
+          "state": 1
+        }
+      ]
+    },
+    {
+      "name": "dvt_meeting_statuscode",
+      "schemaName": null,
+      "values": [
+        {
+          "value": 1,
+          "label": "Open",
+          "state": 0
+        },
+        {
+          "value": 2,
+          "label": "Completed",
+          "state": 1
+        },
+        {
+          "value": 3,
+          "label": "Canceled",
+          "state": 2
+        },
+        {
+          "value": 4,
+          "label": "Scheduled",
+          "state": 3
+        }
+      ]
+    },
+    {
+      "name": "dvt_project_statuscode",
+      "schemaName": null,
+      "values": [
+        {
+          "value": 1,
+          "label": "Active",
+          "state": 0,
+          "color": "#F3F2F1"
+        },
+        {
+          "value": 123450000,
+          "label": "On Hold",
+          "state": 0,
+          "color": "#FFF4CC",
+          "isCustom": true
+        },
+        {
+          "value": 123450001,
+          "label": "Closed",
+          "state": 1,
+          "color": "#DFF6DD",
+          "isCustom": true
+        }
+      ]
+    },
+    {
+      "name": "task_statuscode",
+      "schemaName": null,
+      "values": [
+        {
+          "value": 2,
+          "label": "Not Started",
+          "state": 0
+        },
+        {
+          "value": 3,
+          "label": "In Progress",
+          "state": 0
+        },
+        {
+          "value": 4,
+          "label": "Waiting on someone else",
+          "state": 0
+        },
+        {
+          "value": 7,
+          "label": "Deferred",
+          "state": 0
+        },
+        {
+          "value": 123450002,
+          "label": "Blocked",
+          "state": 0,
+          "isCustom": true
+        },
+        {
+          "value": 5,
+          "label": "Completed",
+          "state": 1
+        },
+        {
+          "value": 6,
+          "label": "Canceled",
+          "state": 2
+        }
+      ]
+    }
+  ],
+  "bitOptionSets": [
+    {
+      "name": "dvt_project_dvt_isactive",
+      "schemaName": null,
+      "trueLabel": "Running",
+      "falseLabel": "Stopped",
+      "values": [
+        {
+          "value": 1,
+          "label": "Running"
+        },
+        {
+          "value": 0,
+          "label": "Stopped"
+        }
+      ]
+    }
+  ]
+}
