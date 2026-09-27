@@ -1,13 +1,14 @@
-import { readFileSync, readdirSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import type {
   Attribute, Entity, EntityKey, GlobalOptionSet, LocalOptionSet,
   OptionSetValue, StateValue, StatusValue,
 } from '../types.js';
 import {
-  xmlParser, getLabel1033, getDisplayName, getDescription,
-  mapOwnership, SOURCE_TYPE_MAP, EXCLUDED_COLUMNS, EXCLUDED_ENTITIES,
+  xmlParser, getLabel1033,
+  mapOwnership, SOURCE_TYPE_MAP, EXCLUDED_COLUMNS,
 } from './utils.js';
+import { listDir } from '../util.js';
 
 // ── Global OptionSet parser ────────────────────────────────────────────────
 
@@ -136,7 +137,6 @@ export function parseEntityXml(filePath: string): Entity | null {
 
   const entityName: string = entity['@_Name'] ?? '';
   if (!entityName) return null;
-  if (EXCLUDED_ENTITIES.has(entityName)) return null;
   if (String(entity.IsBPFEntity) === '1') return null;
 
   // Display name
@@ -145,6 +145,7 @@ export function parseEntityXml(filePath: string): Entity | null {
   const ownership = mapOwnership(String(entity.OwnershipTypeMask ?? ''));
   const isAuditEnabled = String(entity.IsAuditEnabled) === '1';
   const isActivity = String(entity.IsActivity) === '1';
+  const isActivityKnown = entity.IsActivity !== undefined;
   const isActivityParty = String(entity.IsActivityParty) === '1';
 
   // Attributes
@@ -207,6 +208,7 @@ export function parseEntityXml(filePath: string): Entity | null {
       type: dbmlType,
       required: requiredLevel,
       isPk: attrType === 'primarykey',
+      isCustom: String(attr.IsCustomField) === '1',
       sourceType,
       autoNumber,
       format: fmt,
@@ -216,9 +218,6 @@ export function parseEntityXml(filePath: string): Entity | null {
       lookupTargets: [],
     });
   }
-
-  // Must have a PK
-  if (!attributes.some((a) => a.isPk)) return null;
 
   // Alternate keys
   const keys: EntityKey[] = [];
@@ -236,6 +235,8 @@ export function parseEntityXml(filePath: string): Entity | null {
     isAuditEnabled,
     isActivity,
     isActivityParty,
+    isActivityKnown,
+    hasPrimaryKey: attributes.some((a) => a.isPk),
     attributes,
     localOptionSets,
     globalOptionSetRefs,
@@ -245,27 +246,25 @@ export function parseEntityXml(filePath: string): Entity | null {
 
 // ── Directory scanner ──────────────────────────────────────────────────────
 
-/** Parse all Entity.xml files from an Entities folder. Returns map of name → Entity. */
+/** Parse all Entity.xml files from an Entities folder, in name order. Returns map of name → Entity. */
 export function parseEntitiesFolder(entitiesPath: string): Map<string, Entity> {
   const result = new Map<string, Entity>();
   if (!existsSync(entitiesPath)) return result;
 
-  for (const item of readdirSync(entitiesPath, { withFileTypes: true })) {
-    if (!item.isDirectory()) continue;
-    const entityXml = join(entitiesPath, item.name, 'Entity.xml');
-    const entity = parseEntityXml(entityXml);
+  for (const dir of listDir(entitiesPath, 'dirs')) {
+    const entity = parseEntityXml(join(entitiesPath, dir, 'Entity.xml'));
     if (entity) result.set(entity.name, entity);
   }
   return result;
 }
 
-/** Parse all OptionSet XML files from an OptionSets folder. */
+/** Parse all OptionSet XML files from an OptionSets folder, in file-name order. */
 export function parseOptionSetsFolder(osPath: string): Map<string, GlobalOptionSet> {
   const result = new Map<string, GlobalOptionSet>();
   if (!existsSync(osPath)) return result;
 
-  for (const fn of readdirSync(osPath)) {
-    if (!String(fn).endsWith('.xml')) continue;
+  for (const fn of listDir(osPath, 'files')) {
+    if (!fn.endsWith('.xml')) continue;
     const os = parseGlobalOptionSet(join(osPath, fn));
     if (os) result.set(os.name, os);
   }

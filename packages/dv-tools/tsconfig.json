@@ -8,7 +8,6 @@
     "moduleResolution": "bundler",
     "paths": {
       "@dbml/parse": ["../dbml-parse/src/index.ts"],
-      "@dbml/core": ["../dbml-core/src/index.ts"],
       "@/*": ["./src/*"]
     }
   },

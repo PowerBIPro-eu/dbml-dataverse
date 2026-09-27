@@ -27,6 +27,19 @@ export function getLabel1033(items: any[] | undefined, descKey = 'description'):
   return found ? (found[`@_${descKey}`] as string ?? '') : '';
 }
 
+/**
+ * Decode numeric character references (`&#xA;`, `&#10;`) that the XML parser leaves in
+ * attribute values, and normalize line endings to LF.
+ */
+export function decodeCharRefs(s: string): string {
+  return s
+    .replace(/&#(x[0-9a-fA-F]+|[0-9]+);/g, (ref, code: string) => {
+      const cp = code[0] === 'x' ? parseInt(code.slice(1), 16) : parseInt(code, 10);
+      return cp >= 0 && cp <= 0x10ffff ? String.fromCodePoint(cp) : ref;
+    })
+    .replace(/\r\n?/g, '\n');
+}
+
 /** Get display name from displaynames element. */
 export function getDisplayName(el: any): string {
   return getLabel1033(el?.displaynames?.displayname, 'description');
@@ -61,9 +74,19 @@ export const EXCLUDED_COLUMNS = new Set([
   'ownerid', 'owningteam', 'owninguser',
 ]);
 
-/** Entity names to always exclude. */
+/** Platform tables left out unless they carry our columns (platformTables: with-our-columns). */
 export const EXCLUDED_ENTITIES = new Set([
   'BusinessUnit', 'Role', 'SystemUser', 'Team', 'TransactionCurrency',
+]);
+
+/**
+ * Standard activity tables (primary key `activityid`). Partial platform tables often
+ * omit <IsActivity>, so the primary-key rule falls back to this list.
+ */
+export const PLATFORM_ACTIVITY_TABLES = new Set([
+  'activitypointer', 'appointment', 'bulkoperation', 'campaignactivity', 'campaignresponse',
+  'email', 'fax', 'incidentresolution', 'letter', 'opportunityclose', 'orderclose', 'phonecall',
+  'quoteclose', 'recurringappointmentmaster', 'serviceappointment', 'socialactivity', 'task',
 ]);
 
 /** Cascade action XML tags → DBML setting keys. */

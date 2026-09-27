@@ -1,7 +1,8 @@
-import { readFileSync, readdirSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import type { AnyRelationship, ManyToManyRelationship, Relationship } from '../types.js';
 import { xmlParser, CASCADE_ACTIONS } from './utils.js';
+import { listDir } from '../util.js';
 
 function parseRelFile(filePath: string): AnyRelationship[] {
   let raw: string;
@@ -83,12 +84,12 @@ function parseRelFile(filePath: string): AnyRelationship[] {
   return results;
 }
 
-/** Parse all relationship files from a folder. */
+/** Parse all relationship files from a folder, in file-name order. */
 function parseRelFolder(folderPath: string): AnyRelationship[] {
   if (!existsSync(folderPath)) return [];
   const results: AnyRelationship[] = [];
-  for (const fn of readdirSync(folderPath)) {
-    if (!String(fn).endsWith('.xml')) continue;
+  for (const fn of listDir(folderPath, 'files')) {
+    if (!fn.endsWith('.xml')) continue;
     results.push(...parseRelFile(join(folderPath, fn)));
   }
   return results;
@@ -115,9 +116,8 @@ export function parseAllRelationships(
 
   // Per-entity Relationships sub-folder
   if (existsSync(entitiesPath)) {
-    for (const item of readdirSync(entitiesPath, { withFileTypes: true })) {
-      if (!item.isDirectory()) continue;
-      all.push(...parseRelFolder(join(entitiesPath, item.name, 'Relationships')));
+    for (const dir of listDir(entitiesPath, 'dirs')) {
+      all.push(...parseRelFolder(join(entitiesPath, dir, 'Relationships')));
     }
   }
 

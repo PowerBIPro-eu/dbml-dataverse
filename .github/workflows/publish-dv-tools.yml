@@ -49,15 +49,11 @@ jobs:
       - name: Install workspace dependencies
         run: yarn install --frozen-lockfile --ignore-scripts
 
-      # dbml-parse and dbml-core are workspace deps of dv-tools. Their dist/lib
-      # directories are gitignored, so we must build them before dv-tools.
-      # build:parser output is already committed to git, so we only need vite.
+      # dbml-parse is a workspace dep of dv-tools. Its dist directory is gitignored,
+      # so we must build it before dv-tools. build:parser output is already committed
+      # to git, so we only need vite.
       - name: Build dbml-parse
         working-directory: packages/dbml-parse
-        run: npx vite build
-
-      - name: Build dbml-core
-        working-directory: packages/dbml-core
         run: npx vite build
 
       - name: Test dv-tools
