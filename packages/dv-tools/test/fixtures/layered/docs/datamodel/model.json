@@ -3,7 +3,7 @@
   "provenance": {
     "generator": {
       "name": "@powerbipro-eu/dv-tools",
-      "version": "1.1.0"
+      "version": "1.2.0"
     },
     "config": "dv-convert.json",
     "layers": [

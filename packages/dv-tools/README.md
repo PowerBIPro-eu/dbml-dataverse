@@ -264,6 +264,66 @@ they carry our columns (or with `all`).
 
 ---
 
+## What changed: `dv-convert diff`
+
+Compares two `model.json` files, or one `model.json` at two git refs, and reports what changed
+in the data model — for release notes or a review. Nothing is stored: the history is git's.
+
+```bash
+dv-convert diff old/model.json new/model.json
+dv-convert diff --from dv-tools/v1.1.0                      # tag → working tree
+dv-convert diff --from v2.3.0 --to v2.4.0 --format json     # two refs
+```
+
+```
+Options:
+  --from <ref>          Git ref of the older model (read with git show); a ref without the file counts as empty
+  --to <ref>            Git ref of the newer model; default: the working tree
+  --model <path>        model.json in the repository (default: <git root>/docs/datamodel/model.json)
+  --format json|md      Output format (default: md)
+  --output <file>       Write to a file instead of standard output
+  --exit-code           Exit 1 when there are differences
+```
+
+**Exit codes:** `0` ok · `1` differences (with `--exit-code`) · `2` usage error · `3` input error
+(unknown ref, missing or invalid file).
+
+**Markdown** (`--format md`) is a release-note block: `### Data model changes (<from> → <to>)`,
+a `**Solutions:**` line with each solution's version (`Core 1.0.0.3 → 1.0.0.4 · Sales 2.1`), and
+tables for Tables, Columns, Choices and status reasons, Relationships and Keys.
+
+**JSON** (`--format json`):
+
+```json
+{
+  "diffSchema": 1,
+  "from": { "ref": "v1.1.0", "modelSchema": 2, "solutions": [ { "order": 1, "name": "Core", "uniqueName": "DDSolCore", "version": "1.0.0.3" } ] },
+  "to":   { "ref": "working tree", "modelSchema": 2, "solutions": [ ... ] },
+  "summary": { "total": 3, "added": 2, "removed": 0, "modified": 1, "byKind": { "table": { "added": 1, "removed": 0, "modified": 0 }, ... } },
+  "changes": [
+    { "kind": "solution", "op": "modified", "solution": "DDSolCore", "label": "Core",
+      "changes": { "version": { "from": "1.0.0.3", "to": "1.0.0.4" } } },
+    { "kind": "table", "op": "added", "table": "ddsol_contract", "label": "Contract",
+      "after": { ... }, "columns": [ { "name": "ddsol_contractid", "type": "primarykey", ... } ], "keys": [] },
+    { "kind": "option", "op": "added", "optionSet": "task_statuscode", "value": 717170003, "label": "Waiting",
+      "usedBy": ["Task.statuscode"], "after": { "label": "Waiting", "state": 0, "color": null, "isCustom": true } }
+  ],
+  "notes": []
+}
+```
+
+- `kind` is one of `solution, table, column, optionSet, option, relationship, key` (changes come
+  in this order); `op` is `added`, `removed` or `modified`. Added and removed items carry
+  `after` / `before`, modified ones `changes` (`{ property: { from, to } }`).
+- An added or removed table lists its `columns` and `keys` inside the record; an added or
+  removed choice lists its `options`. `usedBy` names the columns that use a choice.
+- `possibleRename` on an added table or column names a removed one with the same display name
+  (and type). It is only a hint: Dataverse logical names cannot be renamed.
+- Comparing a dv-tools 1.0.x model (schema 1) with a newer one reports only values both
+  record, so the facts 1.1 added (lookup targets, status values, ...) do not show up as changes.
+
+---
+
 ## Multi-solution / layered ALM
 
 When your data model spans multiple Power Platform solutions (a base layer plus

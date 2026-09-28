@@ -5,6 +5,7 @@ import { buildOutputs, buildSingleEntity } from './converter.js';
 import { CONFIG_FILE, discoverConfig, makeConfig, readConfig, serializeConfig } from './config.js';
 import { compareOutputs, writeOutputs } from './output.js';
 import { DbmlCompileError } from './model/json.js';
+import { runDiff } from './diff/command.js';
 import { UsageError } from './errors.js';
 import { deriveSolutionName } from './merge.js';
 import { PLATFORM_TABLES_VALUES, type ConvertOptions, type PlatformTables } from './types.js';
@@ -18,6 +19,7 @@ Usage:
   dv-convert --config <file> [options]
   dv-convert <solution-path> [solution-path ...] --output <dir> [options]
   dv-convert <Entity.xml>    --output <dir>             (single entity mode)
+  dv-convert diff ...                                   (compare two model.json; dv-convert diff --help)
 
 Options:
   --output, -o <dir>           Output directory (required with solution paths)
@@ -184,8 +186,33 @@ function resolveInvocation(args: CliArgs, argv: string[], cwd: string): Invocati
   };
 }
 
+function exitCodeFor(err: any): number {
+  if (err instanceof UsageError) {
+    console.error(`Error: ${err.message}`);
+    console.error('Run with --help for usage information.');
+    return EXIT.usage;
+  }
+  if (err instanceof DbmlCompileError) {
+    console.error('\nDBML validation errors (nothing was written):');
+    for (const d of err.diags) {
+      console.error(`  • ${d.file ? `${d.file}:${d.location.start.line}: ` : ''}${d.message}`);
+    }
+    return EXIT.input;
+  }
+  console.error(`Error: ${err?.message ?? err}`);
+  return EXIT.input;
+}
+
 /** Run dv-convert; returns the exit code (0 ok, 1 stale with --check, 2 usage, 3 input). */
 export async function run(argv: string[], cwd: string = process.cwd()): Promise<number> {
+  if (argv[0] === 'diff') {
+    try {
+      return await runDiff(argv.slice(1), cwd);
+    } catch (err) {
+      return exitCodeFor(err);
+    }
+  }
+
   if (argv.includes('--version')) {
     console.log(VERSION);
     return EXIT.ok;
@@ -239,20 +266,7 @@ export async function run(argv: string[], cwd: string = process.cwd()): Promise<
 
     console.error('\nDone.');
     return EXIT.ok;
-  } catch (err: any) {
-    if (err instanceof UsageError) {
-      console.error(`Error: ${err.message}`);
-      console.error('Run with --help for usage information.');
-      return EXIT.usage;
-    }
-    if (err instanceof DbmlCompileError) {
-      console.error('\nDBML validation errors (nothing was written):');
-      for (const d of err.diags) {
-        console.error(`  • ${d.file ? `${d.file}:${d.location.start.line}: ` : ''}${d.message}`);
-      }
-      return EXIT.input;
-    }
-    console.error(`Error: ${err?.message ?? err}`);
-    return EXIT.input;
+  } catch (err) {
+    return exitCodeFor(err);
   }
 }

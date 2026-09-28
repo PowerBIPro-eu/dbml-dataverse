@@ -1,0 +1,2092 @@
+{
+  "schemas": [],
+  "tables": [
+    {
+      "name": "Account",
+      "schemaName": null,
+      "alias": null,
+      "fields": [
+        {
+          "name": "accountid",
+          "token": {
+            "start": {
+              "offset": 707,
+              "line": 18,
+              "column": 3
+            },
+            "end": {
+              "offset": 851,
+              "line": 18,
+              "column": 147
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "type": {
+            "schemaName": null,
+            "type_name": "primarykey",
+            "args": null
+          },
+          "pk": true,
+          "unique": false,
+          "note": {
+            "value": "Unique identifier of the account.",
+            "token": {
+              "start": {
+                "offset": 784,
+                "line": 18,
+                "column": 80
+              },
+              "end": {
+                "offset": 825,
+                "line": 18,
+                "column": 121
+              },
+              "filepath": {
+                "path": "/main.dbml"
+              }
+            }
+          },
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Account",
+          "sourceSolution": "Core",
+          "required": "systemrequired"
+        },
+        {
+          "name": "name",
+          "token": {
+            "start": {
+              "offset": 854,
+              "line": 19,
+              "column": 3
+            },
+            "end": {
+              "offset": 1008,
+              "line": 19,
+              "column": 157
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "type": {
+            "schemaName": null,
+            "type_name": "nvarchar(160)",
+            "args": "160"
+          },
+          "pk": false,
+          "unique": false,
+          "note": {
+            "value": "Type the company or business name.",
+            "token": {
+              "start": {
+                "offset": 940,
+                "line": 19,
+                "column": 89
+              },
+              "end": {
+                "offset": 982,
+                "line": 19,
+                "column": 131
+              },
+              "filepath": {
+                "path": "/main.dbml"
+              }
+            }
+          },
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Account Name",
+          "format": "text",
+          "sourceSolution": "Core",
+          "required": "required"
+        }
+      ],
+      "token": {
+        "start": {
+          "offset": 470,
+          "line": 17,
+          "column": 1
+        },
+        "end": {
+          "offset": 1010,
+          "line": 20,
+          "column": 2
+        },
+        "filepath": {
+          "path": "/main.dbml"
+        }
+      },
+      "indexes": [],
+      "partials": [],
+      "checks": [],
+      "headerColor": "#175e7a",
+      "displayName": "Account",
+      "description": "Business that represents a customer or potential customer.",
+      "ownership": "UserOwned",
+      "isActivityParty": true,
+      "isAuditEnabled": true,
+      "sourceSolution": "Core"
+    },
+    {
+      "name": "dvt_meeting",
+      "schemaName": null,
+      "alias": null,
+      "fields": [
+        {
+          "name": "activityid",
+          "token": {
+            "start": {
+              "offset": 2181,
+              "line": 57,
+              "column": 3
+            },
+            "end": {
+              "offset": 2327,
+              "line": 57,
+              "column": 149
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "type": {
+            "schemaName": null,
+            "type_name": "primarykey",
+            "args": null
+          },
+          "pk": true,
+          "unique": false,
+          "note": {
+            "value": "Unique identifier of the activity.",
+            "token": {
+              "start": {
+                "offset": 2259,
+                "line": 57,
+                "column": 81
+              },
+              "end": {
+                "offset": 2301,
+                "line": 57,
+                "column": 123
+              },
+              "filepath": {
+                "path": "/main.dbml"
+              }
+            }
+          },
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Meeting",
+          "sourceSolution": "Core",
+          "required": "systemrequired"
+        },
+        {
+          "name": "dvt_agenda",
+          "token": {
+            "start": {
+              "offset": 2330,
+              "line": 58,
+              "column": 3
+            },
+            "end": {
+              "offset": 2440,
+              "line": 58,
+              "column": 113
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "type": {
+            "schemaName": null,
+            "type_name": "nvarchar(500)",
+            "args": "500"
+          },
+          "pk": false,
+          "unique": false,
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Agenda",
+          "format": "textarea",
+          "sourceSolution": "Core",
+          "required": "none"
+        },
+        {
+          "name": "dvt_projectid",
+          "token": {
+            "start": {
+              "offset": 2443,
+              "line": 59,
+              "column": 3
+            },
+            "end": {
+              "offset": 2554,
+              "line": 59,
+              "column": 114
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "type": {
+            "schemaName": null,
+            "type_name": "lookup",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Project",
+          "targets": "dvt_project",
+          "sourceSolution": "Core",
+          "required": "none"
+        },
+        {
+          "name": "statecode",
+          "token": {
+            "start": {
+              "offset": 2557,
+              "line": 60,
+              "column": 3
+            },
+            "end": {
+              "offset": 2694,
+              "line": 60,
+              "column": 140
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "type": {
+            "schemaName": null,
+            "type_name": "state",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Activity Status",
+          "optionSetName": "dvt_meeting_statecode",
+          "sourceSolution": "Core",
+          "required": "systemrequired"
+        },
+        {
+          "name": "statuscode",
+          "token": {
+            "start": {
+              "offset": 2697,
+              "line": 61,
+              "column": 3
+            },
+            "end": {
+              "offset": 2825,
+              "line": 61,
+              "column": 131
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "type": {
+            "schemaName": null,
+            "type_name": "status",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Status Reason",
+          "optionSetName": "dvt_meeting_statuscode",
+          "sourceSolution": "Core",
+          "required": "none"
+        }
+      ],
+      "token": {
+        "start": {
+          "offset": 2045,
+          "line": 56,
+          "column": 1
+        },
+        "end": {
+          "offset": 2827,
+          "line": 62,
+          "column": 2
+        },
+        "filepath": {
+          "path": "/main.dbml"
+        }
+      },
+      "indexes": [],
+      "partials": [],
+      "checks": [],
+      "headerColor": "#175e7a",
+      "displayName": "Meeting",
+      "ownership": "UserOwned",
+      "isActivity": true,
+      "sourceSolution": "Core"
+    },
+    {
+      "name": "dvt_project",
+      "schemaName": null,
+      "alias": null,
+      "fields": [
+        {
+          "name": "dvt_accountid",
+          "token": {
+            "start": {
+              "offset": 3511,
+              "line": 80,
+              "column": 3
+            },
+            "end": {
+              "offset": 3656,
+              "line": 80,
+              "column": 148
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "type": {
+            "schemaName": null,
+            "type_name": "lookup",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "note": {
+            "value": "Customer the project is for",
+            "token": {
+              "start": {
+                "offset": 3595,
+                "line": 80,
+                "column": 87
+              },
+              "end": {
+                "offset": 3630,
+                "line": 80,
+                "column": 122
+              },
+              "filepath": {
+                "path": "/main.dbml"
+              }
+            }
+          },
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Customer",
+          "targets": "Account",
+          "sourceSolution": "Core",
+          "required": "none"
+        },
+        {
+          "name": "dvt_contactid",
+          "token": {
+            "start": {
+              "offset": 3659,
+              "line": 81,
+              "column": 3
+            },
+            "end": {
+              "offset": 3746,
+              "line": 81,
+              "column": 90
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "type": {
+            "schemaName": null,
+            "type_name": "lookup",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Sponsor",
+          "sourceSolution": "Core",
+          "required": "none"
+        },
+        {
+          "name": "dvt_description",
+          "token": {
+            "start": {
+              "offset": 3749,
+              "line": 82,
+              "column": 3
+            },
+            "end": {
+              "offset": 3861,
+              "line": 82,
+              "column": 115
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "type": {
+            "schemaName": null,
+            "type_name": "ntext",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Description",
+          "format": "textarea",
+          "sourceSolution": "Core",
+          "required": "none"
+        },
+        {
+          "name": "dvt_isactive",
+          "token": {
+            "start": {
+              "offset": 3864,
+              "line": 83,
+              "column": 3
+            },
+            "end": {
+              "offset": 4006,
+              "line": 83,
+              "column": 145
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "type": {
+            "schemaName": null,
+            "type_name": "bit",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "note": {
+            "value": "Running or stopped.&#xA;Set by the project owner.",
+            "token": {
+              "start": {
+                "offset": 3923,
+                "line": 83,
+                "column": 62
+              },
+              "end": {
+                "offset": 3980,
+                "line": 83,
+                "column": 119
+              },
+              "filepath": {
+                "path": "/main.dbml"
+              }
+            }
+          },
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Running",
+          "sourceSolution": "Core",
+          "required": "none"
+        },
+        {
+          "name": "dvt_name",
+          "token": {
+            "start": {
+              "offset": 4009,
+              "line": 84,
+              "column": 3
+            },
+            "end": {
+              "offset": 4150,
+              "line": 84,
+              "column": 144
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "type": {
+            "schemaName": null,
+            "type_name": "nvarchar(100)",
+            "args": "100"
+          },
+          "pk": false,
+          "unique": false,
+          "note": {
+            "value": "Short name of the project",
+            "token": {
+              "start": {
+                "offset": 4091,
+                "line": 84,
+                "column": 85
+              },
+              "end": {
+                "offset": 4124,
+                "line": 84,
+                "column": 118
+              },
+              "filepath": {
+                "path": "/main.dbml"
+              }
+            }
+          },
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Name",
+          "format": "text",
+          "sourceSolution": "Core",
+          "required": "required"
+        },
+        {
+          "name": "dvt_priority",
+          "token": {
+            "start": {
+              "offset": 4153,
+              "line": 85,
+              "column": 3
+            },
+            "end": {
+              "offset": 4270,
+              "line": 85,
+              "column": 120
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "type": {
+            "schemaName": null,
+            "type_name": "picklist",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Priority",
+          "optionSetName": "dvt_priority",
+          "sourceSolution": "Core",
+          "required": "none"
+        },
+        {
+          "name": "dvt_projectid",
+          "token": {
+            "start": {
+              "offset": 4273,
+              "line": 86,
+              "column": 3
+            },
+            "end": {
+              "offset": 4426,
+              "line": 86,
+              "column": 156
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "type": {
+            "schemaName": null,
+            "type_name": "primarykey",
+            "args": null
+          },
+          "pk": true,
+          "unique": false,
+          "note": {
+            "value": "Unique identifier for entity instances",
+            "token": {
+              "start": {
+                "offset": 4354,
+                "line": 86,
+                "column": 84
+              },
+              "end": {
+                "offset": 4400,
+                "line": 86,
+                "column": 130
+              },
+              "filepath": {
+                "path": "/main.dbml"
+              }
+            }
+          },
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Project",
+          "sourceSolution": "Core",
+          "required": "systemrequired"
+        },
+        {
+          "name": "dvt_reviewerid",
+          "token": {
+            "start": {
+              "offset": 4429,
+              "line": 87,
+              "column": 3
+            },
+            "end": {
+              "offset": 4518,
+              "line": 87,
+              "column": 92
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "type": {
+            "schemaName": null,
+            "type_name": "lookup",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Reviewer",
+          "sourceSolution": "Core",
+          "required": "none"
+        },
+        {
+          "name": "owningbusinessunit",
+          "token": {
+            "start": {
+              "offset": 4521,
+              "line": 88,
+              "column": 3
+            },
+            "end": {
+              "offset": 4696,
+              "line": 88,
+              "column": 178
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "type": {
+            "schemaName": null,
+            "type_name": "lookup",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "note": {
+            "value": "Unique identifier for the business unit that owns the record",
+            "token": {
+              "start": {
+                "offset": 4602,
+                "line": 88,
+                "column": 84
+              },
+              "end": {
+                "offset": 4670,
+                "line": 88,
+                "column": 152
+              },
+              "filepath": {
+                "path": "/main.dbml"
+              }
+            }
+          },
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Owning Business Unit",
+          "sourceSolution": "Core",
+          "required": "none"
+        },
+        {
+          "name": "statecode",
+          "token": {
+            "start": {
+              "offset": 4699,
+              "line": 89,
+              "column": 3
+            },
+            "end": {
+              "offset": 4858,
+              "line": 89,
+              "column": 162
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "type": {
+            "schemaName": null,
+            "type_name": "state",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "note": {
+            "value": "Status of the Project",
+            "token": {
+              "start": {
+                "offset": 4803,
+                "line": 89,
+                "column": 107
+              },
+              "end": {
+                "offset": 4832,
+                "line": 89,
+                "column": 136
+              },
+              "filepath": {
+                "path": "/main.dbml"
+              }
+            }
+          },
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Status",
+          "optionSetName": "dvt_project_statecode",
+          "sourceSolution": "Core",
+          "required": "systemrequired"
+        },
+        {
+          "name": "statuscode",
+          "token": {
+            "start": {
+              "offset": 4861,
+              "line": 90,
+              "column": 3
+            },
+            "end": {
+              "offset": 5035,
+              "line": 90,
+              "column": 177
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "type": {
+            "schemaName": null,
+            "type_name": "status",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "note": {
+            "value": "Reason for the status of the Project",
+            "token": {
+              "start": {
+                "offset": 4965,
+                "line": 90,
+                "column": 107
+              },
+              "end": {
+                "offset": 5009,
+                "line": 90,
+                "column": 151
+              },
+              "filepath": {
+                "path": "/main.dbml"
+              }
+            }
+          },
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Status Reason",
+          "optionSetName": "dvt_project_statuscode",
+          "sourceSolution": "Core",
+          "required": "none"
+        }
+      ],
+      "token": {
+        "start": {
+          "offset": 3294,
+          "line": 79,
+          "column": 1
+        },
+        "end": {
+          "offset": 5180,
+          "line": 96,
+          "column": 2
+        },
+        "filepath": {
+          "path": "/main.dbml"
+        }
+      },
+      "indexes": [
+        {
+          "columns": [
+            {
+              "value": "dvt_name",
+              "type": "column",
+              "token": {
+                "start": {
+                  "offset": 5054,
+                  "line": 93,
+                  "column": 6
+                },
+                "end": {
+                  "offset": 5062,
+                  "line": 93,
+                  "column": 14
+                },
+                "filepath": {
+                  "path": "/main.dbml"
+                }
+              }
+            }
+          ],
+          "unique": true,
+          "name": "dvt_project_name_key",
+          "token": {
+            "start": {
+              "offset": 5053,
+              "line": 93,
+              "column": 5
+            },
+            "end": {
+              "offset": 5102,
+              "line": 93,
+              "column": 54
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          }
+        },
+        {
+          "columns": [
+            {
+              "value": "dvt_accountid",
+              "type": "column",
+              "token": {
+                "start": {
+                  "offset": 5108,
+                  "line": 94,
+                  "column": 6
+                },
+                "end": {
+                  "offset": 5121,
+                  "line": 94,
+                  "column": 19
+                },
+                "filepath": {
+                  "path": "/main.dbml"
+                }
+              }
+            },
+            {
+              "value": "dvt_name",
+              "type": "column",
+              "token": {
+                "start": {
+                  "offset": 5123,
+                  "line": 94,
+                  "column": 21
+                },
+                "end": {
+                  "offset": 5131,
+                  "line": 94,
+                  "column": 29
+                },
+                "filepath": {
+                  "path": "/main.dbml"
+                }
+              }
+            }
+          ],
+          "unique": true,
+          "name": "dvt_project_account_key",
+          "token": {
+            "start": {
+              "offset": 5107,
+              "line": 94,
+              "column": 5
+            },
+            "end": {
+              "offset": 5174,
+              "line": 94,
+              "column": 72
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          }
+        }
+      ],
+      "partials": [],
+      "checks": [],
+      "headerColor": "#175e7a",
+      "displayName": "Project",
+      "description": "A piece of work we deliver.&#xA;Owned by one business unit.",
+      "ownership": "UserOwned",
+      "isAuditEnabled": true,
+      "sourceSolution": "Core"
+    },
+    {
+      "name": "dvt_invoice",
+      "schemaName": null,
+      "alias": null,
+      "fields": [
+        {
+          "name": "dvt_amount",
+          "token": {
+            "start": {
+              "offset": 6821,
+              "line": 150,
+              "column": 3
+            },
+            "end": {
+              "offset": 6908,
+              "line": 150,
+              "column": 90
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "type": {
+            "schemaName": null,
+            "type_name": "money",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Amount",
+          "sourceSolution": "Sales",
+          "required": "required"
+        },
+        {
+          "name": "dvt_categorycode",
+          "token": {
+            "start": {
+              "offset": 6911,
+              "line": 151,
+              "column": 3
+            },
+            "end": {
+              "offset": 7033,
+              "line": 151,
+              "column": 125
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "type": {
+            "schemaName": null,
+            "type_name": "picklist",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Category",
+          "optionSetName": "dvt_category",
+          "sourceSolution": "Sales",
+          "required": "none"
+        },
+        {
+          "name": "dvt_invoiceid",
+          "token": {
+            "start": {
+              "offset": 7036,
+              "line": 152,
+              "column": 3
+            },
+            "end": {
+              "offset": 7190,
+              "line": 152,
+              "column": 157
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "type": {
+            "schemaName": null,
+            "type_name": "primarykey",
+            "args": null
+          },
+          "pk": true,
+          "unique": false,
+          "note": {
+            "value": "Unique identifier for entity instances",
+            "token": {
+              "start": {
+                "offset": 7117,
+                "line": 152,
+                "column": 84
+              },
+              "end": {
+                "offset": 7163,
+                "line": 152,
+                "column": 130
+              },
+              "filepath": {
+                "path": "/main.dbml"
+              }
+            }
+          },
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Invoice",
+          "sourceSolution": "Sales",
+          "required": "systemrequired"
+        },
+        {
+          "name": "dvt_projectid",
+          "token": {
+            "start": {
+              "offset": 7193,
+              "line": 153,
+              "column": 3
+            },
+            "end": {
+              "offset": 7309,
+              "line": 153,
+              "column": 119
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "type": {
+            "schemaName": null,
+            "type_name": "lookup",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Project",
+          "targets": "dvt_project",
+          "sourceSolution": "Sales",
+          "required": "required"
+        },
+        {
+          "name": "statecode",
+          "token": {
+            "start": {
+              "offset": 7312,
+              "line": 154,
+              "column": 3
+            },
+            "end": {
+              "offset": 7441,
+              "line": 154,
+              "column": 132
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "type": {
+            "schemaName": null,
+            "type_name": "state",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Status",
+          "optionSetName": "dvt_invoice_statecode",
+          "sourceSolution": "Sales",
+          "required": "systemrequired"
+        },
+        {
+          "name": "statuscode",
+          "token": {
+            "start": {
+              "offset": 7444,
+              "line": 155,
+              "column": 3
+            },
+            "end": {
+              "offset": 7573,
+              "line": 155,
+              "column": 132
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "type": {
+            "schemaName": null,
+            "type_name": "status",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Status Reason",
+          "optionSetName": "dvt_invoice_statuscode",
+          "sourceSolution": "Sales",
+          "required": "none"
+        }
+      ],
+      "token": {
+        "start": {
+          "offset": 6695,
+          "line": 149,
+          "column": 1
+        },
+        "end": {
+          "offset": 7575,
+          "line": 156,
+          "column": 2
+        },
+        "filepath": {
+          "path": "/main.dbml"
+        }
+      },
+      "indexes": [],
+      "partials": [],
+      "checks": [],
+      "headerColor": "#175e7a",
+      "displayName": "Invoice",
+      "ownership": "OrganizationOwned",
+      "sourceSolution": "Sales"
+    }
+  ],
+  "notes": [],
+  "refs": [
+    {
+      "token": {
+        "start": {
+          "offset": 1012,
+          "line": 22,
+          "column": 1
+        },
+        "end": {
+          "offset": 1477,
+          "line": 36,
+          "column": 49
+        },
+        "filepath": {
+          "path": "/main.dbml"
+        }
+      },
+      "name": "dvt_account_dvt_project",
+      "schemaName": null,
+      "endpoints": [
+        {
+          "schemaName": null,
+          "tableName": "Account",
+          "fieldNames": [
+            "accountid"
+          ],
+          "relation": "1",
+          "token": {
+            "start": {
+              "offset": 1432,
+              "line": 36,
+              "column": 4
+            },
+            "end": {
+              "offset": 1449,
+              "line": 36,
+              "column": 21
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          }
+        },
+        {
+          "schemaName": null,
+          "tableName": "dvt_project",
+          "fieldNames": [
+            "dvt_accountid"
+          ],
+          "relation": "*",
+          "token": {
+            "start": {
+              "offset": 1452,
+              "line": 36,
+              "column": 24
+            },
+            "end": {
+              "offset": 1477,
+              "line": 36,
+              "column": 49
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          }
+        }
+      ],
+      "onDelete": "RemoveLink",
+      "cascadeAssign": "NoCascade",
+      "cascadeArchive": "RemoveLink",
+      "cascadeReparent": "NoCascade",
+      "cascadeShare": "NoCascade",
+      "cascadeUnshare": "NoCascade",
+      "cascadeRollupView": "NoCascade",
+      "navMany": "dvt_AccountId",
+      "navOne": "dvt_account_dvt_project",
+      "navPaneDisplay": "UseCollectionName",
+      "navPaneArea": "Details",
+      "sourceSolution": "Core",
+      "navPaneOrder": 10000
+    },
+    {
+      "token": {
+        "start": {
+          "offset": 5182,
+          "line": 98,
+          "column": 1
+        },
+        "end": {
+          "offset": 5351,
+          "line": 101,
+          "column": 55
+        },
+        "filepath": {
+          "path": "/main.dbml"
+        }
+      },
+      "name": "dvt_project_meeting_reviewers",
+      "schemaName": null,
+      "endpoints": [
+        {
+          "schemaName": null,
+          "tableName": "dvt_project",
+          "fieldNames": [
+            "dvt_projectid"
+          ],
+          "relation": "*",
+          "token": {
+            "start": {
+              "offset": 5300,
+              "line": 101,
+              "column": 4
+            },
+            "end": {
+              "offset": 5325,
+              "line": 101,
+              "column": 29
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          }
+        },
+        {
+          "schemaName": null,
+          "tableName": "dvt_meeting",
+          "fieldNames": [
+            "activityid"
+          ],
+          "relation": "*",
+          "token": {
+            "start": {
+              "offset": 5329,
+              "line": 101,
+              "column": 33
+            },
+            "end": {
+              "offset": 5351,
+              "line": 101,
+              "column": 55
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          }
+        }
+      ],
+      "intersectEntity": "dvt_project_meeting_reviewers",
+      "sourceSolution": "Core"
+    },
+    {
+      "token": {
+        "start": {
+          "offset": 5353,
+          "line": 103,
+          "column": 1
+        },
+        "end": {
+          "offset": 5843,
+          "line": 117,
+          "column": 57
+        },
+        "filepath": {
+          "path": "/main.dbml"
+        }
+      },
+      "name": "dvt_dvt_project_dvt_meeting",
+      "schemaName": null,
+      "endpoints": [
+        {
+          "schemaName": null,
+          "tableName": "dvt_project",
+          "fieldNames": [
+            "dvt_projectid"
+          ],
+          "relation": "1",
+          "token": {
+            "start": {
+              "offset": 5790,
+              "line": 117,
+              "column": 4
+            },
+            "end": {
+              "offset": 5815,
+              "line": 117,
+              "column": 29
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          }
+        },
+        {
+          "schemaName": null,
+          "tableName": "dvt_meeting",
+          "fieldNames": [
+            "dvt_projectid"
+          ],
+          "relation": "*",
+          "token": {
+            "start": {
+              "offset": 5818,
+              "line": 117,
+              "column": 32
+            },
+            "end": {
+              "offset": 5843,
+              "line": 117,
+              "column": 57
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          }
+        }
+      ],
+      "onDelete": "Cascade",
+      "cascadeAssign": "NoCascade",
+      "cascadeArchive": "RemoveLink",
+      "cascadeReparent": "NoCascade",
+      "cascadeShare": "NoCascade",
+      "cascadeUnshare": "NoCascade",
+      "cascadeRollupView": "NoCascade",
+      "navMany": "dvt_ProjectId_dvt_meeting",
+      "navOne": "dvt_dvt_project_dvt_meeting",
+      "navPaneDisplay": "UseCollectionName",
+      "navPaneArea": "Details",
+      "sourceSolution": "Core",
+      "navPaneOrder": 10000
+    },
+    {
+      "token": {
+        "start": {
+          "offset": 5845,
+          "line": 119,
+          "column": 1
+        },
+        "end": {
+          "offset": 6337,
+          "line": 133,
+          "column": 57
+        },
+        "filepath": {
+          "path": "/main.dbml"
+        }
+      },
+      "name": "dvt_dvt_project_dvt_invoice",
+      "schemaName": null,
+      "endpoints": [
+        {
+          "schemaName": null,
+          "tableName": "dvt_project",
+          "fieldNames": [
+            "dvt_projectid"
+          ],
+          "relation": "1",
+          "token": {
+            "start": {
+              "offset": 6284,
+              "line": 133,
+              "column": 4
+            },
+            "end": {
+              "offset": 6309,
+              "line": 133,
+              "column": 29
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          }
+        },
+        {
+          "schemaName": null,
+          "tableName": "dvt_invoice",
+          "fieldNames": [
+            "dvt_projectid"
+          ],
+          "relation": "*",
+          "token": {
+            "start": {
+              "offset": 6312,
+              "line": 133,
+              "column": 32
+            },
+            "end": {
+              "offset": 6337,
+              "line": 133,
+              "column": 57
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          }
+        }
+      ],
+      "onDelete": "Restrict",
+      "cascadeAssign": "NoCascade",
+      "cascadeArchive": "RemoveLink",
+      "cascadeReparent": "NoCascade",
+      "cascadeShare": "NoCascade",
+      "cascadeUnshare": "NoCascade",
+      "cascadeRollupView": "NoCascade",
+      "navMany": "dvt_ProjectId_dvt_invoice",
+      "navOne": "dvt_dvt_project_dvt_invoice",
+      "navPaneDisplay": "UseCollectionName",
+      "navPaneArea": "Details",
+      "sourceSolution": "Sales",
+      "navPaneOrder": 10000
+    }
+  ],
+  "enums": [],
+  "tableGroups": [],
+  "aliases": [],
+  "tablePartials": [],
+  "records": [],
+  "diagramViews": [],
+  "token": {
+    "start": {
+      "offset": 64,
+      "line": 3,
+      "column": 1
+    },
+    "end": {
+      "offset": 7576,
+      "line": 157,
+      "column": 1
+    },
+    "filepath": {
+      "path": "/main.dbml"
+    }
+  },
+  "externals": {
+    "tables": [],
+    "enums": [],
+    "tableGroups": [],
+    "tablePartials": [],
+    "notes": []
+  },
+  "optionSets": [
+    {
+      "name": "dvt_category",
+      "schemaName": null,
+      "token": {
+        "start": {
+          "offset": 64,
+          "line": 3,
+          "column": 1
+        },
+        "end": {
+          "offset": 254,
+          "line": 6,
+          "column": 2
+        },
+        "filepath": {
+          "path": "/main.dbml"
+        }
+      },
+      "values": [
+        {
+          "value": 123450000,
+          "token": {
+            "start": {
+              "offset": 193,
+              "line": 4,
+              "column": 3
+            },
+            "end": {
+              "offset": 221,
+              "line": 4,
+              "column": 31
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "label": "Service"
+        },
+        {
+          "value": 123450001,
+          "token": {
+            "start": {
+              "offset": 224,
+              "line": 5,
+              "column": 3
+            },
+            "end": {
+              "offset": 252,
+              "line": 5,
+              "column": 31
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "label": "Licence"
+        }
+      ],
+      "displayName": "Category",
+      "description": "Invoice category",
+      "sourceSolution": "Core",
+      "isGlobal": true
+    },
+    {
+      "name": "dvt_priority",
+      "schemaName": null,
+      "token": {
+        "start": {
+          "offset": 256,
+          "line": 8,
+          "column": 1
+        },
+        "end": {
+          "offset": 406,
+          "line": 11,
+          "column": 2
+        },
+        "filepath": {
+          "path": "/main.dbml"
+        }
+      },
+      "values": [
+        {
+          "value": 123450000,
+          "token": {
+            "start": {
+              "offset": 352,
+              "line": 9,
+              "column": 3
+            },
+            "end": {
+              "offset": 376,
+              "line": 9,
+              "column": 27
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "label": "Low"
+        },
+        {
+          "value": 123450001,
+          "token": {
+            "start": {
+              "offset": 379,
+              "line": 10,
+              "column": 3
+            },
+            "end": {
+              "offset": 404,
+              "line": 10,
+              "column": 28
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "label": "High"
+        }
+      ],
+      "displayName": "Priority",
+      "sourceSolution": "Core",
+      "isGlobal": true
+    }
+  ],
+  "stateOptionSets": [
+    {
+      "name": "dvt_meeting_statecode",
+      "schemaName": null,
+      "token": {
+        "start": {
+          "offset": 1545,
+          "line": 42,
+          "column": 1
+        },
+        "end": {
+          "offset": 1865,
+          "line": 47,
+          "column": 2
+        },
+        "filepath": {
+          "path": "/main.dbml"
+        }
+      },
+      "values": [
+        {
+          "value": 0,
+          "token": {
+            "start": {
+              "offset": 1586,
+              "line": 43,
+              "column": 3
+            },
+            "end": {
+              "offset": 1646,
+              "line": 43,
+              "column": 63
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "label": "Open",
+          "invariantName": "Open"
+        },
+        {
+          "value": 1,
+          "token": {
+            "start": {
+              "offset": 1649,
+              "line": 44,
+              "column": 3
+            },
+            "end": {
+              "offset": 1719,
+              "line": 44,
+              "column": 73
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "label": "Completed",
+          "invariantName": "Completed"
+        },
+        {
+          "value": 2,
+          "token": {
+            "start": {
+              "offset": 1722,
+              "line": 45,
+              "column": 3
+            },
+            "end": {
+              "offset": 1790,
+              "line": 45,
+              "column": 71
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "label": "Canceled",
+          "invariantName": "Canceled"
+        },
+        {
+          "value": 3,
+          "token": {
+            "start": {
+              "offset": 1793,
+              "line": 46,
+              "column": 3
+            },
+            "end": {
+              "offset": 1863,
+              "line": 46,
+              "column": 73
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "label": "Scheduled",
+          "invariantName": "Scheduled"
+        }
+      ]
+    },
+    {
+      "name": "dvt_project_statecode",
+      "schemaName": null,
+      "token": {
+        "start": {
+          "offset": 2895,
+          "line": 68,
+          "column": 1
+        },
+        "end": {
+          "offset": 3081,
+          "line": 71,
+          "column": 2
+        },
+        "filepath": {
+          "path": "/main.dbml"
+        }
+      },
+      "values": [
+        {
+          "value": 0,
+          "token": {
+            "start": {
+              "offset": 2936,
+              "line": 69,
+              "column": 3
+            },
+            "end": {
+              "offset": 3000,
+              "line": 69,
+              "column": 67
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "label": "Active",
+          "invariantName": "Active"
+        },
+        {
+          "value": 1,
+          "token": {
+            "start": {
+              "offset": 3003,
+              "line": 70,
+              "column": 3
+            },
+            "end": {
+              "offset": 3079,
+              "line": 70,
+              "column": 79
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "label": "Inactive",
+          "invariantName": "Inactive"
+        }
+      ]
+    },
+    {
+      "name": "dvt_invoice_statecode",
+      "schemaName": null,
+      "token": {
+        "start": {
+          "offset": 6405,
+          "line": 139,
+          "column": 1
+        },
+        "end": {
+          "offset": 6583,
+          "line": 142,
+          "column": 2
+        },
+        "filepath": {
+          "path": "/main.dbml"
+        }
+      },
+      "values": [
+        {
+          "value": 0,
+          "token": {
+            "start": {
+              "offset": 6446,
+              "line": 140,
+              "column": 3
+            },
+            "end": {
+              "offset": 6510,
+              "line": 140,
+              "column": 67
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "label": "Active",
+          "invariantName": "Active"
+        },
+        {
+          "value": 1,
+          "token": {
+            "start": {
+              "offset": 6513,
+              "line": 141,
+              "column": 3
+            },
+            "end": {
+              "offset": 6581,
+              "line": 141,
+              "column": 71
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "label": "Inactive",
+          "invariantName": "Inactive"
+        }
+      ]
+    }
+  ],
+  "statusOptionSets": [
+    {
+      "name": "dvt_meeting_statuscode",
+      "schemaName": null,
+      "token": {
+        "start": {
+          "offset": 1867,
+          "line": 49,
+          "column": 1
+        },
+        "end": {
+          "offset": 2043,
+          "line": 54,
+          "column": 2
+        },
+        "filepath": {
+          "path": "/main.dbml"
+        }
+      },
+      "values": [
+        {
+          "value": 1,
+          "token": {
+            "start": {
+              "offset": 1910,
+              "line": 50,
+              "column": 3
+            },
+            "end": {
+              "offset": 1937,
+              "line": 50,
+              "column": 30
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "label": "Open"
+        },
+        {
+          "value": 2,
+          "token": {
+            "start": {
+              "offset": 1940,
+              "line": 51,
+              "column": 3
+            },
+            "end": {
+              "offset": 1972,
+              "line": 51,
+              "column": 35
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "label": "Completed"
+        },
+        {
+          "value": 3,
+          "token": {
+            "start": {
+              "offset": 1975,
+              "line": 52,
+              "column": 3
+            },
+            "end": {
+              "offset": 2006,
+              "line": 52,
+              "column": 34
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "label": "Canceled"
+        },
+        {
+          "value": 4,
+          "token": {
+            "start": {
+              "offset": 2009,
+              "line": 53,
+              "column": 3
+            },
+            "end": {
+              "offset": 2041,
+              "line": 53,
+              "column": 35
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "label": "Scheduled"
+        }
+      ]
+    },
+    {
+      "name": "dvt_project_statuscode",
+      "schemaName": null,
+      "token": {
+        "start": {
+          "offset": 3083,
+          "line": 73,
+          "column": 1
+        },
+        "end": {
+          "offset": 3292,
+          "line": 77,
+          "column": 2
+        },
+        "filepath": {
+          "path": "/main.dbml"
+        }
+      },
+      "values": [
+        {
+          "value": 1,
+          "token": {
+            "start": {
+              "offset": 3126,
+              "line": 74,
+              "column": 3
+            },
+            "end": {
+              "offset": 3173,
+              "line": 74,
+              "column": 50
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "label": "Active",
+          "color": "#F3F2F1"
+        },
+        {
+          "value": 123450000,
+          "token": {
+            "start": {
+              "offset": 3176,
+              "line": 75,
+              "column": 3
+            },
+            "end": {
+              "offset": 3232,
+              "line": 75,
+              "column": 59
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "label": "On Hold",
+          "color": "#FFF4CC"
+        },
+        {
+          "value": 123450001,
+          "token": {
+            "start": {
+              "offset": 3235,
+              "line": 76,
+              "column": 3
+            },
+            "end": {
+              "offset": 3290,
+              "line": 76,
+              "column": 58
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "label": "Closed",
+          "color": "#DFF6DD"
+        }
+      ]
+    },
+    {
+      "name": "dvt_invoice_statuscode",
+      "schemaName": null,
+      "token": {
+        "start": {
+          "offset": 6585,
+          "line": 144,
+          "column": 1
+        },
+        "end": {
+          "offset": 6693,
+          "line": 147,
+          "column": 2
+        },
+        "filepath": {
+          "path": "/main.dbml"
+        }
+      },
+      "values": [
+        {
+          "value": 1,
+          "token": {
+            "start": {
+              "offset": 6628,
+              "line": 145,
+              "column": 3
+            },
+            "end": {
+              "offset": 6657,
+              "line": 145,
+              "column": 32
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "label": "Active"
+        },
+        {
+          "value": 2,
+          "token": {
+            "start": {
+              "offset": 6660,
+              "line": 146,
+              "column": 3
+            },
+            "end": {
+              "offset": 6691,
+              "line": 146,
+              "column": 34
+            },
+            "filepath": {
+              "path": "/main.dbml"
+            }
+          },
+          "label": "Inactive"
+        }
+      ]
+    }
+  ],
+  "bitOptionSets": []
+}

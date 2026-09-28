@@ -2,6 +2,15 @@
 
 Each release is tagged `dv-tools/v<version>` in this repository.
 
+## 1.2.0
+
+### Added
+- `dv-convert diff`: what changed in the data model between two `model.json` files, or between
+  git refs (`--from <ref> [--to <ref>]`, read with `git show`; the working tree by default).
+  Markdown for release notes (`**Solutions:**` versions line; tables for tables, columns,
+  choices and status reasons, relationships, keys) or JSON (`diffSchema: 1`). `--exit-code`
+  exits 1 when something changed. `model.json` itself is unchanged.
+
 ## 1.1.0
 
 `model.json` schema 2 only adds to schema 1: table, file and relationship names are unchanged.
