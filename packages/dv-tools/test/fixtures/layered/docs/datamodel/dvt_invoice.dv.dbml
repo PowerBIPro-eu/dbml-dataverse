@@ -1,0 +1,21 @@
+// Generated from Dataverse solution XML
+// Entity: dvt_invoice
+
+StateOptionSet dvt_invoice_statecode {
+  0 [label: 'Active', invariant_name: 'Active', default_status: 1]
+  1 [label: 'Inactive', invariant_name: 'Inactive', default_status: 2]
+}
+
+StatusOptionSet dvt_invoice_statuscode {
+  1 [label: 'Active', state: 0]
+  2 [label: 'Inactive', state: 1]
+}
+
+Table dvt_invoice [display_name: 'Invoice', ownership: OrganizationOwned, source_solution: 'Sales', headercolor: #175e7a] {
+  dvt_amount money [display_name: 'Amount', required: required, source_solution: 'Sales']
+  dvt_categorycode picklist [display_name: 'Category', required: none, option_set: 'dvt_category', source_solution: 'Sales']
+  dvt_invoiceid primarykey [pk, display_name: 'Invoice', required: systemrequired, note: 'Unique identifier for entity instances', source_solution: 'Sales']
+  dvt_projectid lookup [display_name: 'Project', required: required, targets: 'dvt_project', source_solution: 'Sales']
+  statecode state [display_name: 'Status', required: systemrequired, option_set: 'dvt_invoice_statecode', source_solution: 'Sales']
+  statuscode status [display_name: 'Status Reason', required: none, option_set: 'dvt_invoice_statuscode', source_solution: 'Sales']
+}

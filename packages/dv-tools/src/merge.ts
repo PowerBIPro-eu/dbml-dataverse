@@ -70,10 +70,18 @@ export function mergeSolutions(layers: SolutionLayer[]): MergedModel {
         // display_name and description: last-wins (presentation metadata)
         if (entity.displayName) existing.displayName = entity.displayName;
         if (entity.description) existing.description = entity.description;
-        // ownership: first-wins (structural, not overridable)
-        // isActivity / isActivityParty: structural, first-wins
+        // ownership / isActivity / isActivityParty: structural, first-wins — but a partial
+        // platform table in an earlier layer may not define them, so the first layer that does wins
+        if (existing.ownership === 'None') existing.ownership = entity.ownership;
+        if (!existing.isActivityKnown && entity.isActivityKnown) {
+          existing.isActivity = entity.isActivity;
+          existing.isActivityParty = entity.isActivityParty;
+          existing.isActivityKnown = true;
+        }
         // isAuditEnabled: OR semantics — any layer enabling it counts
         if (entity.isAuditEnabled) existing.isAuditEnabled = true;
+        // a later layer may carry the full table definition (primary key included)
+        if (entity.hasPrimaryKey) existing.hasPrimaryKey = true;
 
         // Merge new columns (first-wins by logical name)
         const existingColNames = new Set(existing.attributes.map((a) => a.name));

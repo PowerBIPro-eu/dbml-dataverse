@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Synthetic fixture: partial platform table without our columns (e.g. included for a form).
+     Left out by default; kept with platformTables: all. -->
+<Entity xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name LocalizedName="Contact" OriginalName="Contact">Contact</Name>
+  <EntityInfo>
+    <entity Name="Contact" unmodified="1">
+      <attributes>
+        <attribute PhysicalName="JobTitle">
+          <Type>nvarchar</Type>
+          <Name>jobtitle</Name>
+          <LogicalName>jobtitle</LogicalName>
+          <RequiredLevel>none</RequiredLevel>
+          <IsCustomField>0</IsCustomField>
+          <SourceType>0</SourceType>
+          <Format>text</Format>
+          <MaxLength>100</MaxLength>
+          <displaynames>
+            <displayname description="Job Title" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="Type the job title of the contact." languagecode="1033" />
+          </Descriptions>
+        </attribute>
+      </attributes>
+    </entity>
+  </EntityInfo>
+</Entity>

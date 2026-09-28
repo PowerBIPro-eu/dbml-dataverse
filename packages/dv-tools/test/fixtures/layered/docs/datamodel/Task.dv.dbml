@@ -1,0 +1,19 @@
+// Generated from Dataverse solution XML
+// Entity: Task
+
+StatusOptionSet task_statuscode {
+  2 [label: 'Not Started', state: 0]
+  3 [label: 'In Progress', state: 0]
+  4 [label: 'Waiting on someone else', state: 0]
+  7 [label: 'Deferred', state: 0]
+  123450002 [label: 'Blocked', state: 0]
+  5 [label: 'Completed', state: 1]
+  6 [label: 'Canceled', state: 2]
+}
+
+Table Task [is_activity: true, source_solution: 'Core', headercolor: #336699] {
+  activityid primarykey [pk, required: systemrequired]
+  dvt_effort int [display_name: 'Effort (hours)', required: none, format: 'none', note: 'Planned effort in hours', source_solution: 'Core']
+  dvt_projectid lookup [display_name: 'Project', required: none, targets: 'dvt_project', source_solution: 'Core']
+  statuscode status [display_name: 'Status Reason', required: none, option_set: 'task_statuscode', note: 'Select the task\'s status.', source_solution: 'Core']
+}

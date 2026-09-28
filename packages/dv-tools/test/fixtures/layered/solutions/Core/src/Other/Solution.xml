@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Synthetic fixture: base layer of a fictional two-layer solution (publisher prefix dvt). -->
+<ImportExportXml version="9.2.24044.192" SolutionPackageVersion="9.2" languagecode="1033" generatedBy="CrmLive" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <SolutionManifest>
+    <UniqueName>DvtCore</UniqueName>
+    <LocalizedNames>
+      <LocalizedName description="DVT Core" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions />
+    <Version>1.0.0.3</Version>
+    <Managed>2</Managed>
+    <Publisher>
+      <UniqueName>dvtools</UniqueName>
+      <LocalizedNames>
+        <LocalizedName description="dv-tools test publisher" languagecode="1033" />
+      </LocalizedNames>
+      <Descriptions />
+      <EMailAddress xsi:nil="true"></EMailAddress>
+      <SupportingWebsiteUrl xsi:nil="true"></SupportingWebsiteUrl>
+      <CustomizationPrefix>dvt</CustomizationPrefix>
+      <CustomizationOptionValuePrefix>12345</CustomizationOptionValuePrefix>
+      <Addresses />
+    </Publisher>
+    <RootComponents />
+    <MissingDependencies />
+  </SolutionManifest>
+</ImportExportXml>

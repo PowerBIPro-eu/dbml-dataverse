@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Synthetic fixture: partial platform activity table. Only our columns and the modified
+     statuscode are in the solution; no primary key, no <IsActivity>. -->
+<Entity xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name LocalizedName="Task" OriginalName="Task">Task</Name>
+  <EntityInfo>
+    <entity Name="Task" unmodified="1">
+      <attributes>
+        <attribute PhysicalName="dvt_effort">
+          <Type>int</Type>
+          <Name>dvt_effort</Name>
+          <LogicalName>dvt_effort</LogicalName>
+          <RequiredLevel>none</RequiredLevel>
+          <IsCustomField>1</IsCustomField>
+          <SourceType>0</SourceType>
+          <Format>none</Format>
+          <displaynames>
+            <displayname description="Effort (hours)" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="Planned effort in hours" languagecode="1033" />
+          </Descriptions>
+        </attribute>
+        <attribute PhysicalName="dvt_projectid">
+          <Type>lookup</Type>
+          <Name>dvt_projectid</Name>
+          <LogicalName>dvt_projectid</LogicalName>
+          <RequiredLevel>none</RequiredLevel>
+          <IsCustomField>1</IsCustomField>
+          <SourceType>0</SourceType>
+          <LookupStyle>single</LookupStyle>
+          <LookupTypes />
+          <displaynames>
+            <displayname description="Project" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="" languagecode="1033" />
+          </Descriptions>
+        </attribute>
+        <attribute PhysicalName="StatusCode">
+          <Type>status</Type>
+          <Name>statuscode</Name>
+          <LogicalName>statuscode</LogicalName>
+          <RequiredLevel>none</RequiredLevel>
+          <IsCustomField>0</IsCustomField>
+          <SourceType>0</SourceType>
+          <optionset Name="task_statuscode">
+            <OptionSetType>status</OptionSetType>
+            <displaynames>
+              <displayname description="Status Reason" languagecode="1033" />
+            </displaynames>
+            <Descriptions>
+              <Description description="Select the task's status." languagecode="1033" />
+            </Descriptions>
+            <statuses>
+              <status value="2" state="0">
+                <labels>
+                  <label description="Not Started" languagecode="1033" />
+                </labels>
+              </status>
+              <status value="3" state="0">
+                <labels>
+                  <label description="In Progress" languagecode="1033" />
+                </labels>
+              </status>
+              <status value="4" state="0">
+                <labels>
+                  <label description="Waiting on someone else" languagecode="1033" />
+                </labels>
+              </status>
+              <status value="7" state="0">
+                <labels>
+                  <label description="Deferred" languagecode="1033" />
+                </labels>
+              </status>
+              <status value="123450002" state="0">
+                <labels>
+                  <label description="Blocked" languagecode="1033" />
+                </labels>
+              </status>
+              <status value="5" state="1">
+                <labels>
+                  <label description="Completed" languagecode="1033" />
+                </labels>
+              </status>
+              <status value="6" state="2">
+                <labels>
+                  <label description="Canceled" languagecode="1033" />
+                </labels>
+              </status>
+            </statuses>
+          </optionset>
+          <displaynames>
+            <displayname description="Status Reason" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="Select the task's status." languagecode="1033" />
+          </Descriptions>
+        </attribute>
+      </attributes>
+    </entity>
+  </EntityInfo>
+</Entity>

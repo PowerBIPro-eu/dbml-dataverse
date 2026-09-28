@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Synthetic fixture: custom activity table; its status reasons are exactly the activity baseline. -->
+<Entity xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name LocalizedName="Meeting" OriginalName="Meeting">dvt_meeting</Name>
+  <EntityInfo>
+    <entity Name="dvt_meeting">
+      <LocalizedNames>
+        <LocalizedName description="Meeting" languagecode="1033" />
+      </LocalizedNames>
+      <Descriptions>
+        <Description description="" languagecode="1033" />
+      </Descriptions>
+      <attributes>
+        <attribute PhysicalName="ActivityId">
+          <Type>primarykey</Type>
+          <Name>activityid</Name>
+          <LogicalName>activityid</LogicalName>
+          <RequiredLevel>systemrequired</RequiredLevel>
+          <IsCustomField>0</IsCustomField>
+          <SourceType>0</SourceType>
+          <displaynames>
+            <displayname description="Meeting" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="Unique identifier of the activity." languagecode="1033" />
+          </Descriptions>
+        </attribute>
+        <attribute PhysicalName="dvt_agenda">
+          <Type>nvarchar</Type>
+          <Name>dvt_agenda</Name>
+          <LogicalName>dvt_agenda</LogicalName>
+          <RequiredLevel>none</RequiredLevel>
+          <IsCustomField>1</IsCustomField>
+          <SourceType>0</SourceType>
+          <Format>textarea</Format>
+          <MaxLength>500</MaxLength>
+          <displaynames>
+            <displayname description="Agenda" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="" languagecode="1033" />
+          </Descriptions>
+        </attribute>
+        <attribute PhysicalName="dvt_projectid">
+          <Type>lookup</Type>
+          <Name>dvt_projectid</Name>
+          <LogicalName>dvt_projectid</LogicalName>
+          <RequiredLevel>none</RequiredLevel>
+          <IsCustomField>1</IsCustomField>
+          <SourceType>0</SourceType>
+          <LookupStyle>single</LookupStyle>
+          <LookupTypes />
+          <displaynames>
+            <displayname description="Project" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="" languagecode="1033" />
+          </Descriptions>
+        </attribute>
+        <attribute PhysicalName="StateCode">
+          <Type>state</Type>
+          <Name>statecode</Name>
+          <LogicalName>statecode</LogicalName>
+          <RequiredLevel>systemrequired</RequiredLevel>
+          <IsCustomField>0</IsCustomField>
+          <SourceType>0</SourceType>
+          <optionset Name="dvt_meeting_statecode">
+            <OptionSetType>state</OptionSetType>
+            <displaynames>
+              <displayname description="Activity Status" languagecode="1033" />
+            </displaynames>
+            <Descriptions>
+              <Description description="" languagecode="1033" />
+            </Descriptions>
+            <states>
+              <state value="0" defaultstatus="1" invariantname="Open">
+                <labels>
+                  <label description="Open" languagecode="1033" />
+                </labels>
+              </state>
+              <state value="1" defaultstatus="2" invariantname="Completed">
+                <labels>
+                  <label description="Completed" languagecode="1033" />
+                </labels>
+              </state>
+              <state value="2" defaultstatus="3" invariantname="Canceled">
+                <labels>
+                  <label description="Canceled" languagecode="1033" />
+                </labels>
+              </state>
+              <state value="3" defaultstatus="4" invariantname="Scheduled">
+                <labels>
+                  <label description="Scheduled" languagecode="1033" />
+                </labels>
+              </state>
+            </states>
+          </optionset>
+          <displaynames>
+            <displayname description="Activity Status" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="" languagecode="1033" />
+          </Descriptions>
+        </attribute>
+        <attribute PhysicalName="StatusCode">
+          <Type>status</Type>
+          <Name>statuscode</Name>
+          <LogicalName>statuscode</LogicalName>
+          <RequiredLevel>none</RequiredLevel>
+          <IsCustomField>0</IsCustomField>
+          <SourceType>0</SourceType>
+          <optionset Name="dvt_meeting_statuscode">
+            <OptionSetType>status</OptionSetType>
+            <displaynames>
+              <displayname description="Status Reason" languagecode="1033" />
+            </displaynames>
+            <Descriptions>
+              <Description description="" languagecode="1033" />
+            </Descriptions>
+            <statuses>
+              <status value="1" state="0">
+                <labels>
+                  <label description="Open" languagecode="1033" />
+                </labels>
+              </status>
+              <status value="2" state="1">
+                <labels>
+                  <label description="Completed" languagecode="1033" />
+                </labels>
+              </status>
+              <status value="3" state="2">
+                <labels>
+                  <label description="Canceled" languagecode="1033" />
+                </labels>
+              </status>
+              <status value="4" state="3">
+                <labels>
+                  <label description="Scheduled" languagecode="1033" />
+                </labels>
+              </status>
+            </statuses>
+          </optionset>
+          <displaynames>
+            <displayname description="Status Reason" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="" languagecode="1033" />
+          </Descriptions>
+        </attribute>
+      </attributes>
+      <EntitySetName>dvt_meetings</EntitySetName>
+      <IsBPFEntity>0</IsBPFEntity>
+      <OwnershipTypeMask>UserOwned</OwnershipTypeMask>
+      <IsAuditEnabled>0</IsAuditEnabled>
+      <IsActivity>1</IsActivity>
+      <IsActivityParty>0</IsActivityParty>
+      <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    </entity>
+  </EntityInfo>
+</Entity>

@@ -2,6 +2,7 @@ import type {
   AnyRelationship, Entity, GlobalOptionSet, LocalOptionSet,
   Relationship, ManyToManyRelationship,
 } from '../types.js';
+import { compareStrings } from '../util.js';
 
 // ── String helpers ─────────────────────────────────────────────────────────
 
@@ -128,7 +129,7 @@ export function emitTable(
 
   if (entity.keys.length) {
     lines.push('', '  indexes {');
-    for (const key of entity.keys) {
+    for (const key of [...entity.keys].sort((a, b) => compareStrings(a.name, b.name))) {
       lines.push(`    (${key.columns.join(', ')}) [name: '${key.name}', unique]`);
     }
     lines.push('  }');
@@ -229,7 +230,8 @@ export function emitGlobalOptionSetsFile(globalOptionSets: Map<string, GlobalOpt
     '// Global option sets (solution-level, shared across entities)',
     '',
   ];
-  for (const os of globalOptionSets.values()) {
+  const sorted = [...globalOptionSets.values()].sort((a, b) => compareStrings(a.name, b.name));
+  for (const os of sorted) {
     parts.push(emitOptionSet(os.name, os.displayName, os.description, os.values, true, os.sourceSolution));
   }
   return parts.join('\n');

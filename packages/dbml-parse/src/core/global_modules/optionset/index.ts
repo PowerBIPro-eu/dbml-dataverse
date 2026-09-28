@@ -143,8 +143,7 @@ export const stateOptionSetGlobalModule: GlobalModule = {
         const intVal = extractIntFromField(entry);
         if (intVal === undefined) continue;
         const sm = aggregateSettingList(entry.args[0] instanceof ListExpressionNode ? entry.args[0] : undefined).getValue();
-        const dsAttr = sm[SettingName.DefaultStatus]?.at(0);
-        const defaultStatus = dsAttr?.value ? parseInt(extractVariableFromExpression(dsAttr.value) ?? '', 10) || undefined : undefined;
+        const defaultStatus = extractIntFromNode(sm[SettingName.DefaultStatus]?.at(0)?.value);
         result.values.push({
           value: intVal,
           token: getTokenPosition(entry),
@@ -193,8 +192,7 @@ export const statusOptionSetGlobalModule: GlobalModule = {
         const intVal = extractIntFromField(entry);
         if (intVal === undefined) continue;
         const sm = aggregateSettingList(entry.args[0] instanceof ListExpressionNode ? entry.args[0] : undefined).getValue();
-        const stateAttr = sm[SettingName.State]?.at(0);
-        const state = stateAttr?.value ? parseInt(extractVariableFromExpression(stateAttr.value) ?? '', 10) || undefined : undefined;
+        const state = extractIntFromNode(sm[SettingName.State]?.at(0)?.value);
         result.values.push({
           value: intVal,
           token: getTokenPosition(entry),

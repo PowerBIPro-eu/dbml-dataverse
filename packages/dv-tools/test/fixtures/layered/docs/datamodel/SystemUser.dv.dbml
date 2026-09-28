@@ -1,0 +1,23 @@
+// Generated from Dataverse solution XML
+// Entity: SystemUser
+
+Table SystemUser [source_solution: 'Core', headercolor: #175e7a] {
+  systemuserid primarykey [pk, required: systemrequired]
+  dvt_employeeno nvarchar(20) [display_name: 'Employee No.', required: none, format: 'text', source_solution: 'Core']
+}
+
+Ref dvt_systemuser_dvt_project_reviewerid [
+  delete: RemoveLink,
+  cascade_assign: NoCascade,
+  cascade_archive: RemoveLink,
+  cascade_reparent: NoCascade,
+  cascade_share: NoCascade,
+  cascade_unshare: NoCascade,
+  cascade_rollupview: NoCascade,
+  nav_many: 'dvt_ReviewerId',
+  nav_one: 'dvt_systemuser_dvt_project_reviewerid',
+  nav_pane_display: UseCollectionName,
+  nav_pane_area: Details,
+  nav_pane_order: 10000,
+  source_solution: 'Core'
+]: SystemUser.systemuserid < dvt_project.dvt_reviewerid

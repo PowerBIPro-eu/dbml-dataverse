@@ -1,0 +1,98 @@
+// Generated from Dataverse solution XML
+// Entity: dvt_project
+
+BitOptionSet dvt_project_dvt_isactive {
+  1 [label: 'Running']
+  0 [label: 'Stopped']
+}
+
+StateOptionSet dvt_project_statecode {
+  0 [label: 'Active', invariant_name: 'Active', default_status: 1]
+  1 [label: 'Inactive', invariant_name: 'Inactive', default_status: 123450001]
+}
+
+StatusOptionSet dvt_project_statuscode {
+  1 [label: 'Active', state: 0, color: '#F3F2F1']
+  123450000 [label: 'On Hold', state: 0, color: '#FFF4CC']
+  123450001 [label: 'Closed', state: 1, color: '#DFF6DD']
+}
+
+Table dvt_project [display_name: 'Project', ownership: UserOwned, is_audit_enabled: true, description: 'A piece of work we deliver.&#xA;Owned by one business unit.', source_solution: 'Core', headercolor: #aa3366] {
+  dvt_accountid lookup [display_name: 'Customer', required: none, targets: 'Account', note: 'Customer the project is for', source_solution: 'Core']
+  dvt_contactid lookup [display_name: 'Sponsor', required: none, targets: 'Contact', source_solution: 'Core']
+  dvt_description ntext [display_name: 'Description', required: none, format: 'textarea', source_solution: 'Core']
+  dvt_isactive bit [display_name: 'Running', required: none, option_set: 'dvt_project_dvt_isactive', note: 'Running or stopped.&#xA;Set by the project owner.', source_solution: 'Core']
+  dvt_name nvarchar(100) [display_name: 'Name', required: required, format: 'text', note: 'Short name of the project', source_solution: 'Core']
+  dvt_priority picklist [display_name: 'Priority', required: none, option_set: 'dvt_priority', source_solution: 'Core']
+  dvt_projectid primarykey [pk, display_name: 'Project', required: systemrequired, note: 'Unique identifier for entity instances', source_solution: 'Core']
+  dvt_reviewerid lookup [display_name: 'Reviewer', required: none, targets: 'SystemUser', source_solution: 'Core']
+  owningbusinessunit lookup [display_name: 'Owning Business Unit', required: none, targets: 'BusinessUnit', note: 'Unique identifier for the business unit that owns the record', source_solution: 'Core']
+  statecode state [display_name: 'Status', required: systemrequired, option_set: 'dvt_project_statecode', note: 'Status of the Project', source_solution: 'Core']
+  statuscode status [display_name: 'Status Reason', required: none, option_set: 'dvt_project_statuscode', note: 'Reason for the status of the Project', source_solution: 'Core']
+  dvt_budget money [display_name: 'Budget', required: none, note: 'Approved budget', source_solution: 'Sales']
+
+  indexes {
+    (dvt_accountid, dvt_name) [name: 'dvt_project_account_key', unique]
+    (dvt_name) [name: 'dvt_project_name_key', unique]
+  }
+}
+
+Ref dvt_dvt_project_dvt_invoice [
+  delete: Restrict,
+  cascade_assign: NoCascade,
+  cascade_archive: RemoveLink,
+  cascade_reparent: NoCascade,
+  cascade_share: NoCascade,
+  cascade_unshare: NoCascade,
+  cascade_rollupview: NoCascade,
+  nav_many: 'dvt_ProjectId_dvt_invoice',
+  nav_one: 'dvt_dvt_project_dvt_invoice',
+  nav_pane_display: UseCollectionName,
+  nav_pane_area: Details,
+  nav_pane_order: 10000,
+  source_solution: 'Sales'
+]: dvt_project.dvt_projectid < dvt_invoice.dvt_projectid
+
+Ref dvt_dvt_project_dvt_meeting [
+  delete: Cascade,
+  cascade_assign: NoCascade,
+  cascade_archive: RemoveLink,
+  cascade_reparent: NoCascade,
+  cascade_share: NoCascade,
+  cascade_unshare: NoCascade,
+  cascade_rollupview: NoCascade,
+  nav_many: 'dvt_ProjectId_dvt_meeting',
+  nav_one: 'dvt_dvt_project_dvt_meeting',
+  nav_pane_display: UseCollectionName,
+  nav_pane_area: Details,
+  nav_pane_order: 10000,
+  source_solution: 'Core'
+]: dvt_project.dvt_projectid < dvt_meeting.dvt_projectid
+
+Ref dvt_dvt_project_task [
+  delete: RemoveLink,
+  cascade_assign: NoCascade,
+  cascade_archive: RemoveLink,
+  cascade_reparent: NoCascade,
+  cascade_share: NoCascade,
+  cascade_unshare: NoCascade,
+  cascade_rollupview: NoCascade,
+  nav_many: 'dvt_ProjectId_Task',
+  nav_one: 'dvt_dvt_project_task',
+  nav_pane_display: UseCollectionName,
+  nav_pane_area: Details,
+  nav_pane_order: 10000,
+  source_solution: 'Core'
+]: dvt_project.dvt_projectid < Task.dvt_projectid
+
+Ref dvt_project_meeting_attendees [
+  intersect_entity: 'dvt_project_meeting_attendees',
+  source_solution: 'Core'
+]: dvt_project.dvt_projectid <> dvt_meeting.activityid
+
+Ref dvt_project_systemuser [
+  intersect_entity: 'dvt_project_systemuser',
+  source_solution: 'Core'
+]: dvt_project.dvt_projectid <> SystemUser.systemuserid
+
+// Many-to-many dvt_project_meeting_reviewers (dvt_project <> dvt_meeting) is in model.json only: DBML allows one Ref per pair of tables

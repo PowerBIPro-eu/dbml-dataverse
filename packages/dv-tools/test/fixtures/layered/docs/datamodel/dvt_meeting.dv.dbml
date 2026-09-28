@@ -1,0 +1,24 @@
+// Generated from Dataverse solution XML
+// Entity: dvt_meeting
+
+StateOptionSet dvt_meeting_statecode {
+  0 [label: 'Open', invariant_name: 'Open', default_status: 1]
+  1 [label: 'Completed', invariant_name: 'Completed', default_status: 2]
+  2 [label: 'Canceled', invariant_name: 'Canceled', default_status: 3]
+  3 [label: 'Scheduled', invariant_name: 'Scheduled', default_status: 4]
+}
+
+StatusOptionSet dvt_meeting_statuscode {
+  1 [label: 'Open', state: 0]
+  2 [label: 'Completed', state: 1]
+  3 [label: 'Canceled', state: 2]
+  4 [label: 'Scheduled', state: 3]
+}
+
+Table dvt_meeting [display_name: 'Meeting', ownership: UserOwned, is_activity: true, source_solution: 'Core', headercolor: #175e7a] {
+  activityid primarykey [pk, display_name: 'Meeting', required: systemrequired, note: 'Unique identifier of the activity.', source_solution: 'Core']
+  dvt_agenda nvarchar(500) [display_name: 'Agenda', required: none, format: 'textarea', source_solution: 'Core']
+  dvt_projectid lookup [display_name: 'Project', required: none, targets: 'dvt_project', source_solution: 'Core']
+  statecode state [display_name: 'Activity Status', required: systemrequired, option_set: 'dvt_meeting_statecode', source_solution: 'Core']
+  statuscode status [display_name: 'Status Reason', required: none, option_set: 'dvt_meeting_statuscode', source_solution: 'Core']
+}

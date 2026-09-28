@@ -1,0 +1,2 @@
+# dv-tools test fixtures are compared byte for byte: keep LF on every OS (core.autocrlf included)
+packages/dv-tools/test/fixtures/** text eol=lf

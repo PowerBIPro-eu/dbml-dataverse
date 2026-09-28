@@ -1,0 +1,11 @@
+// Global option sets (solution-level, shared across entities)
+
+OptionSet dvt_category [display_name: 'Category', is_global: true, description: 'Invoice category', source_solution: 'Core'] {
+  123450000 [label: 'Service']
+  123450001 [label: 'Licence']
+}
+
+OptionSet dvt_priority [display_name: 'Priority', is_global: true, source_solution: 'Core'] {
+  123450000 [label: 'Low']
+  123450001 [label: 'High']
+}

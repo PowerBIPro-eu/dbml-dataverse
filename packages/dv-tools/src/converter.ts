@@ -1,244 +1,404 @@
-import { writeFileSync, mkdirSync, existsSync, readdirSync } from 'node:fs';
-import { join, resolve, basename, dirname } from 'node:path';
-import type { AnyRelationship, ConvertOptions, Entity, GlobalOptionSet, Relationship } from './types.js';
-import { parseEntityXml, parseOptionSetsFolder } from './xml/parseEntity.js';
+import { existsSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import type {
+  AnyRelationship, Attribute, ConvertOptions, Entity, ManyToManyRelationship, PlatformTables,
+  SolutionInfo, SolutionInput,
+} from './types.js';
+import { parseEntitiesFolder, parseEntityXml, parseOptionSetsFolder } from './xml/parseEntity.js';
 import { parseAllRelationships } from './xml/parseRelationships.js';
+import { EXCLUDED_ENTITIES, PLATFORM_ACTIVITY_TABLES, decodeCharRefs } from './xml/utils.js';
 import { emitEntityFile, emitGlobalOptionSetsFile } from './emit/dbml.js';
-import { buildModelJson } from './model/json.js';
-import { type SolutionLayer, deriveSolutionName, mergeSolutions } from './merge.js';
+import { buildModelJson, DbmlCompileError } from './model/json.js';
+import {
+  finalizeModel, serializeModel, GENERATOR_NAME,
+  type FieldFacts, type ModelFacts, type Provenance, type TableFacts,
+} from './model/finalize.js';
+import { type SolutionLayer, mergeSolutions } from './merge.js';
+import { readSolutionXml, resolvePaths } from './solution.js';
+import { InputError, UsageError } from './errors.js';
+import { compareStrings, portableRelative } from './util.js';
+import { VERSION } from './version.js';
+import type { OutputFile } from './output.js';
 
-// ── Path resolution ────────────────────────────────────────────────────────
-
-function resolvePaths(inputPath: string): {
-  entitiesPath: string;
-  optionSetsPath: string | null;
-  globalRelsPath: string | null;
-} {
-  const abs = resolve(inputPath);
-
-  // Check common solution layouts
-  const tryPaths = [
-    { entities: join(abs, 'src', 'Entities'), optionSets: join(abs, 'src', 'OptionSets'), rels: join(abs, 'src', 'Other', 'Relationships') },
-    { entities: join(abs, 'Entities'),         optionSets: join(abs, 'OptionSets'),       rels: join(abs, 'Other', 'Relationships') },
-  ];
-
-  for (const p of tryPaths) {
-    if (existsSync(p.entities)) {
-      return {
-        entitiesPath: p.entities,
-        optionSetsPath: existsSync(p.optionSets) ? p.optionSets : null,
-        globalRelsPath: existsSync(p.rels) ? p.rels : null,
-      };
-    }
-  }
-
-  // User pointed directly at an Entities folder
-  if (basename(abs) === 'Entities' && existsSync(abs)) {
-    const parent = dirname(abs);
-    const osPath = join(parent, 'OptionSets');
-    const relPath = join(parent, 'Other', 'Relationships');
-    return {
-      entitiesPath: abs,
-      optionSetsPath: existsSync(osPath) ? osPath : null,
-      globalRelsPath: existsSync(relPath) ? relPath : null,
-    };
-  }
-
-  throw new Error(`Could not find an Entities folder under: ${abs}`);
+export interface BuildResult {
+  files: OutputFile[];
+  layers: Array<{ input: SolutionInput; info: SolutionInfo }>;
 }
 
 // ── Parse a single solution into a SolutionLayer ──────────────────────────
 
-function parseSolution(inputPath: string, solutionName: string): SolutionLayer {
-  const { entitiesPath, optionSetsPath, globalRelsPath } = resolvePaths(inputPath);
-
-  const globalOptionSets: Map<string, GlobalOptionSet> = optionSetsPath
-    ? parseOptionSetsFolder(optionSetsPath)
-    : new Map();
-  console.error(`[${solutionName}] Parsed ${globalOptionSets.size} global option sets`);
-
-  const entities = new Map<string, Entity>();
-  if (existsSync(entitiesPath)) {
-    for (const item of readdirSync(entitiesPath, { withFileTypes: true })) {
-      if (!item.isDirectory()) continue;
-      const entity = parseEntityXml(join(entitiesPath, item.name, 'Entity.xml'));
-      if (!entity) continue;
-      entities.set(entity.name, entity);
-    }
-  }
-  console.error(`[${solutionName}] Parsed ${entities.size} entities`);
-
-  const relationships = parseAllRelationships(entitiesPath, globalRelsPath);
-  console.error(`[${solutionName}] Parsed ${relationships.length} relationships`);
-
-  return { name: solutionName, entities, globalOptionSets, relationships };
+interface ParsedSolution {
+  input: SolutionInput;
+  info: SolutionInfo;
+  layer: SolutionLayer;
 }
 
-// ── Enrichment: populate lookup targets ───────────────────────────────────
+function parseSolution(input: SolutionInput): ParsedSolution {
+  const paths = resolvePaths(input.path);
+  const info = readSolutionXml(paths.solutionXmlPath);
+  if (input.uniqueName && input.uniqueName.toLowerCase() !== (info.uniqueName ?? '').toLowerCase()) {
+    const found = paths.solutionXmlPath ? `its Solution.xml has '${info.uniqueName ?? ''}'` : 'it has no Solution.xml';
+    throw new UsageError(`solution '${input.name}' should have uniqueName '${input.uniqueName}', but ${found}`);
+  }
 
+  const globalOptionSets = paths.optionSetsPath ? parseOptionSetsFolder(paths.optionSetsPath) : new Map();
+  console.error(`[${input.name}] Parsed ${globalOptionSets.size} global option sets`);
+  const entities = parseEntitiesFolder(paths.entitiesPath);
+  console.error(`[${input.name}] Parsed ${entities.size} entities`);
+  const relationships = parseAllRelationships(paths.entitiesPath, paths.globalRelsPath);
+  console.error(`[${input.name}] Parsed ${relationships.length} relationships`);
+
+  return { input, info, layer: { name: input.name, entities, globalOptionSets, relationships } };
+}
+
+// ── Our tables vs platform tables ──────────────────────────────────────────
+
+/** Publisher prefixes (`ddsol_`) of all layers; a table whose name starts with one is ours. */
+function publisherPrefixes(infos: SolutionInfo[]): string[] {
+  const prefixes = new Set<string>();
+  for (const info of infos) {
+    const prefix = info.publisher?.customizationPrefix;
+    if (prefix) prefixes.add(`${prefix.toLowerCase()}_`);
+  }
+  return [...prefixes].sort(compareStrings);
+}
+
+function isOurTable(logicalName: string, prefixes: string[]): boolean {
+  // Without any Solution.xml, fall back to "has a publisher-style prefix"
+  return prefixes.length ? prefixes.some((p) => logicalName.startsWith(p)) : /^[a-z0-9]+_/.test(logicalName);
+}
+
+// ── Status reasons: which values are ours, and is statuscode modified ─────
+
+/** Custom option values start with the publisher's 5-digit option-value prefix: 9 digits. */
+const CUSTOM_OPTION_VALUE_MIN = 100_000_000;
+
+/** State → default status reason of a table as the platform creates it. */
+const STATUS_BASELINE = {
+  table: new Map([[0, 1], [1, 2]]),
+  activity: new Map([[0, 1], [1, 2], [2, 3], [3, 4]]),
+};
+
+interface StatusFacts {
+  optionSetName: string;
+  fieldName: string;
+  customValues: Set<number>;
+  modified: boolean;
+}
+
+function localSetOf(entity: Entity, type: 'state' | 'status') {
+  const field = entity.attributes.find((a) => a.type === type && a.optionSetName);
+  const set = field ? entity.localOptionSets.get(field.optionSetName!) : undefined;
+  return field && set?.type === type ? { field, set } : null;
+}
+
+function analyzeStatus(entity: Entity, ours: boolean): StatusFacts | null {
+  const status = localSetOf(entity, 'status');
+  if (!status) return null;
+  const values = status.set.statuses!.map((s) => s.value);
+  const facts = (customValues: Set<number>, modified: boolean): StatusFacts =>
+    ({ optionSetName: status.set.name, fieldName: status.field.name, customValues, modified });
+
+  if (!ours) {
+    // Platform tables ship their own status reasons (Task: 2–7), so only 9-digit values are ours
+    const customValues = new Set(values.filter((v) => v >= CUSTOM_OPTION_VALUE_MIN));
+    return facts(customValues, customValues.size > 0);
+  }
+
+  // Tables we created: compare with the baseline, which also catches removed values and changed defaults
+  const baseline = entity.isActivity ? STATUS_BASELINE.activity : STATUS_BASELINE.table;
+  const baseStatuses = new Set(baseline.values());
+  const customValues = new Set(values.filter((v) => !baseStatuses.has(v)));
+  const removed = [...baseStatuses].some((v) => !values.includes(v));
+  const defaultChanged = localSetOf(entity, 'state')?.set.states!.some(
+    (s) => s.defaultStatus !== null && baseline.has(s.value) && baseline.get(s.value) !== s.defaultStatus,
+  ) ?? false;
+  return facts(customValues, customValues.size > 0 || removed || defaultChanged);
+}
+
+// ── Which tables end up in the model ───────────────────────────────────────
+
+interface TableClass {
+  ours: boolean;
+  status: StatusFacts | null;
+}
+
+const EXCLUDED = new Set([...EXCLUDED_ENTITIES].map((n) => n.toLowerCase()));
+
+function selectTables(entities: Map<string, Entity>, prefixes: string[], mode: PlatformTables): Map<string, TableClass> {
+  const selected = new Map<string, TableClass>();
+  for (const entity of entities.values()) {
+    const ours = isOurTable(entity.name.toLowerCase(), prefixes);
+    const status = analyzeStatus(entity, ours);
+    // 1.0.x kept every fully defined platform table except the excluded system tables
+    const fullyDefined = entity.hasPrimaryKey && !EXCLUDED.has(entity.name.toLowerCase());
+    const carriesOurs = entity.attributes.some((a) => a.isCustom) || !!status?.modified;
+    const keep = ours || mode === 'all' || (mode === 'with-our-columns' && (fullyDefined || carriesOurs));
+    if (keep) selected.set(entity.name, { ours, status });
+  }
+  return selected;
+}
+
+/** A table whose XML only has some columns gets its key: activityid for activities, else <logical>id. */
+function addSyntheticPrimaryKey(entity: Entity): void {
+  const logical = entity.name.toLowerCase();
+  if (!entity.isActivityKnown && PLATFORM_ACTIVITY_TABLES.has(logical)) entity.isActivity = true;
+  const name = entity.isActivity ? 'activityid' : `${logical}id`;
+  const existing = entity.attributes.find((a) => a.name === name);
+  if (existing) {
+    existing.isPk = true;
+    return;
+  }
+  const pk: Attribute = {
+    name, type: 'primarykey', required: 'systemrequired', isPk: true, isCustom: false,
+    sourceType: 'simple', autoNumber: '', format: '', displayName: '', description: '',
+    optionSetName: null, lookupTargets: [],
+  };
+  entity.attributes.unshift(pk);
+}
+
+const byTableOrder = (a: Entity, b: Entity) =>
+  compareStrings(a.name.toLowerCase(), b.name.toLowerCase()) || compareStrings(a.name, b.name);
+
+// ── Enrichment: lookup targets ─────────────────────────────────────────────
+
+const LOOKUP_TYPES = ['lookup', 'owner', 'customer'];
+
+/** Targets come from every 1:N relationship; tables outside the model keep their XML name. */
 function enrichLookupTargets(
   entities: Map<string, Entity>,
   relationships: AnyRelationship[],
+  tableNames: Map<string, string>,
 ): void {
-  // Build map: (referencing_entity, fk_col) → referenced_entity
-  const targetMap = new Map<string, string>();
+  // (referencing table, lookup column) → lowercase target → target name
+  const targets = new Map<string, Map<string, string>>();
   for (const rel of relationships) {
-    if (rel.type === 'OneToMany' && rel.fkCol) {
-      const r = rel as Relationship;
-      targetMap.set(`${r.referencing}::${r.fkCol}`, r.referenced);
-    }
+    if (rel.type !== 'OneToMany' || !rel.fkCol) continue;
+    const key = `${rel.referencing.toLowerCase()}::${rel.fkCol}`;
+    const byLower = targets.get(key) ?? new Map<string, string>();
+    const lower = rel.referenced.toLowerCase();
+    if (!byLower.has(lower)) byLower.set(lower, tableNames.get(lower) ?? rel.referenced);
+    targets.set(key, byLower);
   }
 
   for (const entity of entities.values()) {
     for (const attr of entity.attributes) {
-      const baseType = attr.type.split('(')[0];
-      if (['lookup', 'owner', 'customer'].includes(baseType)) {
-        const target = targetMap.get(`${entity.name}::${attr.name}`);
-        if (target && entities.has(target)) {
-          attr.lookupTargets = [target];
-        }
-      }
+      if (!LOOKUP_TYPES.includes(attr.type.split('(')[0])) continue;
+      const found = targets.get(`${entity.name.toLowerCase()}::${attr.name}`);
+      if (found) attr.lookupTargets = [...found.values()].sort(compareStrings);
     }
   }
 }
 
 // ── Group relationships by parent entity ──────────────────────────────────
 
+interface GroupedRelationships {
+  byParent: Map<string, AnyRelationship[]>;
+  /**
+   * N:N that DBML cannot hold: a second N:N between the same two tables, or a table related
+   * to itself (DBML rejects refs with the same endpoints). They go into model.json directly.
+   */
+  modelOnly: ManyToManyRelationship[];
+}
+
 function groupRelsByParent(
   relationships: AnyRelationship[],
   entities: Map<string, Entity>,
-): Map<string, AnyRelationship[]> {
-  const map = new Map<string, AnyRelationship[]>();
-  const seenNN = new Set<string>();
+  tableNames: Map<string, string>,
+): GroupedRelationships {
+  const byParent = new Map<string, AnyRelationship[]>();
+  const add = (parent: string, rel: AnyRelationship) => byParent.set(parent, [...(byParent.get(parent) ?? []), rel]);
+  const manyToManyByPair = new Map<string, ManyToManyRelationship[]>();
 
   for (const rel of relationships) {
     if (rel.type === 'OneToMany') {
-      const r = rel as Relationship;
-      if (!entities.has(r.referenced) || !entities.has(r.referencing)) continue;
-      const list = map.get(r.referenced) ?? [];
-      list.push(r);
-      map.set(r.referenced, list);
+      const referenced = tableNames.get(rel.referenced.toLowerCase());
+      const referencing = tableNames.get(rel.referencing.toLowerCase());
+      if (!referenced || !referencing) continue;
+      // the lookup column may be left out of the model (system columns such as owninguser)
+      if (!entities.get(referencing)!.attributes.some((a) => a.name === rel.fkCol)) continue;
+      add(referenced, { ...rel, referenced, referencing });
     } else {
-      // ManyToMany — emit from the "first" entity, avoid duplicates
-      const mn = rel as { type: 'ManyToMany'; name: string; first: string; second: string; intersect: string };
-      const nnKey = [mn.first, mn.second].sort().join('::');
-      if (seenNN.has(nnKey)) continue;
-      seenNN.add(nnKey);
-      if (entities.has(mn.first)) {
-        const list = map.get(mn.first) ?? [];
-        list.push(rel);
-        map.set(mn.first, list);
-      }
+      // XML names may be logical (lowercase) or schema names
+      const first = tableNames.get(rel.first.toLowerCase());
+      const second = tableNames.get(rel.second.toLowerCase());
+      if (!first || !second) continue;
+      const pair = [first, second].sort(compareStrings).join('::');
+      const resolved = { ...rel, name: rel.name || `${rel.first}_${rel.second}`, first, second };
+      manyToManyByPair.set(pair, [...(manyToManyByPair.get(pair) ?? []), resolved]);
     }
   }
-  return map;
+
+  // Every N:N is kept: the first per pair of tables (by name) as a DBML Ref, the others model-only
+  const modelOnly: ManyToManyRelationship[] = [];
+  for (const group of manyToManyByPair.values()) {
+    group.sort((a, b) => compareStrings(a.name, b.name));
+    const selfReference = group[0].first === group[0].second;
+    if (!selfReference) add(group[0].first, group[0]);
+    modelOnly.push(...(selfReference ? group : group.slice(1)));
+  }
+
+  for (const list of byParent.values()) list.sort((a, b) => compareStrings(a.name, b.name));
+  return { byParent, modelOnly: modelOnly.sort((a, b) => compareStrings(a.name, b.name)) };
+}
+
+/** model.json ref for a model-only N:N, in the parser's shape. */
+function manyToManyRefJson(rel: ManyToManyRelationship, pkMap: Map<string, string>): Record<string, unknown> {
+  const endpoint = (tableName: string) =>
+    ({ schemaName: null, tableName, fieldNames: [pkMap.get(tableName)!], relation: '*' });
+  return {
+    name: rel.name,
+    schemaName: null,
+    endpoints: [endpoint(rel.first), endpoint(rel.second)],
+    ...(rel.intersect ? { intersectEntity: rel.intersect } : {}),
+    ...(rel.sourceSolution ? { sourceSolution: rel.sourceSolution } : {}),
+  };
+}
+
+// ── DBML → model.json ──────────────────────────────────────────────────────
+
+/** LF line endings and exactly one trailing newline. */
+function normalizeText(text: string): string {
+  return text.replace(/\r\n?/g, '\n').replace(/\n*$/, '\n');
+}
+
+/** Compile the .dv.dbml files together; errors name the file and line they come from. */
+function compile(files: OutputFile[]): object {
+  const starts: Array<{ name: string; line: number }> = [];
+  let line = 1;
+  for (const file of files) {
+    starts.push({ name: file.name, line });
+    line += file.content.split('\n').length;
+  }
+
+  try {
+    return buildModelJson(files.map((f) => f.content).join('\n'));
+  } catch (err) {
+    if (!(err instanceof DbmlCompileError)) throw err;
+    throw new DbmlCompileError(err.diags.map((d) => {
+      const start = [...starts].reverse().find((s) => s.line <= d.location.start.line) ?? starts[0];
+      return { ...d, file: start.name, location: { start: { ...d.location.start, line: d.location.start.line - start.line + 1 } } };
+    }));
+  }
+}
+
+function colorLookup(colors: Record<string, string>): (name: string) => string | undefined {
+  const byLower = new Map<string, string>();
+  for (const key of Object.keys(colors).sort(compareStrings)) byLower.set(key.toLowerCase(), colors[key]);
+  return (name) => byLower.get(name.toLowerCase());
+}
+
+function tableFacts(entity: Entity, cls: TableClass): TableFacts {
+  const fields = new Map<string, FieldFacts>();
+  for (const attr of entity.attributes) {
+    fields.set(attr.name, {
+      isCustom: attr.isCustom,
+      description: decodeCharRefs(attr.description),
+      modifications: cls.status?.modified && cls.status.fieldName === attr.name ? ['statusReasons'] : [],
+    });
+  }
+  return { logicalName: entity.name.toLowerCase(), isCustom: cls.ours, isPartial: !entity.hasPrimaryKey, fields };
+}
+
+function modelFacts(
+  entities: Map<string, Entity>,
+  classes: Map<string, TableClass>,
+  extraRefs: Record<string, unknown>[] = [],
+): ModelFacts {
+  const facts: ModelFacts = { tables: new Map(), customStatusValues: new Map(), extraRefs };
+  for (const [name, entity] of entities) {
+    const cls = classes.get(name)!;
+    facts.tables.set(name, tableFacts(entity, cls));
+    if (cls.status?.customValues.size) facts.customStatusValues.set(cls.status.optionSetName, cls.status.customValues);
+  }
+  return facts;
+}
+
+function provenanceFor(solutions: ParsedSolution[], outputDir: string, configPath: string | null): Provenance {
+  return {
+    generator: { name: GENERATOR_NAME, version: VERSION },
+    config: configPath ? portableRelative(outputDir, configPath) : null,
+    layers: solutions.map(({ input, info }, i) => ({
+      order: i + 1,
+      name: input.name,
+      path: portableRelative(outputDir, input.path),
+      uniqueName: info.uniqueName,
+      displayName: info.displayName,
+      version: info.version,
+      publisher: info.publisher,
+    })),
+  };
 }
 
 // ── Main converter ─────────────────────────────────────────────────────────
 
-export async function convert(
-  inputPaths: string | string[],
-  options: ConvertOptions,
-): Promise<void> {
-  const paths = Array.isArray(inputPaths) ? inputPaths : [inputPaths];
-  const explicitNames = options.solutionNames ?? [];
+/** Build every output file in memory; nothing is written. Throws UsageError / DbmlCompileError. */
+export function buildOutputs(options: ConvertOptions): BuildResult {
+  // 1. Parse each solution into a layer, then merge (base layer first)
+  const solutions = options.solutions.map(parseSolution);
+  const merged = mergeSolutions(solutions.map((s) => s.layer));
 
-  // 1. Parse each solution into a layer
-  const layers = paths.map((p, i) => {
-    const name = explicitNames[i] ?? deriveSolutionName(p);
-    return parseSolution(p, name);
-  });
+  // 2. Decide which tables are in the model
+  const prefixes = publisherPrefixes(solutions.map((s) => s.info));
+  if (!prefixes.length) console.error('Warning: no Solution.xml found; tables with a publisher-style prefix (xxx_) are treated as ours.');
+  const classes = selectTables(merged.entities, prefixes, options.platformTables);
 
-  // 2. Merge all layers
-  const { entities, globalOptionSets, relationships } = mergeSolutions(layers);
-  console.error(`Merged: ${entities.size} entities, ${globalOptionSets.size} global option sets, ${relationships.length} relationships`);
-
-  // 3. Build pk map
-  const pkMap = new Map<string, string>();
-  for (const entity of entities.values()) {
-    const pk = entity.attributes.find((a) => a.isPk);
-    if (pk) pkMap.set(entity.name, pk.name);
+  const entities = new Map<string, Entity>();
+  for (const entity of [...merged.entities.values()].filter((e) => classes.has(e.name)).sort(byTableOrder)) {
+    if (!entity.hasPrimaryKey) addSyntheticPrimaryKey(entity);
+    entities.set(entity.name, entity);
   }
+  console.error(`Merged: ${entities.size} entities, ${merged.globalOptionSets.size} global option sets, ${merged.relationships.length} relationships`);
 
-  // 4. Enrich lookup targets (second pass)
-  enrichLookupTargets(entities, relationships);
+  // 3. Keys, lookup targets and relationships (table names resolved case-insensitively)
+  const tableNames = new Map([...entities.keys()].map((name) => [name.toLowerCase(), name]));
+  const pkMap = new Map([...entities.values()].map((e) => [e.name, e.attributes.find((a) => a.isPk)!.name]));
+  enrichLookupTargets(entities, merged.relationships, tableNames);
+  const { byParent, modelOnly } = groupRelsByParent(merged.relationships, entities, tableNames);
 
-  // 5. Group relationships by parent entity
-  const relsByParent = groupRelsByParent(relationships, entities);
-
-  // 6. Build DBML strings (in memory)
-  mkdirSync(options.outputDir, { recursive: true });
-
-  const dbmlParts: string[] = [];
-
-  if (globalOptionSets.size > 0) {
-    const content = emitGlobalOptionSetsFile(globalOptionSets);
-    dbmlParts.push(content);
-    if (options.writeDbml) {
-      writeFileSync(join(options.outputDir, 'global_option_sets.dv.dbml'), content, 'utf-8');
-      console.error(`Written: global_option_sets.dv.dbml`);
+  // 4. DBML text per file, in memory
+  const colorOf = colorLookup(options.colors);
+  const dbmlFiles: OutputFile[] = [];
+  if (merged.globalOptionSets.size > 0) {
+    dbmlFiles.push({ name: 'global_option_sets.dv.dbml', content: normalizeText(emitGlobalOptionSetsFile(merged.globalOptionSets)) });
+  }
+  for (const [name, entity] of entities) {
+    let content = emitEntityFile(entity, pkMap, colorOf(name), byParent.get(name) ?? []);
+    for (const rel of modelOnly.filter((r) => r.first === name)) {
+      content += `\n// Many-to-many ${rel.name} (${rel.first} <> ${rel.second}) is in model.json only: DBML allows one Ref per pair of tables\n`;
     }
+    dbmlFiles.push({ name: `${name}.dv.dbml`, content: normalizeText(content) });
   }
 
-  for (const [entityName, entity] of entities) {
-    const content = emitEntityFile(
-      entity, pkMap,
-      options.colors[entityName],
-      relsByParent.get(entityName) ?? [],
-    );
-    dbmlParts.push(content);
-    if (options.writeDbml) {
-      writeFileSync(join(options.outputDir, `${entityName}.dv.dbml`), content, 'utf-8');
-      console.error(`Written: ${entityName}.dv.dbml`);
-    }
-  }
+  // 5. Compile, finalize: model.json exists only if all DBML is valid
+  const model = finalizeModel(
+    compile(dbmlFiles),
+    modelFacts(entities, classes, modelOnly.map((rel) => manyToManyRefJson(rel, pkMap))),
+    provenanceFor(solutions, options.outputDir, options.configPath),
+  );
 
-  // 7. Parse combined DBML → model.json
-  const combined = dbmlParts.join('\n\n');
-  let modelJson: object;
-  try {
-    modelJson = buildModelJson(combined);
-  } catch (err: any) {
-    if (err?.diags?.length) {
-      console.error('\nDBML validation errors:');
-      for (const d of err.diags) {
-        const loc = d.location ? ` (line ${d.location.start?.line ?? '?'})` : '';
-        console.error(`  • ${d.message}${loc}`);
-      }
-    } else {
-      console.error('DBML parse error:', err?.message ?? err);
-    }
-    process.exit(1);
-  }
-
-  const modelPath = join(options.outputDir, 'model.json');
-  writeFileSync(modelPath, JSON.stringify(modelJson, null, 2), 'utf-8');
-  console.error(`Written: model.json`);
+  return {
+    files: [...(options.writeDbml ? dbmlFiles : []), { name: 'model.json', content: serializeModel(model) }],
+    layers: solutions.map(({ input, info }) => ({ input, info })),
+  };
 }
 
 // ── Single-entity mode ─────────────────────────────────────────────────────
 
-export async function convertSingleEntity(entityXmlPath: string, outputDir: string): Promise<void> {
+export function buildSingleEntity(entityXmlPath: string): BuildResult {
   const entity = parseEntityXml(entityXmlPath);
-  if (!entity) {
-    console.error('Could not parse entity from:', entityXmlPath);
-    process.exit(1);
-  }
+  if (!entity) throw new InputError(`Could not parse entity from: ${entityXmlPath}`);
 
-  const pkMap = new Map<string, string>();
-  const pk = entity.attributes.find((a) => a.isPk);
-  if (pk) pkMap.set(entity.name, pk.name);
+  // <solution>/Entities/<name>/Entity.xml → <solution>/Other/Solution.xml, when there is one
+  const solutionXml = join(dirname(dirname(dirname(entityXmlPath))), 'Other', 'Solution.xml');
+  const ours = isOurTable(entity.name.toLowerCase(), publisherPrefixes([readSolutionXml(existsSync(solutionXml) ? solutionXml : null)]));
+  const classes = new Map([[entity.name, { ours, status: analyzeStatus(entity, ours) }]]);
+  if (!entity.hasPrimaryKey) addSyntheticPrimaryKey(entity);
 
-  mkdirSync(outputDir, { recursive: true });
-  const content = emitEntityFile(entity, pkMap, undefined, []);
-  writeFileSync(join(outputDir, `${entity.name}.dv.dbml`), content, 'utf-8');
-  console.error(`Written: ${entity.name}.dv.dbml`);
+  const pkMap = new Map([[entity.name, entity.attributes.find((a) => a.isPk)!.name]]);
+  const dbml: OutputFile = { name: `${entity.name}.dv.dbml`, content: normalizeText(emitEntityFile(entity, pkMap, undefined, [])) };
+  const provenance: Provenance = { generator: { name: GENERATOR_NAME, version: VERSION }, config: null, layers: [] };
+  const model = finalizeModel(compile([dbml]), modelFacts(new Map([[entity.name, entity]]), classes), provenance);
 
-  try {
-    const modelJson = buildModelJson(content);
-    writeFileSync(join(outputDir, 'model.json'), JSON.stringify(modelJson, null, 2), 'utf-8');
-    console.error('Written: model.json');
-  } catch (err: any) {
-    console.error('DBML parse warning (model.json not written):', err?.message ?? err);
-  }
+  return { files: [dbml, { name: 'model.json', content: serializeModel(model) }], layers: [] };
 }

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Synthetic fixture: a column name that is not a valid DBML identifier, so compiling the DBML fails. -->
+<Entity xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name LocalizedName="Broken" OriginalName="Broken">dvt_broken</Name>
+  <EntityInfo>
+    <entity Name="dvt_broken">
+      <attributes>
+        <attribute PhysicalName="dvt_brokenId">
+          <Type>primarykey</Type>
+          <Name>dvt_brokenid</Name>
+          <LogicalName>dvt_brokenid</LogicalName>
+          <RequiredLevel>systemrequired</RequiredLevel>
+          <IsCustomField>0</IsCustomField>
+        </attribute>
+        <attribute PhysicalName="dvt_bad-name">
+          <Type>nvarchar</Type>
+          <Name>dvt_bad-name</Name>
+          <LogicalName>dvt_bad-name</LogicalName>
+          <RequiredLevel>none</RequiredLevel>
+          <IsCustomField>1</IsCustomField>
+          <MaxLength>100</MaxLength>
+        </attribute>
+      </attributes>
+      <OwnershipTypeMask>UserOwned</OwnershipTypeMask>
+      <IsActivity>0</IsActivity>
+    </entity>
+  </EntityInfo>
+</Entity>

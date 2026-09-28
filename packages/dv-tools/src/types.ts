@@ -52,11 +52,12 @@ export interface Attribute {
   type: string;            // DBML type string e.g. "nvarchar(250)", "picklist"
   required: string;        // none|required|applicationrequired|systemrequired
   isPk: boolean;
+  isCustom: boolean;       // IsCustomField == 1 (created by us)
   sourceType: string;      // simple|calculated|rollup|formula
   autoNumber: string;
   format: string;
   displayName: string;
-  description: string;
+  description: string;     // as in the XML (character references not decoded)
   optionSetName: string | null;
   lookupTargets: string[]; // filled in second pass from relationships
   sourceSolution?: string;
@@ -75,6 +76,10 @@ export interface Entity {
   isAuditEnabled: boolean;
   isActivity: boolean;
   isActivityParty: boolean;
+  /** IsActivity is present in the XML (partial platform tables often omit entity metadata). */
+  isActivityKnown: boolean;
+  /** The XML defines the primary-key attribute, i.e. the full table (not only some columns). */
+  hasPrimaryKey: boolean;
   attributes: Attribute[];
   localOptionSets: Map<string, LocalOptionSet>;
   globalOptionSetRefs: Set<string>;
@@ -109,9 +114,34 @@ export interface ManyToManyRelationship {
 
 export type AnyRelationship = Relationship | ManyToManyRelationship;
 
+/** Which platform (non-publisher) tables end up in the model. */
+export type PlatformTables = 'with-our-columns' | 'all' | 'none';
+
+export const PLATFORM_TABLES_VALUES: readonly PlatformTables[] = ['with-our-columns', 'all', 'none'];
+
+/** Solution.xml facts; null when the solution folder has no Solution.xml. */
+export interface SolutionInfo {
+  uniqueName: string | null;
+  displayName: string | null;
+  version: string | null;
+  publisher: {
+    uniqueName: string | null;
+    customizationPrefix: string | null;
+    optionValuePrefix: number | null;
+  } | null;
+}
+
+export interface SolutionInput {
+  path: string;          // absolute solution folder
+  name: string;          // friendly name (source_solution)
+  uniqueName?: string;   // expected Solution.xml UniqueName (options file)
+}
+
 export interface ConvertOptions {
-  outputDir: string;
+  solutions: SolutionInput[];
+  outputDir: string;           // absolute
   writeDbml: boolean;
   colors: Record<string, string>;
-  solutionNames?: string[];
+  platformTables: PlatformTables;
+  configPath: string | null;   // absolute path of the options file, recorded in provenance
 }

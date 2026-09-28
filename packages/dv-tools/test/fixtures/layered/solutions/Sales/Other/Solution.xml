@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Synthetic fixture: second layer (no src/ folder); a two-part Version must stay "2.1". -->
+<ImportExportXml version="9.2.24044.192" SolutionPackageVersion="9.2" languagecode="1033" generatedBy="CrmLive" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <SolutionManifest>
+    <UniqueName>DvtSales</UniqueName>
+    <LocalizedNames>
+      <LocalizedName description="DVT Sales" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions />
+    <Version>2.1</Version>
+    <Managed>2</Managed>
+    <Publisher>
+      <UniqueName>dvtools</UniqueName>
+      <LocalizedNames>
+        <LocalizedName description="dv-tools test publisher" languagecode="1033" />
+      </LocalizedNames>
+      <Descriptions />
+      <CustomizationPrefix>dvt</CustomizationPrefix>
+      <CustomizationOptionValuePrefix>12345</CustomizationOptionValuePrefix>
+      <Addresses />
+    </Publisher>
+    <RootComponents />
+    <MissingDependencies />
+  </SolutionManifest>
+</ImportExportXml>
