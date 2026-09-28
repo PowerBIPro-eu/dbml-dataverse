@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package",
   "name": "@powerbipro-eu/dv-tools",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Dataverse solution XML → .dv.dbml and model.json converter CLI",
   "author": "DDSol",
   "license": "UNLICENSED",
