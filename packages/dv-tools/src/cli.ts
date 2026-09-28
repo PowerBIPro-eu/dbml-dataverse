@@ -2,6 +2,7 @@ import { parseArgs } from 'node:util';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { convert, convertSingleEntity } from './converter.js';
+import { VERSION } from './version.js';
 
 const USAGE = `
 dv-convert — Dataverse solution XML → .dv.dbml + model.json
@@ -15,6 +16,7 @@ Options:
   --colors <file>              JSON file mapping entity names to hex header colors
   --solution-names <n1,n2,...> Override solution names (comma-separated, matches order of paths)
   --no-dbml                    Skip writing .dv.dbml files (only write model.json)
+  --version                    Print the dv-tools version and exit
   --help, -h                   Show this help
 
 Examples:
@@ -27,6 +29,11 @@ Examples:
 
 async function main() {
   const args = process.argv.slice(2);
+
+  if (args.includes('--version')) {
+    console.log(VERSION);
+    process.exit(0);
+  }
 
   if (args.includes('--help') || args.includes('-h') || args.length === 0) {
     console.log(USAGE);
@@ -43,6 +50,7 @@ async function main() {
         colors:           { type: 'string' },
         'solution-names': { type: 'string' },
         'no-dbml':        { type: 'boolean', default: false },
+        version:          { type: 'boolean', default: false },
         help:             { type: 'boolean', short: 'h', default: false },
       },
     });

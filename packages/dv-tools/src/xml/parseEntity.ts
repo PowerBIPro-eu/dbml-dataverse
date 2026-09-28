@@ -94,6 +94,17 @@ function parseInlineOptionSet(osEl: any, fallbackType: string): LocalOptionSet |
   return { name, type: 'picklist', displayName, description, values };
 }
 
+// ── Yes/No labels ─────────────────────────────────────────────────────────
+
+const DEFAULT_BIT_LABELS = ['yes', 'no', 'true', 'false'];
+
+/** True when both labels are platform defaults (Python: {tl, fl} <= {'yes', 'no', 'true', 'false'}). */
+export function isDefaultBitLabels(trueLabel: string, falseLabel: string): boolean {
+  const tl = trueLabel.trim().toLowerCase();
+  const fl = falseLabel.trim().toLowerCase();
+  return DEFAULT_BIT_LABELS.includes(tl) && DEFAULT_BIT_LABELS.includes(fl);
+}
+
 // ── Required level normalizer ─────────────────────────────────────────────
 
 // Dataverse XML stores RequiredLevel as either a string name or a numeric code.
@@ -170,12 +181,7 @@ export function parseEntityXml(filePath: string): Entity | null {
       if (osData) {
         const isBit = osData.type === 'bit';
         if (isBit) {
-          const tl = (osData.trueLabel ?? '').trim().toLowerCase();
-          const fl = (osData.falseLabel ?? '').trim().toLowerCase();
-          const isDefault = new Set([tl, fl]).isSubsetOf !== undefined
-            ? new Set([tl, fl]) <= new Set(['yes', 'no', 'true', 'false'])
-            : (['yes', 'no', 'true', 'false'].includes(tl) && ['yes', 'no', 'true', 'false'].includes(fl));
-          if (!isDefault) {
+          if (!isDefaultBitLabels(osData.trueLabel ?? '', osData.falseLabel ?? '')) {
             localOptionSets.set(osData.name, osData);
             optionSetName = osData.name;
           }

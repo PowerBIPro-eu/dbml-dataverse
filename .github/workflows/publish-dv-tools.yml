@@ -7,8 +7,8 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to publish (e.g. 1.2.0) — leave blank to use package.json'
-        required: false
+        description: 'Version to publish; must equal packages/dv-tools/package.json (run from the release tag)'
+        required: true
 
 permissions:
   contents: read
@@ -22,37 +22,27 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           registry-url: 'https://npm.pkg.github.com'
           scope: '@powerbipro-eu'
 
       - name: Install yarn
         run: npm install -g yarn
 
-      - name: Set version from tag
-        if: startsWith(github.ref, 'refs/tags/dv-tools/v')
+      # The committed package.json version is what gets published. The tag (or the
+      # dispatch input) must name exactly that version, otherwise nothing is published.
+      - name: Check requested version matches package.json
         working-directory: packages/dv-tools
+        env:
+          REQUESTED: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.version || github.ref_name }}
         run: |
-          TAG_VERSION="${GITHUB_REF#refs/tags/dv-tools/v}"
-          node -e "
-            const fs = require('fs');
-            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-            pkg.version = '${TAG_VERSION}';
-            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
-          "
-          echo "Publishing version ${TAG_VERSION}"
-
-      - name: Set version from input
-        if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''
-        working-directory: packages/dv-tools
-        run: |
-          node -e "
-            const fs = require('fs');
-            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-            pkg.version = '${{ github.event.inputs.version }}';
-            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
-          "
-          echo "Publishing version ${{ github.event.inputs.version }}"
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          REQUESTED="${REQUESTED#dv-tools/v}"
+          if [ "$REQUESTED" != "$PKG_VERSION" ]; then
+            echo "::error::Requested version '${REQUESTED}' does not match packages/dv-tools/package.json version '${PKG_VERSION}'"
+            exit 1
+          fi
+          echo "Publishing version ${PKG_VERSION}"
 
       # Use yarn (the workspace manager) with --ignore-scripts so workspace
       # member prepare/build hooks don't run — we only need node_modules symlinks.
@@ -70,9 +60,23 @@ jobs:
         working-directory: packages/dbml-core
         run: npx vite build
 
+      - name: Test dv-tools
+        working-directory: packages/dv-tools
+        run: yarn test
+
       - name: Build dv-tools
         working-directory: packages/dv-tools
         run: npx vite build
+
+      - name: Check built CLI reports the version
+        working-directory: packages/dv-tools
+        run: |
+          BUILT=$(node dist/cli.mjs --version)
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          if [ "$BUILT" != "$PKG_VERSION" ]; then
+            echo "::error::dist/cli.mjs --version printed '${BUILT}', expected '${PKG_VERSION}'"
+            exit 1
+          fi
 
       - name: Publish to GitHub Packages
         working-directory: packages/dv-tools

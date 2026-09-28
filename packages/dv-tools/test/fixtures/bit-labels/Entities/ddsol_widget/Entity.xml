@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Synthetic fixture: one Yes/No column with custom labels, one with the platform defaults. -->
+<Entity xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name LocalizedName="Widget" OriginalName="Widget">ddsol_widget</Name>
+  <EntityInfo>
+    <entity Name="ddsol_widget">
+      <LocalizedNames>
+        <LocalizedName description="Widget" languagecode="1033" />
+      </LocalizedNames>
+      <Descriptions>
+        <Description description="" languagecode="1033" />
+      </Descriptions>
+      <attributes>
+        <attribute PhysicalName="ddsol_widgetId">
+          <Type>primarykey</Type>
+          <Name>ddsol_widgetid</Name>
+          <LogicalName>ddsol_widgetid</LogicalName>
+          <RequiredLevel>systemrequired</RequiredLevel>
+          <IsCustomField>0</IsCustomField>
+          <SourceType>0</SourceType>
+          <displaynames>
+            <displayname description="Widget" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="Unique identifier for entity instances" languagecode="1033" />
+          </Descriptions>
+        </attribute>
+        <attribute PhysicalName="ddsol_isapproved">
+          <Type>bit</Type>
+          <Name>ddsol_isapproved</Name>
+          <LogicalName>ddsol_isapproved</LogicalName>
+          <RequiredLevel>none</RequiredLevel>
+          <IsCustomField>1</IsCustomField>
+          <SourceType>0</SourceType>
+          <AppDefaultValue>0</AppDefaultValue>
+          <optionset Name="ddsol_widget_ddsol_isapproved">
+            <OptionSetType>bit</OptionSetType>
+            <displaynames>
+              <displayname description="Approval" languagecode="1033" />
+            </displaynames>
+            <Descriptions>
+              <Description description="" languagecode="1033" />
+            </Descriptions>
+            <options>
+              <option value="1" ExternalValue="" IsHidden="0">
+                <labels>
+                  <label description="Approved" languagecode="1033" />
+                </labels>
+              </option>
+              <option value="0" ExternalValue="" IsHidden="0">
+                <labels>
+                  <label description="Rejected" languagecode="1033" />
+                </labels>
+              </option>
+            </options>
+          </optionset>
+          <displaynames>
+            <displayname description="Approval" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="" languagecode="1033" />
+          </Descriptions>
+        </attribute>
+        <attribute PhysicalName="ddsol_isurgent">
+          <Type>bit</Type>
+          <Name>ddsol_isurgent</Name>
+          <LogicalName>ddsol_isurgent</LogicalName>
+          <RequiredLevel>none</RequiredLevel>
+          <IsCustomField>1</IsCustomField>
+          <SourceType>0</SourceType>
+          <AppDefaultValue>0</AppDefaultValue>
+          <optionset Name="ddsol_widget_ddsol_isurgent">
+            <OptionSetType>bit</OptionSetType>
+            <displaynames>
+              <displayname description="Urgent" languagecode="1033" />
+            </displaynames>
+            <Descriptions>
+              <Description description="" languagecode="1033" />
+            </Descriptions>
+            <options>
+              <option value="1" ExternalValue="" IsHidden="0">
+                <labels>
+                  <label description="Yes" languagecode="1033" />
+                </labels>
+              </option>
+              <option value="0" ExternalValue="" IsHidden="0">
+                <labels>
+                  <label description="No" languagecode="1033" />
+                </labels>
+              </option>
+            </options>
+          </optionset>
+          <displaynames>
+            <displayname description="Urgent" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="" languagecode="1033" />
+          </Descriptions>
+        </attribute>
+      </attributes>
+      <OwnershipTypeMask>UserOwned</OwnershipTypeMask>
+      <IsAuditEnabled>0</IsAuditEnabled>
+      <IsActivity>0</IsActivity>
+      <IsActivityParty>0</IsActivityParty>
+      <IsBPFEntity>0</IsBPFEntity>
+    </entity>
+  </EntityInfo>
+</Entity>

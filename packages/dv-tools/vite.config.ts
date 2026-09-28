@@ -1,6 +1,9 @@
+import { readFileSync } from 'fs';
 import path from 'path';
 import { defineConfig } from 'vite';
 import type { Plugin } from 'vite';
+
+const pkg = JSON.parse(readFileSync(path.resolve(__dirname, 'package.json'), 'utf-8'));
 
 const NODE_BUILTINS = new Set([
   'fs', 'path', 'process', 'os', 'url', 'util', 'stream', 'events',
@@ -22,6 +25,10 @@ function shebangPlugin(): Plugin {
 }
 
 export default defineConfig({
+  define: {
+    // Baked into the bundle so `dv-convert --version` needs no package.json at runtime
+    __DV_TOOLS_VERSION__: JSON.stringify(pkg.version),
+  },
   resolve: {
     // Resolve workspace packages from their built output (not TypeScript source)
     // to avoid @/ alias conflicts from other packages
