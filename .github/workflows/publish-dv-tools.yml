@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to publish; must equal packages/dv-tools/package.json (run from the release tag)'
+        description: 'Version to publish; must equal packages/dv-tools/package.json, and the workflow must run from the tag dv-tools/v<version>'
         required: true
 
 permissions:
@@ -29,20 +29,30 @@ jobs:
       - name: Install yarn
         run: npm install -g yarn
 
-      # The committed package.json version is what gets published. The tag (or the
-      # dispatch input) must name exactly that version, otherwise nothing is published.
-      - name: Check requested version matches package.json
+      # The committed package.json version is what gets published. The workflow must run from
+      # the tag dv-tools/v<version> (and a dispatch input must name the same version).
+      - name: Check the tag matches package.json
         working-directory: packages/dv-tools
         env:
-          REQUESTED: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.version || github.ref_name }}
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+          REQUESTED: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.version || '' }}
         run: |
           PKG_VERSION=$(node -p "require('./package.json').version")
-          REQUESTED="${REQUESTED#dv-tools/v}"
-          if [ "$REQUESTED" != "$PKG_VERSION" ]; then
-            echo "::error::Requested version '${REQUESTED}' does not match packages/dv-tools/package.json version '${PKG_VERSION}'"
+          if [ "$REF_TYPE" != "tag" ] || [ "${REF_NAME#dv-tools/v}" = "$REF_NAME" ]; then
+            echo "::error::Run the workflow from a release tag dv-tools/v<version>, not ${REF_TYPE} '${REF_NAME}'"
             exit 1
           fi
-          echo "Publishing version ${PKG_VERSION}"
+          TAG_VERSION="${REF_NAME#dv-tools/v}"
+          if [ -n "$REQUESTED" ] && [ "$REQUESTED" != "$TAG_VERSION" ]; then
+            echo "::error::The requested version '${REQUESTED}' is not the tag's '${TAG_VERSION}'"
+            exit 1
+          fi
+          if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
+            echo "::error::Tag ${REF_NAME} does not match packages/dv-tools/package.json version '${PKG_VERSION}'"
+            exit 1
+          fi
+          echo "Publishing @powerbipro-eu/dv-tools ${PKG_VERSION}"
 
       # Use yarn (the workspace manager) with --ignore-scripts so workspace
       # member prepare/build hooks don't run — we only need node_modules symlinks.
