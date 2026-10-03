@@ -1,0 +1,14 @@
+<!-- Synthetic fixture: an optional Boolean request parameter. -->
+<customapirequestparameter uniquename="IncludeTasks">
+  <description default="IncludeTasks request parameter of dvt_CalculateBudget">
+    <label description="IncludeTasks request parameter of dvt_CalculateBudget" languagecode="1033" />
+  </description>
+  <displayname default="IncludeTasks">
+    <label description="IncludeTasks" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <isoptional>1</isoptional>
+  <logicalentityname />
+  <name>dvt_CalculateBudget.IncludeTasks</name>
+  <type>0</type>
+</customapirequestparameter>

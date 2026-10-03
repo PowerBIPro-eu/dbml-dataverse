@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Synthetic fixture: a step on Assign whose name does not follow the Plugin Registration Tool convention, so the message comes from its id; PluginTypeName without the assembly. -->
+<SdkMessageProcessingStep Name="Recalculate effort on reassignment" SdkMessageProcessingStepId="{d7a5e000-0000-4000-8000-000000000205}">
+  <SdkMessageId>8cbdbb1b-ea3e-db11-86a7-000a3a5473e8</SdkMessageId>
+  <PluginTypeName>Dvt.Plugins.Project.SetProjectCode</PluginTypeName>
+  <PluginTypeId>d7a5e000-0000-4000-8000-000000000102</PluginTypeId>
+  <PrimaryEntity>task</PrimaryEntity>
+  <AsyncAutoDelete>0</AsyncAutoDelete>
+  <Description>Recalculate effort on reassignment</Description>
+  <InvocationSource>0</InvocationSource>
+  <Mode>0</Mode>
+  <Rank>1</Rank>
+  <EventHandlerTypeCode>4602</EventHandlerTypeCode>
+  <Stage>40</Stage>
+  <IsCustomizable>1</IsCustomizable>
+  <IsHidden>0</IsHidden>
+  <SupportedDeployment>0</SupportedDeployment>
+  <IntroducedVersion>1.0.0.0</IntroducedVersion>
+  <SdkMessageProcessingStepImages />
+</SdkMessageProcessingStep>

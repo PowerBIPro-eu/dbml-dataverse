@@ -83,7 +83,34 @@ describe('dv-convert CLI', () => {
   it('--no-dbml leaves existing .dv.dbml files alone', async () => {
     writeFileSync(join(tmp, 'Handmade.dv.dbml'), '// not ours to delete');
     expect(await run(['--config', configFile, '--output', tmp, '--no-dbml'])).toBe(0);
-    expect(readdirSync(tmp).sort()).toEqual(['Handmade.dv.dbml', 'model.json']);
+    expect(readdirSync(tmp).sort()).toEqual(['Handmade.dv.dbml', 'components.json', 'model.json']);
+  });
+
+  it('--check compares components.json; --no-components skips it and leaves it alone', async () => {
+    expect(await run(['--config', configFile, '--output', tmp])).toBe(0);
+    writeFileSync(join(tmp, 'components.json'), '{}\n');
+    expect(await run(['--config', configFile, '--output', tmp, '--check'])).toBe(1);
+    expect(stdout).toContain('Stale: components.json');
+
+    expect(await run(['--config', configFile, '--output', tmp, '--check', '--no-components'])).toBe(0);
+    expect(await run(['--config', configFile, '--output', tmp, '--no-components'])).toBe(0);
+    expect(readFileSync(join(tmp, 'components.json'), 'utf-8')).toBe('{}\n');
+  });
+
+  it('accepts a layer without tables (only Other/Solution.xml and components)', async () => {
+    const plugins = join(tmp, 'Plugins');
+    mkdirSync(join(plugins, 'Other'), { recursive: true });
+    mkdirSync(join(plugins, 'SdkMessageProcessingSteps'));
+    writeFileSync(join(plugins, 'Other', 'Solution.xml'), readFileSync(join(salesSolution, 'Other', 'Solution.xml'), 'utf-8')
+      .replace('<UniqueName>DvtSales</UniqueName>', '<UniqueName>DvtPlugins</UniqueName>'));
+    const step = '{d7a5e000-0000-4000-8000-000000000206}.xml';
+    writeFileSync(join(plugins, 'SdkMessageProcessingSteps', step), readFileSync(join(salesSolution, 'SdkMessageProcessingSteps', step), 'utf-8'));
+
+    const out = join(tmp, 'out');
+    expect(await run([coreSolution, plugins, '--output', out, '--solution-names', 'Core,Plugins'])).toBe(0);
+    const components = JSON.parse(readFileSync(join(out, 'components.json'), 'utf-8'));
+    expect(components.provenance.layers.map((l: any) => l.uniqueName)).toEqual(['DvtCore', 'DvtPlugins']);
+    expect(components.pluginSteps.find((s: any) => s.primaryEntity === 'dvt_invoice').sourceSolution).toBe('Plugins');
   });
 
   it('a DBML error exits 3 and leaves the output folder untouched', async () => {

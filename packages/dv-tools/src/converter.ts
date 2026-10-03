@@ -14,7 +14,8 @@ import {
   type FieldFacts, type ModelFacts, type Provenance, type TableFacts,
 } from './model/finalize.js';
 import { type SolutionLayer, mergeSolutions } from './merge.js';
-import { readSolutionXml, resolvePaths } from './solution.js';
+import { readSolutionXml, resolvePaths, type SolutionPaths } from './solution.js';
+import { buildComponents, COMPONENTS_FILE, readLayerComponents, serializeComponents } from './components/components.js';
 import { InputError, UsageError } from './errors.js';
 import { compareStrings, portableRelative } from './util.js';
 import { VERSION } from './version.js';
@@ -30,6 +31,7 @@ export interface BuildResult {
 interface ParsedSolution {
   input: SolutionInput;
   info: SolutionInfo;
+  paths: SolutionPaths;
   layer: SolutionLayer;
 }
 
@@ -48,7 +50,7 @@ function parseSolution(input: SolutionInput): ParsedSolution {
   const relationships = parseAllRelationships(paths.entitiesPath, paths.globalRelsPath);
   console.error(`[${input.name}] Parsed ${relationships.length} relationships`);
 
-  return { input, info, layer: { name: input.name, entities, globalOptionSets, relationships } };
+  return { input, info, paths, layer: { name: input.name, entities, globalOptionSets, relationships } };
 }
 
 // ── Our tables vs platform tables ──────────────────────────────────────────
@@ -330,6 +332,35 @@ function provenanceFor(solutions: ParsedSolution[], outputDir: string, configPat
   };
 }
 
+// ── Components: plugins, flows, processes ──────────────────────────────────
+
+/** Entity set name (as cloud flows name tables) or logical name → logical name, from every layer's XML. */
+function entityLookup(solutions: ParsedSolution[]): (name: string) => string | null {
+  const bySetName = new Map<string, string>();
+  const logicalNames = new Set<string>();
+  for (const { layer } of solutions) {
+    for (const entity of layer.entities.values()) {
+      const logical = entity.name.toLowerCase();
+      logicalNames.add(logical);
+      const setName = entity.entitySetName.toLowerCase();
+      if (setName && !bySetName.has(setName)) bySetName.set(setName, logical);
+    }
+  }
+  return (name) => {
+    const lower = name.toLowerCase();
+    return bySetName.get(lower) ?? (logicalNames.has(lower) ? lower : null);
+  };
+}
+
+function componentsFile(solutions: ParsedSolution[], provenance: Provenance): OutputFile {
+  const entityOf = entityLookup(solutions);
+  const layers = solutions.map(({ input, paths }) => ({
+    name: input.name,
+    components: readLayerComponents(input.name, paths.rootPath, input.path, entityOf),
+  }));
+  return { name: COMPONENTS_FILE, content: serializeComponents(buildComponents(layers, provenance)) };
+}
+
 // ── Main converter ─────────────────────────────────────────────────────────
 
 /** Build every output file in memory; nothing is written. Throws UsageError / DbmlCompileError. */
@@ -371,14 +402,18 @@ export function buildOutputs(options: ConvertOptions): BuildResult {
   }
 
   // 5. Compile, finalize: model.json exists only if all DBML is valid
+  const provenance = provenanceFor(solutions, options.outputDir, options.configPath);
   const model = finalizeModel(
     compile(dbmlFiles),
     modelFacts(entities, classes, modelOnly.map((rel) => manyToManyRefJson(rel, pkMap))),
-    provenanceFor(solutions, options.outputDir, options.configPath),
+    provenance,
   );
 
+  // 6. components.json, from the same solution folders (written before model.json)
+  const components = options.writeComponents ? [componentsFile(solutions, provenance)] : [];
+
   return {
-    files: [...(options.writeDbml ? dbmlFiles : []), { name: 'model.json', content: serializeModel(model) }],
+    files: [...(options.writeDbml ? dbmlFiles : []), ...components, { name: 'model.json', content: serializeModel(model) }],
     layers: solutions.map(({ input, info }) => ({ input, info })),
   };
 }

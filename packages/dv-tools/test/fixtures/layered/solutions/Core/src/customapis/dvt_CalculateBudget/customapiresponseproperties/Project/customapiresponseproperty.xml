@@ -1,0 +1,13 @@
+<!-- Synthetic fixture: an EntityReference response property to dvt_project. -->
+<customapiresponseproperty uniquename="Project">
+  <description default="Project response property of dvt_CalculateBudget">
+    <label description="Project response property of dvt_CalculateBudget" languagecode="1033" />
+  </description>
+  <displayname default="Project">
+    <label description="Project" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <logicalentityname>dvt_project</logicalentityname>
+  <name>dvt_CalculateBudget.Project</name>
+  <type>5</type>
+</customapiresponseproperty>

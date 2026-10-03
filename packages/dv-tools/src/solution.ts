@@ -8,6 +8,7 @@ import { getLabel1033 } from './xml/utils.js';
 // ── Path resolution ────────────────────────────────────────────────────────
 
 export interface SolutionPaths {
+  rootPath: string;              // holds Entities/, Other/, Workflows/, PluginAssemblies/, …
   entitiesPath: string;
   optionSetsPath: string | null;
   globalRelsPath: string | null;
@@ -18,35 +19,34 @@ function existing(path: string): string | null {
   return existsSync(path) ? path : null;
 }
 
+function pathsUnder(root: string, entitiesPath = join(root, 'Entities')): SolutionPaths {
+  return {
+    rootPath: root,
+    entitiesPath,
+    optionSetsPath: existing(join(root, 'OptionSets')),
+    globalRelsPath: existing(join(root, 'Other', 'Relationships')),
+    solutionXmlPath: existing(join(root, 'Other', 'Solution.xml')),
+  };
+}
+
 /** Locate Entities/OptionSets/Relationships/Solution.xml in an unpacked solution folder. */
 export function resolvePaths(inputPath: string): SolutionPaths {
   const abs = resolve(inputPath);
 
   // Common solution layouts: <root>/src/... (pac solution project) or <root>/...
   for (const root of [join(abs, 'src'), abs]) {
-    const entities = join(root, 'Entities');
-    if (existsSync(entities)) {
-      return {
-        entitiesPath: entities,
-        optionSetsPath: existing(join(root, 'OptionSets')),
-        globalRelsPath: existing(join(root, 'Other', 'Relationships')),
-        solutionXmlPath: existing(join(root, 'Other', 'Solution.xml')),
-      };
-    }
+    if (existsSync(join(root, 'Entities'))) return pathsUnder(root);
   }
 
   // User pointed directly at an Entities folder
-  if (basename(abs) === 'Entities' && existsSync(abs)) {
-    const parent = dirname(abs);
-    return {
-      entitiesPath: abs,
-      optionSetsPath: existing(join(parent, 'OptionSets')),
-      globalRelsPath: existing(join(parent, 'Other', 'Relationships')),
-      solutionXmlPath: existing(join(parent, 'Other', 'Solution.xml')),
-    };
+  if (basename(abs) === 'Entities' && existsSync(abs)) return pathsUnder(dirname(abs), abs);
+
+  // A solution without tables (only plugins, flows, …)
+  for (const root of [join(abs, 'src'), abs]) {
+    if (existsSync(join(root, 'Other', 'Solution.xml'))) return pathsUnder(root);
   }
 
-  throw new UsageError(`Could not find an Entities folder under: ${abs}`);
+  throw new UsageError(`Could not find an Entities folder or Other/Solution.xml under: ${abs}`);
 }
 
 // ── Solution.xml ───────────────────────────────────────────────────────────

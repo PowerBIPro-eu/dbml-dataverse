@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Synthetic fixture: a fictional plugin assembly with five plugin types (one implements a custom API) and a custom workflow activity (whose Name is a friendly name). -->
+<PluginAssembly FullName="Dvt.Plugins, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d7a5e00000000001" PluginAssemblyId="d7a5e000-0000-4000-8000-000000000001" CustomizationLevel="1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <IsolationMode>2</IsolationMode>
+  <SourceType>0</SourceType>
+  <IntroducedVersion>1.0.0.0</IntroducedVersion>
+  <FileName>/PluginAssemblies/DvtPlugins-D7A5E000-0000-4000-8000-000000000001/DvtPlugins.dll</FileName>
+  <PluginTypes>
+    <PluginType AssemblyQualifiedName="Dvt.Plugins.Project.ValidateBudget, Dvt.Plugins, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d7a5e00000000001" PluginTypeId="d7a5e000-0000-4000-8000-000000000101" Name="Dvt.Plugins.Project.ValidateBudget">
+      <FriendlyName>d7a5e000-0000-4000-8000-000000000111</FriendlyName>
+    </PluginType>
+    <PluginType AssemblyQualifiedName="Dvt.Plugins.Project.SetProjectCode, Dvt.Plugins, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d7a5e00000000001" PluginTypeId="d7a5e000-0000-4000-8000-000000000102" Name="Dvt.Plugins.Project.SetProjectCode">
+      <FriendlyName>d7a5e000-0000-4000-8000-000000000112</FriendlyName>
+    </PluginType>
+    <PluginType AssemblyQualifiedName="Dvt.Plugins.Invoice.CheckTotal, Dvt.Plugins, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d7a5e00000000001" PluginTypeId="d7a5e000-0000-4000-8000-000000000103" Name="Dvt.Plugins.Invoice.CheckTotal">
+      <FriendlyName>d7a5e000-0000-4000-8000-000000000113</FriendlyName>
+    </PluginType>
+    <PluginType AssemblyQualifiedName="Dvt.Plugins.Events.DispatchProjectEvent, Dvt.Plugins, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d7a5e00000000001" PluginTypeId="d7a5e000-0000-4000-8000-000000000104" Name="Dvt.Plugins.Events.DispatchProjectEvent">
+      <FriendlyName>d7a5e000-0000-4000-8000-000000000114</FriendlyName>
+    </PluginType>
+    <PluginType AssemblyQualifiedName="Dvt.Plugins.Api.CalculateBudget, Dvt.Plugins, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d7a5e00000000001" PluginTypeId="d7a5e000-0000-4000-8000-000000000106" Name="Dvt.Plugins.Api.CalculateBudget">
+      <FriendlyName>d7a5e000-0000-4000-8000-000000000116</FriendlyName>
+    </PluginType>
+    <PluginType AssemblyQualifiedName="Dvt.Plugins.Activities.CalculateEffort, Dvt.Plugins, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d7a5e00000000001" PluginTypeId="d7a5e000-0000-4000-8000-000000000105" Name="CalculateEffort">
+      <WorkflowActivityGroupName>Dvt.Plugins (1.0.0.0)</WorkflowActivityGroupName>
+      <FriendlyName>Calculate effort</FriendlyName>
+    </PluginType>
+  </PluginTypes>
+</PluginAssembly>

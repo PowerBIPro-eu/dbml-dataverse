@@ -78,6 +78,8 @@ export interface Entity {
   isActivityParty: boolean;
   /** IsActivity is present in the XML (partial platform tables often omit entity metadata). */
   isActivityKnown: boolean;
+  /** Web API entity set name (e.g. `accounts`), '' when the XML has none; cloud flows name tables by it. */
+  entitySetName: string;
   /** The XML defines the primary-key attribute, i.e. the full table (not only some columns). */
   hasPrimaryKey: boolean;
   attributes: Attribute[];
@@ -141,6 +143,7 @@ export interface ConvertOptions {
   solutions: SolutionInput[];
   outputDir: string;           // absolute
   writeDbml: boolean;
+  writeComponents: boolean;    // components.json (plugins, flows, processes)
   colors: Record<string, string>;
   platformTables: PlatformTables;
   configPath: string | null;   // absolute path of the options file, recorded in provenance

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Synthetic fixture: pre-validation step registered in the second layer. -->
+<SdkMessageProcessingStep Name="Dvt.Plugins.Invoice.CheckTotal: Update of dvt_invoice" SdkMessageProcessingStepId="{d7a5e000-0000-4000-8000-000000000206}">
+  <SdkMessageId>20bebb1b-ea3e-db11-86a7-000a3a5473e8</SdkMessageId>
+  <PluginTypeName>Dvt.Plugins.Invoice.CheckTotal, Dvt.Plugins, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d7a5e00000000001</PluginTypeName>
+  <PluginTypeId>d7a5e000-0000-4000-8000-000000000103</PluginTypeId>
+  <PrimaryEntity>dvt_invoice</PrimaryEntity>
+  <AsyncAutoDelete>0</AsyncAutoDelete>
+  <Description>Dvt.Plugins.Invoice.CheckTotal: Update of dvt_invoice</Description>
+  <FilteringAttributes>dvt_total</FilteringAttributes>
+  <InvocationSource>0</InvocationSource>
+  <Mode>0</Mode>
+  <Rank>1</Rank>
+  <EventHandlerTypeCode>4602</EventHandlerTypeCode>
+  <Stage>10</Stage>
+  <IsCustomizable>1</IsCustomizable>
+  <IsHidden>0</IsHidden>
+  <SupportedDeployment>0</SupportedDeployment>
+  <IntroducedVersion>1.0.0.0</IntroducedVersion>
+  <SdkMessageProcessingStepImages />
+</SdkMessageProcessingStep>

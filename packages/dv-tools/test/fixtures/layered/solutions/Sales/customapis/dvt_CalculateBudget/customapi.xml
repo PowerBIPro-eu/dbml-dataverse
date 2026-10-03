@@ -1,0 +1,16 @@
+<!-- Synthetic fixture: the same custom API as in the base layer, with another display name; the base layer's definition is kept. -->
+<customapi uniquename="dvt_CalculateBudget">
+  <allowedcustomprocessingsteptype>2</allowedcustomprocessingsteptype>
+  <bindingtype>0</bindingtype>
+  <description default="Calculates the budget of a project">
+    <label description="Calculates the budget of a project" languagecode="1033" />
+  </description>
+  <displayname default="Calculate budget (Sales)">
+    <label description="Calculate budget (Sales)" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <isfunction>1</isfunction>
+  <isprivate>0</isprivate>
+  <name>dvt_CalculateBudget</name>
+  <plugintypeid />
+</customapi>

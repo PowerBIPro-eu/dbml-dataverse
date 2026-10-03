@@ -147,6 +147,7 @@ export function parseEntityXml(filePath: string): Entity | null {
   const isActivity = String(entity.IsActivity) === '1';
   const isActivityKnown = entity.IsActivity !== undefined;
   const isActivityParty = String(entity.IsActivityParty) === '1';
+  const entitySetName = String(entity.EntitySetName ?? '').trim();
 
   // Attributes
   const localOptionSets = new Map<string, LocalOptionSet>();
@@ -236,6 +237,7 @@ export function parseEntityXml(filePath: string): Entity | null {
     isActivity,
     isActivityParty,
     isActivityKnown,
+    entitySetName,
     hasPrimaryKey: attributes.some((a) => a.isPk),
     attributes,
     localOptionSets,

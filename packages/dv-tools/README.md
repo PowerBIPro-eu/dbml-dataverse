@@ -1,8 +1,9 @@
 # dv-tools — Dataverse → DBML Converter
 
-Converts Power Platform / Dataverse solution XML into `.dv.dbml` and `model.json` files.
-Supports layered ALM — pass multiple solution paths and every element gets stamped with
-`source_solution` so you know which module introduced each table, column, or relationship.
+Converts Power Platform / Dataverse solution XML into `.dv.dbml` and `model.json` files, plus
+`components.json` with the solution's plugins, cloud flows and processes. Supports layered
+ALM — pass multiple solution paths and every element gets stamped with `source_solution` so
+you know which module introduced each table, column, relationship or component.
 
 The output is deterministic: the same solution XML gives byte-identical files on Windows,
 macOS and Linux, so regenerated files only change when the model changes.
@@ -81,6 +82,7 @@ datamodel/
   ddsol_project.dv.dbml
   ...
   model.json                   ← full parsed model (consumed by diagram tools)
+  components.json              ← plugin steps, custom APIs, cloud flows, processes
 ```
 
 Each `.dv.dbml` file looks like this:
@@ -100,14 +102,15 @@ Ref account_contacts [
 
 How the output folder is written:
 
-- dv-convert owns only `*.dv.dbml` and `model.json`. It never touches `layout.json`,
-  `dv-convert.json`, `colors.json` or any other file.
+- dv-convert owns only `*.dv.dbml`, `components.json` and `model.json`. It never touches
+  `layout.json`, `dv-convert.json`, `colors.json` or any other file.
 - Everything is built and validated in memory first. If the DBML does not compile, nothing
   is written and the folder stays as it was (exit code 3).
 - Changed files are written to `<output>/.dv-convert.tmp/` and renamed into place,
   `model.json` last; unchanged files are left alone.
 - `.dv.dbml` files that are no longer produced (a table removed from the solution) are
-  deleted — except with `--no-dbml` and in single-entity mode.
+  deleted — except with `--no-dbml` and in single-entity mode. `--no-components` leaves an
+  existing `components.json` alone; single-entity mode writes none.
 - Files use LF line endings and end with a newline. `--check` ignores line-ending-only
   differences (Windows checkouts with `core.autocrlf`).
 
@@ -129,7 +132,8 @@ Options:
   --colors <file>              JSON file mapping table names to hex header colors
   --solution-names <n1,n2,...> Override solution names (comma-separated, in order)
   --platform-tables <mode>     with-our-columns (default), all or none
-  --no-dbml                    Skip .dv.dbml files, write only model.json
+  --no-dbml                    Skip writing .dv.dbml files
+  --no-components              Skip writing components.json (plugins, flows, processes)
   --version                    Print the dv-tools version and exit
   --help, -h                   Show this help
 ```
@@ -264,6 +268,106 @@ they carry our columns (or with `all`).
 
 ---
 
+## components.json
+
+The solution's components outside the data model, read from the same solution folders (every
+layer) and written in the same run as `model.json`: plugin assemblies, plugin types and their
+steps, custom APIs, cloud flows, business process flows and classic workflows.
+`--no-components` skips it.
+
+```json
+{
+  "componentsSchema": 1,
+  "provenance": { "generator": { ... }, "config": "dv-convert.json", "layers": [ ... ] },
+  "pluginAssemblies": [
+    { "id": "d7a5e000-…-000000000001", "name": "Dvt.Plugins", "version": "1.0.0.0",
+      "file": "src/PluginAssemblies/DvtPlugins-…/DvtPlugins.dll.data.xml", "sourceSolution": "Core" }
+  ],
+  "pluginTypes": [
+    { "id": "d7a5e000-…-000000000101", "name": "Dvt.Plugins.Project.ValidateBudget", "assembly": "Dvt.Plugins",
+      "kind": "plugin", "file": "src/PluginAssemblies/…", "sourceSolution": "Core" }
+  ],
+  "pluginSteps": [
+    { "id": "d7a5e000-…-000000000201", "name": "Dvt.Plugins.Project.ValidateBudget: Update of dvt_project",
+      "pluginType": "Dvt.Plugins.Project.ValidateBudget", "pluginTypeId": "d7a5e000-…-000000000101", "assembly": "Dvt.Plugins",
+      "message": "Update", "messageId": "20bebb1b-ea3e-db11-86a7-000a3a5473e8", "primaryEntity": "dvt_project",
+      "stage": 20, "stageName": "preOperation", "mode": "sync", "rank": 1,
+      "filteringAttributes": ["dvt_accountid", "dvt_budget"],
+      "images": [ { "name": "PreImage", "alias": "PreImage", "type": "pre", "attributes": ["dvt_accountid", "dvt_budget"] } ],
+      "file": "src/SdkMessageProcessingSteps/{d7a5e000-…-000000000201}.xml", "sourceSolution": "Core" }
+  ],
+  "customApis": [
+    { "uniqueName": "dvt_CalculateBudget", "displayName": "Calculate budget", "description": "Calculates the budget of a project",
+      "bindingType": "global", "boundEntity": null, "isFunction": true, "isPrivate": false,
+      "allowedCustomProcessingStepType": "none", "executePrivilegeName": null,
+      "pluginType": "Dvt.Plugins.Api.CalculateBudget", "pluginTypeId": "d7a5e000-…-000000000106", "assembly": "Dvt.Plugins",
+      "requestParameters": [ { "uniqueName": "ProjectId", "type": "guid", "isOptional": false, "entity": null } ],
+      "responseProperties": [ { "uniqueName": "Project", "type": "entityReference", "entity": "dvt_project" } ],
+      "file": "src/customapis/dvt_CalculateBudget/customapi.xml", "sourceSolution": "Core" }
+  ],
+  "cloudFlows": [
+    { "id": "d7a5e000-…-000000000401", "name": "Notify the project owner",
+      "trigger": { "name": "When_a_project_changes", "kind": "dataverse", "connector": "shared_commondataserviceforapps",
+                   "operation": "SubscribeWebhookTrigger", "entity": "dvt_project", "messages": ["Update"],
+                   "scope": "organization", "filteringAttributes": ["dvt_budget"], "filterExpression": "statecode eq 0" },
+      "connectionReferences": [ { "name": "shared_commondataserviceforapps", "logicalName": "dvt_dataverse",
+                                  "connector": "shared_commondataserviceforapps" } ],
+      "dataverseActions": [ { "name": "Get_the_customer", "operation": "GetItem", "entity": "account",
+                              "entitySetName": "accounts", "actionName": null } ],
+      "file": "src/Workflows/Notifytheprojectowner-….json", "sourceSolution": "Core" }
+  ],
+  "businessProcessFlows": [
+    { "id": "d7a5e000-…-000000000501", "name": "Project lifecycle", "uniqueName": "dvt_projectlifecycle",
+      "primaryEntity": "dvt_project",
+      "stages": [ { "id": "d7a5e000-…-000000000512", "name": "Deliver", "order": 2, "category": 1,
+                    "entity": "dvt_project", "nextStage": "d7a5e000-…-000000000513",
+                    "branches": [ { "condition": "If the project was stopped", "nextStage": "d7a5e000-…-000000000514" } ] } ],
+      "file": "src/Workflows/Projectlifecycle-….xaml", "sourceSolution": "Core" }
+  ],
+  "classicWorkflows": [
+    { "id": "d7a5e000-…-000000000601", "name": "Close stale projects", "category": "workflow",
+      "primaryEntity": "dvt_project", "file": "src/Workflows/Closestaleprojects-….xaml", "sourceSolution": "Core" }
+  ]
+}
+```
+
+- **Every key is always present:** `null` when a value is unknown or does not apply, `[]` for an
+  empty list. Ids are GUIDs in lowercase without braces; tables are logical names.
+- **Order:** every list by `name`, then `id`; custom APIs, their request parameters and
+  response properties by `uniqueName`; column lists sorted; stages in process order. The
+  format rules of `model.json` apply (LF, trailing newline, no timestamps).
+- **`sourceSolution`** is the layer the component comes from. A component that is in several
+  layers (same id; for a custom API, the same unique name) is taken from the first one, as
+  columns are.
+- **`file`** is the component's definition file, relative to the layer's `path` in
+  `provenance`: the step or assembly XML, a custom API's `customapi.xml`, a flow's `.json`, a
+  process's `.xaml` (its `.data.xml` when the definition is not in the solution folder).
+
+| Where | Field | Meaning |
+|---|---|---|
+| plugin type | `name`, `kind` | The full type name (from the assembly-qualified name); `plugin`, or `workflowActivity` for a custom workflow activity. |
+| plugin step | `pluginType`, `assembly` | From the step's assembly-qualified `PluginTypeName`, else from its plugin type id, else the type from the step name. A step of a plugin package names its type only by an export key, so its `assembly` is `null`; plugin packages themselves are not read. |
+| plugin step | `message` | The SDK message: by `messageId` for the 14 platform messages Microsoft Learn lists (Create, Update, Delete, Assign, Retrieve, RetrieveMultiple, SetState, …), else from the step name `<type>: <Message> of <table>`. `null` when neither names it. |
+| plugin step | `primaryEntity` | The table the step is registered on; `null` for a message without a table (an event registration, e.g. on a custom API or action). |
+| plugin step | `stage`, `stageName` | `10` `preValidation`, `20` `preOperation`, `30` `mainOperation`, `40` `postOperation`. |
+| plugin step | `mode` | `sync` or `async`. |
+| plugin step | `filteringAttributes` | Columns that trigger an Update step; empty: every column. |
+| step image | `type`, `alias`, `attributes` | `pre`, `post` or `both`; the alias the plugin reads the image by; empty `attributes`: all columns. |
+| custom API | `displayName`, `description` | The English label, else the default. |
+| custom API | `bindingType`, `boundEntity` | `global`, `entity` or `entityCollection`, and the bound table (`null` when global). |
+| custom API | `isFunction`, `isPrivate`, `allowedCustomProcessingStepType`, `executePrivilegeName` | As defined; the step type is `none`, `asyncOnly` or `syncAndAsync`. |
+| custom API | `pluginType`, `pluginTypeId`, `assembly` | The implementing plug-in type, resolved like a step's: `customapi.xml` names it by id or by export key (for a type in the solution's `PluginAssemblies`, the export key is its id). A type that is not in the solution (e.g. of a plug-in package) keeps only `pluginTypeId`. |
+| custom API | `requestParameters`, `responseProperties` | Each with `uniqueName`, `type` (`boolean`, `dateTime`, `decimal`, `entity`, `entityCollection`, `entityReference`, `float`, `integer`, `money`, `picklist`, `string`, `stringArray`, `guid`) and `entity` (the logical entity name); parameters also `isOptional`. |
+| cloud flow | `trigger.kind` | `dataverse` (a Dataverse trigger), `connector` (another connector), `manual`, `powerApps`, `copilot` (Copilot Studio), `powerPages`, `http`, `recurrence` or `other`. "When a row is added, modified or deleted" also gives `entity`, `messages` (`Create`, `Update`, `Delete`), `scope` (`user`, `businessUnit`, `parentChildBusinessUnits`, `organization`), `filteringAttributes` and `filterExpression`; "When an action is performed" gives the action as `messages`. |
+| cloud flow | `connectionReferences` | The connections the flow uses: the key its actions name, the connection reference's logical name and the connector. |
+| cloud flow | `dataverseActions` | Every Dataverse action, nested ones included: `operation` (e.g. `ListRecords`), the table (`entity`, from the entity set name when that table is in the solution; `entitySetName` is `null` when the flow computes it) and `actionName` for bound and unbound actions. |
+| business process flow | `uniqueName`, `stages` | The table that holds the process instances; each stage with its position (`order`, from 1), `category` (the StageCategory option value, custom values included), its table (`entity`), `nextStage` (`null` for the last stage) and `branches`: the conditions that lead out of the stage, each with its label and target (`nextStage` is then the stage when no condition applies). |
+| classic workflow | `category` | `workflow`, `dialog`, `businessRule` or `action`. Only id, name, category and table are read. |
+
+Desktop flows and other process categories are not read.
+
+---
+
 ## What changed: `dv-convert diff`
 
 Compares two `model.json` files, or one `model.json` at two git refs, and reports what changed
@@ -340,6 +444,9 @@ field showing which layer introduced it. If the same table appears in multiple l
 columns are merged (first-wins by logical name) and the ownership/structural settings
 are locked to the first layer that defines them.
 
+A layer does not need tables: a solution with only plugins or flows is read from its
+`Other/Solution.xml` and contributes to `components.json` and the provenance.
+
 **Merge rules:**
 
 | Element | Rule |
@@ -348,6 +455,7 @@ are locked to the first layer that defines them.
 | Table `ownership`, `is_activity` | First-wins — structural; taken from the first layer that defines them |
 | `is_audit_enabled` | OR — any layer enabling it wins |
 | Columns, relationships, global option sets | First-wins by logical name |
+| Plugin steps, flows, processes (`components.json`) | First-wins by id (custom APIs by unique name) |
 
 ---
 

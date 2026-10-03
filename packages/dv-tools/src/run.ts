@@ -12,7 +12,7 @@ import { PLATFORM_TABLES_VALUES, type ConvertOptions, type PlatformTables } from
 import { VERSION } from './version.js';
 
 export const USAGE = `
-dv-convert — Dataverse solution XML → .dv.dbml + model.json
+dv-convert — Dataverse solution XML → .dv.dbml + model.json + components.json
 
 Usage:
   dv-convert [options]                                  (uses dv-convert.json, see below)
@@ -29,7 +29,8 @@ Options:
   --colors <file>              JSON file mapping table names to hex header colors
   --solution-names <n1,n2,...> Override solution names (comma-separated, matches order of paths)
   --platform-tables <mode>     with-our-columns (default), all or none
-  --no-dbml                    Skip writing .dv.dbml files (only write model.json)
+  --no-dbml                    Skip writing .dv.dbml files
+  --no-components              Skip writing components.json (plugins, flows, processes)
   --version                    Print the dv-tools version and exit
   --help, -h                   Show this help
 
@@ -65,6 +66,7 @@ function parseCli(argv: string[]) {
         'solution-names':  { type: 'string' },
         'platform-tables': { type: 'string' },
         'no-dbml':         { type: 'boolean', default: false },
+        'no-components':   { type: 'boolean', default: false },
         version:           { type: 'boolean', default: false },
         help:              { type: 'boolean', short: 'h', default: false },
       },
@@ -146,6 +148,7 @@ function resolveInvocation(args: CliArgs, argv: string[], cwd: string): Invocati
         })),
         outputDir: values.output ? resolve(cwd, values.output) : resolve(dir, config.output ?? '.'),
         writeDbml: values['no-dbml'] ? false : config.dbml ?? true,
+        writeComponents: !values['no-components'],
         colors: loadColors(colorsPath),
         platformTables: platformTables ?? config.platformTables ?? 'with-our-columns',
         configPath: configFile,
@@ -177,6 +180,7 @@ function resolveInvocation(args: CliArgs, argv: string[], cwd: string): Invocati
       solutions: paths.map((p, i) => ({ path: p, name: names?.[i] ?? deriveSolutionName(p) })),
       outputDir,
       writeDbml: !values['no-dbml'],
+      writeComponents: !values['no-components'],
       colors: loadColors(colorsPath),
       platformTables: platformTables ?? 'with-our-columns',
       configPath: values['write-config'] ? join(outputDir, CONFIG_FILE) : null,

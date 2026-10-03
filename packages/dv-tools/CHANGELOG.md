@@ -2,6 +2,26 @@
 
 Each release is tagged `dv-tools/v<version>` in this repository.
 
+## 1.3.0
+
+`model.json` and the `.dv.dbml` files are unchanged: for the same input they are byte-identical
+to 1.2.0, apart from `provenance.generator.version`.
+
+### Added
+- `components.json` next to `model.json`: the solution's plugin assemblies, plugin types and steps,
+  custom APIs (with their request parameters, response properties and implementing plug-in
+  type), cloud flows (trigger, connection references, Dataverse actions), business process flows
+  with their stages and branches, and classic workflows, read from every layer
+  (`componentsSchema: 1`, the same `provenance` block as `model.json`). It is built in the same
+  run, renamed into place before `model.json`, and compared by `--check`. `--no-components`
+  skips it.
+- A layer may be a solution without tables (only plugins, flows, …): an `Other/Solution.xml` is
+  enough, an `Entities` folder is no longer required.
+
+### Release process
+- A manual run of the publish workflow must start from a `dv-tools/v<version>` tag, as the
+  okf-tools workflow does; its version input must name the same version.
+
 ## 1.2.0
 
 ### Added
