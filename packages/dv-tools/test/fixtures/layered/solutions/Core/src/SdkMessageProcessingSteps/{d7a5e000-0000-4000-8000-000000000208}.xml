@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Synthetic fixture: neither a platform message id nor a name in the Plugin Registration Tool convention: the message is unknown. -->
+<SdkMessageProcessingStep Name="Notify attendees" SdkMessageProcessingStepId="{d7a5e000-0000-4000-8000-000000000208}">
+  <SdkMessageId>d7a5e000-0000-4000-8000-000000000302</SdkMessageId>
+  <PluginTypeName>Dvt.Plugins.Events.DispatchProjectEvent, Dvt.Plugins, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d7a5e00000000001</PluginTypeName>
+  <PluginTypeId>d7a5e000-0000-4000-8000-000000000104</PluginTypeId>
+  <PrimaryEntity>dvt_meeting</PrimaryEntity>
+  <AsyncAutoDelete>1</AsyncAutoDelete>
+  <Description>Notify attendees</Description>
+  <InvocationSource>0</InvocationSource>
+  <Mode>1</Mode>
+  <Rank>1</Rank>
+  <EventHandlerTypeCode>4602</EventHandlerTypeCode>
+  <Stage>40</Stage>
+  <IsCustomizable>1</IsCustomizable>
+  <IsHidden>0</IsHidden>
+  <SupportedDeployment>0</SupportedDeployment>
+  <IntroducedVersion>1.0.0.0</IntroducedVersion>
+  <SdkMessageProcessingStepImages />
+</SdkMessageProcessingStep>

@@ -1,0 +1,14 @@
+<!-- Synthetic fixture: an optional String request parameter. -->
+<customapirequestparameter uniquename="Comment">
+  <description default="Comment request parameter of dvt_RequestApproval">
+    <label description="Comment request parameter of dvt_RequestApproval" languagecode="1033" />
+  </description>
+  <displayname default="Comment">
+    <label description="Comment" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <isoptional>1</isoptional>
+  <logicalentityname />
+  <name>dvt_RequestApproval.Comment</name>
+  <type>10</type>
+</customapirequestparameter>

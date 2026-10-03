@@ -1,0 +1,19 @@
+<!-- Synthetic fixture: bound to the dvt_project collection, private, with an execute privilege. Its plug-in type
+     (by id) is not in the solution's PluginAssemblies, as for a plug-in package; its description has no English label. -->
+<customapi uniquename="dvt_ArchiveProjects">
+  <allowedcustomprocessingsteptype>1</allowedcustomprocessingsteptype>
+  <bindingtype>2</bindingtype>
+  <boundentitylogicalname>dvt_project</boundentitylogicalname>
+  <description default="Archives closed projects" />
+  <displayname default="Archive projects">
+    <label description="Archive projects" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <executeprivilegename>prvDeletedvt_project</executeprivilegename>
+  <isfunction>0</isfunction>
+  <isprivate>1</isprivate>
+  <name>dvt_ArchiveProjects</name>
+  <plugintypeid>
+    <plugintypeid>d7a5e000-0000-4000-8000-000000000107</plugintypeid>
+  </plugintypeid>
+</customapi>

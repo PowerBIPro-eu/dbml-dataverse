@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Synthetic fixture: registered on a custom action without a table (an event registration): no PrimaryEntity; the action's message id is not a platform one, so the message comes from the step name. -->
+<SdkMessageProcessingStep Name="Dvt.Plugins.Events.DispatchProjectEvent: dvt_ProjectEvent of any Entity" SdkMessageProcessingStepId="{d7a5e000-0000-4000-8000-000000000204}">
+  <SdkMessageId>d7a5e000-0000-4000-8000-000000000301</SdkMessageId>
+  <PluginTypeName>Dvt.Plugins.Events.DispatchProjectEvent, Dvt.Plugins, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d7a5e00000000001</PluginTypeName>
+  <PluginTypeId>d7a5e000-0000-4000-8000-000000000104</PluginTypeId>
+  <AsyncAutoDelete>0</AsyncAutoDelete>
+  <Description>Dvt.Plugins.Events.DispatchProjectEvent: dvt_ProjectEvent of any Entity</Description>
+  <InvocationSource>0</InvocationSource>
+  <Mode>1</Mode>
+  <Rank>1</Rank>
+  <EventHandlerTypeCode>4602</EventHandlerTypeCode>
+  <Stage>40</Stage>
+  <IsCustomizable>1</IsCustomizable>
+  <IsHidden>0</IsHidden>
+  <SupportedDeployment>0</SupportedDeployment>
+  <IntroducedVersion>1.0.0.0</IntroducedVersion>
+  <SdkMessageProcessingStepImages />
+</SdkMessageProcessingStep>

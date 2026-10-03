@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Synthetic fixture: the same step as in the base layer, with another rank; the base layer's definition is kept. -->
+<SdkMessageProcessingStep Name="Dvt.Plugins.Project.ValidateBudget: Create of dvt_project" SdkMessageProcessingStepId="{d7a5e000-0000-4000-8000-000000000202}">
+  <SdkMessageId>9ebdbb1b-ea3e-db11-86a7-000a3a5473e8</SdkMessageId>
+  <PluginTypeName>Dvt.Plugins.Project.ValidateBudget, Dvt.Plugins, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d7a5e00000000001</PluginTypeName>
+  <PluginTypeId>d7a5e000-0000-4000-8000-000000000101</PluginTypeId>
+  <PrimaryEntity>dvt_project</PrimaryEntity>
+  <AsyncAutoDelete>0</AsyncAutoDelete>
+  <Description>Dvt.Plugins.Project.ValidateBudget: Create of dvt_project</Description>
+  <InvocationSource>0</InvocationSource>
+  <Mode>0</Mode>
+  <Rank>5</Rank>
+  <EventHandlerTypeCode>4602</EventHandlerTypeCode>
+  <Stage>20</Stage>
+  <IsCustomizable>1</IsCustomizable>
+  <IsHidden>0</IsHidden>
+  <SupportedDeployment>0</SupportedDeployment>
+  <IntroducedVersion>1.0.0.0</IntroducedVersion>
+  <SdkMessageProcessingStepImages />
+</SdkMessageProcessingStep>

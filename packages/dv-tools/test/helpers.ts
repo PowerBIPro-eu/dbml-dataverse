@@ -20,6 +20,7 @@ export function layeredOptions(overrides: Partial<ConvertOptions> = {}): Convert
     ],
     outputDir: datamodel,
     writeDbml: true,
+    writeComponents: true,
     colors: JSON.parse(readFileSync(join(datamodel, 'colors.json'), 'utf-8')),
     platformTables: 'with-our-columns',
     configPath: configFile,
@@ -31,7 +32,9 @@ export function layeredOptions(overrides: Partial<ConvertOptions> = {}): Convert
 export function generatedFiles(dir: string): Map<string, string> {
   const files = new Map<string, string>();
   for (const name of readdirSync(dir).sort()) {
-    if (name.endsWith('.dv.dbml') || name === 'model.json') files.set(name, readFileSync(join(dir, name), 'utf-8'));
+    if (name.endsWith('.dv.dbml') || name === 'model.json' || name === 'components.json') {
+      files.set(name, readFileSync(join(dir, name), 'utf-8'));
+    }
   }
   return files;
 }
@@ -42,4 +45,8 @@ export function filesOf(result: BuildResult): Map<string, string> {
 
 export function modelOf(result: BuildResult): any {
   return JSON.parse(filesOf(result).get('model.json')!);
+}
+
+export function componentsOf(result: BuildResult): any {
+  return JSON.parse(filesOf(result).get('components.json')!);
 }

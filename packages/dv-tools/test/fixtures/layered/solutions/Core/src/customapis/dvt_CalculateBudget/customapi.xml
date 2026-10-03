@@ -1,0 +1,19 @@
+<!-- Synthetic fixture: a global function; it names its plug-in type by export key, which is the type's id in PluginAssemblies. -->
+<customapi uniquename="dvt_CalculateBudget">
+  <allowedcustomprocessingsteptype>0</allowedcustomprocessingsteptype>
+  <bindingtype>0</bindingtype>
+  <description default="Calculates the budget of a project">
+    <label description="Calculates the budget of a project" languagecode="1033" />
+  </description>
+  <displayname default="Calculate budget">
+    <label description="Calculate budget" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <isfunction>1</isfunction>
+  <isprivate>0</isprivate>
+  <name>dvt_CalculateBudget</name>
+  <plugintypeid>
+    <plugintypeexportkey>d7a5e000-0000-4000-8000-000000000106</plugintypeexportkey>
+  </plugintypeid>
+  <workflowsdkstepenabled>0</workflowsdkstepenabled>
+</customapi>

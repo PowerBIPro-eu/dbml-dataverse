@@ -1,0 +1,584 @@
+{
+  "componentsSchema": 1,
+  "provenance": {
+    "generator": {
+      "name": "@powerbipro-eu/dv-tools",
+      "version": "1.3.0"
+    },
+    "config": "dv-convert.json",
+    "layers": [
+      {
+        "order": 1,
+        "name": "Core",
+        "path": "../../solutions/Core",
+        "uniqueName": "DvtCore",
+        "displayName": "DVT Core",
+        "version": "1.0.0.3",
+        "publisher": {
+          "uniqueName": "dvtools",
+          "customizationPrefix": "dvt",
+          "optionValuePrefix": 12345
+        }
+      },
+      {
+        "order": 2,
+        "name": "Sales",
+        "path": "../../solutions/Sales",
+        "uniqueName": "DvtSales",
+        "displayName": "DVT Sales",
+        "version": "2.1",
+        "publisher": {
+          "uniqueName": "dvtools",
+          "customizationPrefix": "dvt",
+          "optionValuePrefix": 12345
+        }
+      }
+    ]
+  },
+  "pluginAssemblies": [
+    {
+      "id": "d7a5e000-0000-4000-8000-000000000001",
+      "name": "Dvt.Plugins",
+      "version": "1.0.0.0",
+      "file": "src/PluginAssemblies/DvtPlugins-D7A5E000-0000-4000-8000-000000000001/DvtPlugins.dll.data.xml",
+      "sourceSolution": "Core"
+    }
+  ],
+  "pluginTypes": [
+    {
+      "id": "d7a5e000-0000-4000-8000-000000000105",
+      "name": "Dvt.Plugins.Activities.CalculateEffort",
+      "assembly": "Dvt.Plugins",
+      "kind": "workflowActivity",
+      "file": "src/PluginAssemblies/DvtPlugins-D7A5E000-0000-4000-8000-000000000001/DvtPlugins.dll.data.xml",
+      "sourceSolution": "Core"
+    },
+    {
+      "id": "d7a5e000-0000-4000-8000-000000000106",
+      "name": "Dvt.Plugins.Api.CalculateBudget",
+      "assembly": "Dvt.Plugins",
+      "kind": "plugin",
+      "file": "src/PluginAssemblies/DvtPlugins-D7A5E000-0000-4000-8000-000000000001/DvtPlugins.dll.data.xml",
+      "sourceSolution": "Core"
+    },
+    {
+      "id": "d7a5e000-0000-4000-8000-000000000104",
+      "name": "Dvt.Plugins.Events.DispatchProjectEvent",
+      "assembly": "Dvt.Plugins",
+      "kind": "plugin",
+      "file": "src/PluginAssemblies/DvtPlugins-D7A5E000-0000-4000-8000-000000000001/DvtPlugins.dll.data.xml",
+      "sourceSolution": "Core"
+    },
+    {
+      "id": "d7a5e000-0000-4000-8000-000000000103",
+      "name": "Dvt.Plugins.Invoice.CheckTotal",
+      "assembly": "Dvt.Plugins",
+      "kind": "plugin",
+      "file": "src/PluginAssemblies/DvtPlugins-D7A5E000-0000-4000-8000-000000000001/DvtPlugins.dll.data.xml",
+      "sourceSolution": "Core"
+    },
+    {
+      "id": "d7a5e000-0000-4000-8000-000000000102",
+      "name": "Dvt.Plugins.Project.SetProjectCode",
+      "assembly": "Dvt.Plugins",
+      "kind": "plugin",
+      "file": "src/PluginAssemblies/DvtPlugins-D7A5E000-0000-4000-8000-000000000001/DvtPlugins.dll.data.xml",
+      "sourceSolution": "Core"
+    },
+    {
+      "id": "d7a5e000-0000-4000-8000-000000000101",
+      "name": "Dvt.Plugins.Project.ValidateBudget",
+      "assembly": "Dvt.Plugins",
+      "kind": "plugin",
+      "file": "src/PluginAssemblies/DvtPlugins-D7A5E000-0000-4000-8000-000000000001/DvtPlugins.dll.data.xml",
+      "sourceSolution": "Core"
+    }
+  ],
+  "pluginSteps": [
+    {
+      "id": "d7a5e000-0000-4000-8000-000000000207",
+      "name": "Dvt.Packaged.Project.ArchiveProject: Delete of dvt_project",
+      "pluginType": "Dvt.Packaged.Project.ArchiveProject",
+      "pluginTypeId": null,
+      "assembly": null,
+      "message": "Delete",
+      "messageId": "a1bdbb1b-ea3e-db11-86a7-000a3a5473e8",
+      "primaryEntity": "dvt_project",
+      "stage": 10,
+      "stageName": "preValidation",
+      "mode": "sync",
+      "rank": 1,
+      "filteringAttributes": [],
+      "images": [],
+      "file": "src/SdkMessageProcessingSteps/{d7a5e000-0000-4000-8000-000000000207}.xml",
+      "sourceSolution": "Core"
+    },
+    {
+      "id": "d7a5e000-0000-4000-8000-000000000204",
+      "name": "Dvt.Plugins.Events.DispatchProjectEvent: dvt_ProjectEvent of any Entity",
+      "pluginType": "Dvt.Plugins.Events.DispatchProjectEvent",
+      "pluginTypeId": "d7a5e000-0000-4000-8000-000000000104",
+      "assembly": "Dvt.Plugins",
+      "message": "dvt_ProjectEvent",
+      "messageId": "d7a5e000-0000-4000-8000-000000000301",
+      "primaryEntity": null,
+      "stage": 40,
+      "stageName": "postOperation",
+      "mode": "async",
+      "rank": 1,
+      "filteringAttributes": [],
+      "images": [],
+      "file": "src/SdkMessageProcessingSteps/{d7a5e000-0000-4000-8000-000000000204}.xml",
+      "sourceSolution": "Core"
+    },
+    {
+      "id": "d7a5e000-0000-4000-8000-000000000206",
+      "name": "Dvt.Plugins.Invoice.CheckTotal: Update of dvt_invoice",
+      "pluginType": "Dvt.Plugins.Invoice.CheckTotal",
+      "pluginTypeId": "d7a5e000-0000-4000-8000-000000000103",
+      "assembly": "Dvt.Plugins",
+      "message": "Update",
+      "messageId": "20bebb1b-ea3e-db11-86a7-000a3a5473e8",
+      "primaryEntity": "dvt_invoice",
+      "stage": 10,
+      "stageName": "preValidation",
+      "mode": "sync",
+      "rank": 1,
+      "filteringAttributes": [
+        "dvt_total"
+      ],
+      "images": [],
+      "file": "SdkMessageProcessingSteps/{d7a5e000-0000-4000-8000-000000000206}.xml",
+      "sourceSolution": "Sales"
+    },
+    {
+      "id": "d7a5e000-0000-4000-8000-000000000203",
+      "name": "Dvt.Plugins.Project.SetProjectCode: Create of dvt_project",
+      "pluginType": "Dvt.Plugins.Project.SetProjectCode",
+      "pluginTypeId": "d7a5e000-0000-4000-8000-000000000102",
+      "assembly": "Dvt.Plugins",
+      "message": "Create",
+      "messageId": "9ebdbb1b-ea3e-db11-86a7-000a3a5473e8",
+      "primaryEntity": "dvt_project",
+      "stage": 40,
+      "stageName": "postOperation",
+      "mode": "async",
+      "rank": 2,
+      "filteringAttributes": [],
+      "images": [
+        {
+          "name": "Snapshot",
+          "alias": "Snapshot",
+          "type": "both",
+          "attributes": []
+        }
+      ],
+      "file": "src/SdkMessageProcessingSteps/{d7a5e000-0000-4000-8000-000000000203}.xml",
+      "sourceSolution": "Core"
+    },
+    {
+      "id": "d7a5e000-0000-4000-8000-000000000202",
+      "name": "Dvt.Plugins.Project.ValidateBudget: Create of dvt_project",
+      "pluginType": "Dvt.Plugins.Project.ValidateBudget",
+      "pluginTypeId": "d7a5e000-0000-4000-8000-000000000101",
+      "assembly": "Dvt.Plugins",
+      "message": "Create",
+      "messageId": "9ebdbb1b-ea3e-db11-86a7-000a3a5473e8",
+      "primaryEntity": "dvt_project",
+      "stage": 20,
+      "stageName": "preOperation",
+      "mode": "sync",
+      "rank": 1,
+      "filteringAttributes": [],
+      "images": [],
+      "file": "src/SdkMessageProcessingSteps/{d7a5e000-0000-4000-8000-000000000202}.xml",
+      "sourceSolution": "Core"
+    },
+    {
+      "id": "d7a5e000-0000-4000-8000-000000000201",
+      "name": "Dvt.Plugins.Project.ValidateBudget: Update of dvt_project",
+      "pluginType": "Dvt.Plugins.Project.ValidateBudget",
+      "pluginTypeId": "d7a5e000-0000-4000-8000-000000000101",
+      "assembly": "Dvt.Plugins",
+      "message": "Update",
+      "messageId": "20bebb1b-ea3e-db11-86a7-000a3a5473e8",
+      "primaryEntity": "dvt_project",
+      "stage": 20,
+      "stageName": "preOperation",
+      "mode": "sync",
+      "rank": 1,
+      "filteringAttributes": [
+        "dvt_accountid",
+        "dvt_budget"
+      ],
+      "images": [
+        {
+          "name": "PreImage",
+          "alias": "PreImage",
+          "type": "pre",
+          "attributes": [
+            "dvt_accountid",
+            "dvt_budget"
+          ]
+        }
+      ],
+      "file": "src/SdkMessageProcessingSteps/{d7a5e000-0000-4000-8000-000000000201}.xml",
+      "sourceSolution": "Core"
+    },
+    {
+      "id": "d7a5e000-0000-4000-8000-000000000208",
+      "name": "Notify attendees",
+      "pluginType": "Dvt.Plugins.Events.DispatchProjectEvent",
+      "pluginTypeId": "d7a5e000-0000-4000-8000-000000000104",
+      "assembly": "Dvt.Plugins",
+      "message": null,
+      "messageId": "d7a5e000-0000-4000-8000-000000000302",
+      "primaryEntity": "dvt_meeting",
+      "stage": 40,
+      "stageName": "postOperation",
+      "mode": "async",
+      "rank": 1,
+      "filteringAttributes": [],
+      "images": [],
+      "file": "src/SdkMessageProcessingSteps/{d7a5e000-0000-4000-8000-000000000208}.xml",
+      "sourceSolution": "Core"
+    },
+    {
+      "id": "d7a5e000-0000-4000-8000-000000000205",
+      "name": "Recalculate effort on reassignment",
+      "pluginType": "Dvt.Plugins.Project.SetProjectCode",
+      "pluginTypeId": "d7a5e000-0000-4000-8000-000000000102",
+      "assembly": "Dvt.Plugins",
+      "message": "Assign",
+      "messageId": "8cbdbb1b-ea3e-db11-86a7-000a3a5473e8",
+      "primaryEntity": "task",
+      "stage": 40,
+      "stageName": "postOperation",
+      "mode": "sync",
+      "rank": 1,
+      "filteringAttributes": [],
+      "images": [],
+      "file": "src/SdkMessageProcessingSteps/{d7a5e000-0000-4000-8000-000000000205}.xml",
+      "sourceSolution": "Core"
+    }
+  ],
+  "customApis": [
+    {
+      "uniqueName": "dvt_ArchiveProjects",
+      "displayName": "Archive projects",
+      "description": "Archives closed projects",
+      "bindingType": "entityCollection",
+      "boundEntity": "dvt_project",
+      "isFunction": false,
+      "isPrivate": true,
+      "allowedCustomProcessingStepType": "asyncOnly",
+      "executePrivilegeName": "prvDeletedvt_project",
+      "pluginType": null,
+      "pluginTypeId": "d7a5e000-0000-4000-8000-000000000107",
+      "assembly": null,
+      "requestParameters": [],
+      "responseProperties": [],
+      "file": "src/customapis/dvt_ArchiveProjects/customapi.xml",
+      "sourceSolution": "Core"
+    },
+    {
+      "uniqueName": "dvt_CalculateBudget",
+      "displayName": "Calculate budget",
+      "description": "Calculates the budget of a project",
+      "bindingType": "global",
+      "boundEntity": null,
+      "isFunction": true,
+      "isPrivate": false,
+      "allowedCustomProcessingStepType": "none",
+      "executePrivilegeName": null,
+      "pluginType": "Dvt.Plugins.Api.CalculateBudget",
+      "pluginTypeId": "d7a5e000-0000-4000-8000-000000000106",
+      "assembly": "Dvt.Plugins",
+      "requestParameters": [
+        {
+          "uniqueName": "IncludeTasks",
+          "type": "boolean",
+          "isOptional": true,
+          "entity": null
+        },
+        {
+          "uniqueName": "ProjectId",
+          "type": "guid",
+          "isOptional": false,
+          "entity": null
+        }
+      ],
+      "responseProperties": [
+        {
+          "uniqueName": "Budget",
+          "type": "money",
+          "entity": null
+        },
+        {
+          "uniqueName": "Project",
+          "type": "entityReference",
+          "entity": "dvt_project"
+        }
+      ],
+      "file": "src/customapis/dvt_CalculateBudget/customapi.xml",
+      "sourceSolution": "Core"
+    },
+    {
+      "uniqueName": "dvt_RequestApproval",
+      "displayName": "Request approval",
+      "description": "Asks for the approval of an invoice",
+      "bindingType": "entity",
+      "boundEntity": "dvt_invoice",
+      "isFunction": false,
+      "isPrivate": false,
+      "allowedCustomProcessingStepType": "syncAndAsync",
+      "executePrivilegeName": null,
+      "pluginType": null,
+      "pluginTypeId": null,
+      "assembly": null,
+      "requestParameters": [
+        {
+          "uniqueName": "Comment",
+          "type": "string",
+          "isOptional": true,
+          "entity": null
+        }
+      ],
+      "responseProperties": [],
+      "file": "customapis/dvt_RequestApproval/customapi.xml",
+      "sourceSolution": "Sales"
+    }
+  ],
+  "cloudFlows": [
+    {
+      "id": "d7a5e000-0000-4000-8000-000000000402",
+      "name": "Nightly budget check",
+      "trigger": {
+        "name": "Every_night",
+        "kind": "recurrence",
+        "connector": null,
+        "operation": null,
+        "entity": null,
+        "messages": [],
+        "scope": null,
+        "filteringAttributes": [],
+        "filterExpression": null
+      },
+      "connectionReferences": [
+        {
+          "name": "shared_commondataserviceforapps_1",
+          "logicalName": "dvt_dataverse",
+          "connector": "shared_commondataserviceforapps"
+        }
+      ],
+      "dataverseActions": [
+        {
+          "name": "Create_the_invoice",
+          "operation": "CreateRecord",
+          "entity": "dvt_invoice",
+          "entitySetName": "dvt_invoices",
+          "actionName": null
+        },
+        {
+          "name": "List_the_rows_to_check",
+          "operation": "ListRecords",
+          "entity": null,
+          "entitySetName": null,
+          "actionName": null
+        }
+      ],
+      "file": "src/Workflows/Nightlybudgetcheck-D7A5E000-0000-4000-8000-000000000402.json",
+      "sourceSolution": "Core"
+    },
+    {
+      "id": "d7a5e000-0000-4000-8000-000000000401",
+      "name": "Notify the project owner",
+      "trigger": {
+        "name": "When_a_project_changes",
+        "kind": "dataverse",
+        "connector": "shared_commondataserviceforapps",
+        "operation": "SubscribeWebhookTrigger",
+        "entity": "dvt_project",
+        "messages": [
+          "Update"
+        ],
+        "scope": "organization",
+        "filteringAttributes": [
+          "dvt_budget",
+          "dvt_isactive"
+        ],
+        "filterExpression": "statecode eq 0"
+      },
+      "connectionReferences": [
+        {
+          "name": "shared_commondataserviceforapps",
+          "logicalName": "dvt_dataverse",
+          "connector": "shared_commondataserviceforapps"
+        },
+        {
+          "name": "shared_office365",
+          "logicalName": "dvt_office365",
+          "connector": "shared_office365"
+        }
+      ],
+      "dataverseActions": [
+        {
+          "name": "Get_the_customer",
+          "operation": "GetItem",
+          "entity": "account",
+          "entitySetName": "accounts",
+          "actionName": null
+        },
+        {
+          "name": "List_the_open_tasks",
+          "operation": "ListRecords",
+          "entity": null,
+          "entitySetName": "tasks",
+          "actionName": null
+        },
+        {
+          "name": "Mark_the_project_reviewed",
+          "operation": "UpdateRecord",
+          "entity": "dvt_project",
+          "entitySetName": "dvt_projects",
+          "actionName": null
+        },
+        {
+          "name": "Raise_a_project_event",
+          "operation": "PerformUnboundAction",
+          "entity": null,
+          "entitySetName": null,
+          "actionName": "dvt_ProjectEvent"
+        },
+        {
+          "name": "Reset_the_effort",
+          "operation": "UpdateOnlyRecord",
+          "entity": null,
+          "entitySetName": "tasks",
+          "actionName": null
+        }
+      ],
+      "file": "src/Workflows/Notifytheprojectowner-D7A5E000-0000-4000-8000-000000000401.json",
+      "sourceSolution": "Core"
+    },
+    {
+      "id": "d7a5e000-0000-4000-8000-000000000404",
+      "name": "Request invoice approval",
+      "trigger": {
+        "name": "manual",
+        "kind": "powerApps",
+        "connector": null,
+        "operation": null,
+        "entity": null,
+        "messages": [],
+        "scope": null,
+        "filteringAttributes": [],
+        "filterExpression": null
+      },
+      "connectionReferences": [
+        {
+          "name": "shared_commondataserviceforapps",
+          "logicalName": "dvt_dataverse",
+          "connector": "shared_commondataserviceforapps"
+        }
+      ],
+      "dataverseActions": [
+        {
+          "name": "Get_the_invoice",
+          "operation": "GetItem",
+          "entity": "dvt_invoice",
+          "entitySetName": "dvt_invoices",
+          "actionName": null
+        },
+        {
+          "name": "Request_the_approval",
+          "operation": "PerformBoundAction",
+          "entity": "dvt_invoice",
+          "entitySetName": "dvt_invoices",
+          "actionName": "Microsoft.Dynamics.CRM.dvt_RequestApproval"
+        }
+      ],
+      "file": "Workflows/Requestinvoiceapproval-D7A5E000-0000-4000-8000-000000000404.json",
+      "sourceSolution": "Sales"
+    }
+  ],
+  "businessProcessFlows": [
+    {
+      "id": "d7a5e000-0000-4000-8000-000000000501",
+      "name": "Project lifecycle",
+      "uniqueName": "dvt_projectlifecycle",
+      "primaryEntity": "dvt_project",
+      "stages": [
+        {
+          "id": "d7a5e000-0000-4000-8000-000000000511",
+          "name": "Plan",
+          "order": 1,
+          "category": 0,
+          "entity": "dvt_project",
+          "nextStage": "d7a5e000-0000-4000-8000-000000000512",
+          "branches": []
+        },
+        {
+          "id": "d7a5e000-0000-4000-8000-000000000512",
+          "name": "Deliver",
+          "order": 2,
+          "category": 1,
+          "entity": "dvt_project",
+          "nextStage": "d7a5e000-0000-4000-8000-000000000513",
+          "branches": [
+            {
+              "condition": "If the project was stopped",
+              "nextStage": "d7a5e000-0000-4000-8000-000000000514"
+            }
+          ]
+        },
+        {
+          "id": "d7a5e000-0000-4000-8000-000000000513",
+          "name": "Review",
+          "order": 3,
+          "category": 123450000,
+          "entity": "dvt_meeting",
+          "nextStage": "d7a5e000-0000-4000-8000-000000000514",
+          "branches": []
+        },
+        {
+          "id": "d7a5e000-0000-4000-8000-000000000514",
+          "name": "Close",
+          "order": 4,
+          "category": 3,
+          "entity": "dvt_project",
+          "nextStage": null,
+          "branches": []
+        }
+      ],
+      "file": "src/Workflows/Projectlifecycle-D7A5E000-0000-4000-8000-000000000501.xaml",
+      "sourceSolution": "Core"
+    }
+  ],
+  "classicWorkflows": [
+    {
+      "id": "d7a5e000-0000-4000-8000-000000000602",
+      "name": "Budget is required for active projects",
+      "category": "businessRule",
+      "primaryEntity": "dvt_project",
+      "file": "src/Workflows/Budgetisrequiredforactiveprojects-D7A5E000-0000-4000-8000-000000000602.xaml.data.xml",
+      "sourceSolution": "Core"
+    },
+    {
+      "id": "d7a5e000-0000-4000-8000-000000000601",
+      "name": "Close stale projects",
+      "category": "workflow",
+      "primaryEntity": "dvt_project",
+      "file": "src/Workflows/Closestaleprojects-D7A5E000-0000-4000-8000-000000000601.xaml.data.xml",
+      "sourceSolution": "Core"
+    },
+    {
+      "id": "d7a5e000-0000-4000-8000-000000000603",
+      "name": "Project event",
+      "category": "action",
+      "primaryEntity": null,
+      "file": "src/Workflows/Projectevent-D7A5E000-0000-4000-8000-000000000603.xaml.data.xml",
+      "sourceSolution": "Core"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+<!-- Synthetic fixture: bound to dvt_invoice, without a plug-in type (a message for flows), in the second layer. -->
+<customapi uniquename="dvt_RequestApproval">
+  <allowedcustomprocessingsteptype>2</allowedcustomprocessingsteptype>
+  <bindingtype>1</bindingtype>
+  <boundentitylogicalname>dvt_invoice</boundentitylogicalname>
+  <description default="Asks for the approval of an invoice">
+    <label description="Asks for the approval of an invoice" languagecode="1033" />
+  </description>
+  <displayname default="Request approval">
+    <label description="Request approval" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <executeprivilegename />
+  <isfunction>0</isfunction>
+  <isprivate>0</isprivate>
+  <name>dvt_RequestApproval</name>
+  <plugintypeid />
+</customapi>

@@ -2,8 +2,8 @@ import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, unlinkSync, wr
 import { join } from 'node:path';
 import { listDir } from './util.js';
 
-// dv-convert owns only *.dv.dbml and model.json in the output folder — never layout.json,
-// dv-convert.json, colors.json or anything else.
+// dv-convert owns only *.dv.dbml, components.json and model.json in the output folder — never
+// layout.json, dv-convert.json, colors.json or anything else.
 
 export interface OutputFile {
   name: string;      // file name inside the output folder

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Synthetic fixture: synchronous pre-operation step on Update, filtered on two columns, with a pre-image. -->
+<SdkMessageProcessingStep Name="Dvt.Plugins.Project.ValidateBudget: Update of dvt_project" SdkMessageProcessingStepId="{d7a5e000-0000-4000-8000-000000000201}">
+  <SdkMessageId>20bebb1b-ea3e-db11-86a7-000a3a5473e8</SdkMessageId>
+  <PluginTypeName>Dvt.Plugins.Project.ValidateBudget, Dvt.Plugins, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d7a5e00000000001</PluginTypeName>
+  <PluginTypeId>d7a5e000-0000-4000-8000-000000000101</PluginTypeId>
+  <PrimaryEntity>dvt_project</PrimaryEntity>
+  <AsyncAutoDelete>0</AsyncAutoDelete>
+  <Description>Dvt.Plugins.Project.ValidateBudget: Update of dvt_project</Description>
+  <FilteringAttributes>dvt_budget,dvt_accountid</FilteringAttributes>
+  <InvocationSource>0</InvocationSource>
+  <Mode>0</Mode>
+  <Rank>1</Rank>
+  <EventHandlerTypeCode>4602</EventHandlerTypeCode>
+  <Stage>20</Stage>
+  <IsCustomizable>1</IsCustomizable>
+  <IsHidden>0</IsHidden>
+  <SupportedDeployment>0</SupportedDeployment>
+  <IntroducedVersion>1.0.0.0</IntroducedVersion>
+  <SdkMessageProcessingStepImages>
+    <SdkMessageProcessingStepImage Name="PreImage">
+      <SdkMessageProcessingStepImageId>{d7a5e000-0000-4000-8000-000000000221}</SdkMessageProcessingStepImageId>
+      <Attributes>dvt_budget,dvt_accountid</Attributes>
+      <EntityAlias>PreImage</EntityAlias>
+      <ImageType>0</ImageType>
+      <MessagePropertyName>Target</MessagePropertyName>
+      <IsCustomizable>1</IsCustomizable>
+    </SdkMessageProcessingStepImage>
+  </SdkMessageProcessingStepImages>
+</SdkMessageProcessingStep>

@@ -1,0 +1,13 @@
+<!-- Synthetic fixture: a Money response property. -->
+<customapiresponseproperty uniquename="Budget">
+  <description default="Budget response property of dvt_CalculateBudget">
+    <label description="Budget response property of dvt_CalculateBudget" languagecode="1033" />
+  </description>
+  <displayname default="Budget">
+    <label description="Budget" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <logicalentityname />
+  <name>dvt_CalculateBudget.Budget</name>
+  <type>8</type>
+</customapiresponseproperty>

@@ -1,0 +1,101 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps_1": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "dvt_dataverse"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "Every_night": {
+          "recurrence": {
+            "frequency": "Day",
+            "interval": 1,
+            "startTime": "2026-01-01T02:00:00Z"
+          },
+          "type": "Recurrence"
+        }
+      },
+      "actions": {
+        "Table_to_check": {
+          "runAfter": {},
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "tableName",
+                "type": "string",
+                "value": "dvt_projects"
+              }
+            ]
+          }
+        },
+        "Check_each_table": {
+          "runAfter": {
+            "Table_to_check": [
+              "Succeeded"
+            ]
+          },
+          "type": "Scope",
+          "actions": {
+            "List_the_rows_to_check": {
+              "runAfter": {},
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_commondataserviceforapps_1",
+                  "operationId": "ListRecords"
+                },
+                "parameters": {
+                  "entityName": "@variables('tableName')",
+                  "$select": "dvt_budget"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "Create_the_invoice": {
+              "runAfter": {
+                "List_the_rows_to_check": [
+                  "Succeeded"
+                ]
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_commondataserviceforapps_1",
+                  "operationId": "CreateRecord"
+                },
+                "parameters": {
+                  "entityName": "dvt_invoices",
+                  "item/dvt_total": 0
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            }
+          }
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

@@ -1,0 +1,14 @@
+<!-- Synthetic fixture: a required Guid request parameter. -->
+<customapirequestparameter uniquename="ProjectId">
+  <description default="ProjectId request parameter of dvt_CalculateBudget">
+    <label description="ProjectId request parameter of dvt_CalculateBudget" languagecode="1033" />
+  </description>
+  <displayname default="ProjectId">
+    <label description="ProjectId" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <isoptional>0</isoptional>
+  <logicalentityname />
+  <name>dvt_CalculateBudget.ProjectId</name>
+  <type>12</type>
+</customapirequestparameter>

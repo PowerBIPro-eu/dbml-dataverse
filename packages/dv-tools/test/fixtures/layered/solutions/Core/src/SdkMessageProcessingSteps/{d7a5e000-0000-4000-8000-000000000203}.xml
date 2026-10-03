@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Synthetic fixture: asynchronous post-operation step with a pre- and post-image of all columns. -->
+<SdkMessageProcessingStep Name="Dvt.Plugins.Project.SetProjectCode: Create of dvt_project" SdkMessageProcessingStepId="{d7a5e000-0000-4000-8000-000000000203}">
+  <SdkMessageId>9ebdbb1b-ea3e-db11-86a7-000a3a5473e8</SdkMessageId>
+  <PluginTypeName>Dvt.Plugins.Project.SetProjectCode, Dvt.Plugins, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d7a5e00000000001</PluginTypeName>
+  <PluginTypeId>d7a5e000-0000-4000-8000-000000000102</PluginTypeId>
+  <PrimaryEntity>dvt_project</PrimaryEntity>
+  <AsyncAutoDelete>0</AsyncAutoDelete>
+  <Description>Dvt.Plugins.Project.SetProjectCode: Create of dvt_project</Description>
+  <InvocationSource>0</InvocationSource>
+  <Mode>1</Mode>
+  <Rank>2</Rank>
+  <EventHandlerTypeCode>4602</EventHandlerTypeCode>
+  <Stage>40</Stage>
+  <IsCustomizable>1</IsCustomizable>
+  <IsHidden>0</IsHidden>
+  <SupportedDeployment>0</SupportedDeployment>
+  <IntroducedVersion>1.0.0.0</IntroducedVersion>
+  <SdkMessageProcessingStepImages>
+    <SdkMessageProcessingStepImage Name="Snapshot">
+      <SdkMessageProcessingStepImageId>{d7a5e000-0000-4000-8000-000000000231}</SdkMessageProcessingStepImageId>
+      <Attributes></Attributes>
+      <EntityAlias>Snapshot</EntityAlias>
+      <ImageType>2</ImageType>
+      <MessagePropertyName>Id</MessagePropertyName>
+      <IsCustomizable>1</IsCustomizable>
+    </SdkMessageProcessingStepImage>
+  </SdkMessageProcessingStepImages>
+</SdkMessageProcessingStep>
