@@ -9,8 +9,9 @@ import {
 // Pipelines of the DDSol plug-in architecture, read from the C# code in the Plugins folder: each
 // entry plug-in (a class deriving from PipelinePluginBase) declares its components in
 // Get{Create,Update,Delete,Special}Steps() as PipelineStepDescriptor { Type, ImplementationType,
-// Order, Description }. Code that does not follow the architecture gets composition "unknown":
-// a whole entry plug-in when the class is not one, else only the message whose method it cannot read.
+// Order, Description }, also through a method of its own that those include (GetSharedSteps()).
+// Code that does not follow the architecture gets composition "unknown": a whole entry plug-in
+// when the class is not one, else only the message whose method it cannot read.
 
 export type ComponentKind = 'validator' | 'mutator' | 'handler';
 
@@ -207,26 +208,78 @@ function readCollection(file: CSharpFile, from: number, to: number, where: strin
   return split(tokens, match, open + 1, to - 1, ',').map(([a, b]) => readDescriptor(file, a, b, where));
 }
 
-/** The descriptors a step method returns: `yield return new PipelineStepDescriptor { … };` statements, or one returned collection. */
-function readStepMethod(decl: TypeDecl, method: string): Descriptor[] {
+/** Index of the `;` that ends the statement at `from` (brackets skipped), or `to`. */
+function statementEnd(tokens: Token[], match: Map<number, number>, from: number, to: number): number {
+  for (let k = from; k < to; k++) {
+    if (tokens[k].text === ';') return k;
+    if (match.has(k)) k = match.get(k)!;
+  }
+  return to;
+}
+
+/** `[this.]Name()` exactly in [from, to), Name a method the class declares: the name, else null. */
+function helperCall(tokens: Token[], from: number, to: number, methods: string[]): string | null {
+  const start = tokens[from]?.text === 'this' && tokens[from + 1]?.text === '.' ? from + 2 : from;
+  const name = tokens[start];
+  return name?.kind === 'ident' && methods.includes(name.text) && tokens[start + 1]?.text === '(' && tokens[start + 2]?.text === ')' && start + 3 === to
+    ? name.text : null;
+}
+
+/** `foreach (var step in Helper()) yield return step;`, the yield also in braces: the helper and the end of the statement. */
+function helperLoop(tokens: Token[], match: Map<number, number>, at: number, methods: string[]): { name: string; end: number } | null {
+  if (tokens[at]?.text !== 'foreach' || tokens[at + 1]?.text !== '(') return null;
+  const close = match.get(at + 1)!;
+  let inAt = at + 3;   // a type, then the loop variable
+  while (inAt < close && tokens[inAt].text !== 'in') inAt++;
+  const variable = tokens[inAt - 1];
+  const name = inAt < close && variable.kind === 'ident' ? helperCall(tokens, inAt + 1, close, methods) : null;
+  if (!name) return null;
+  const yields = (k: number) => tokens[k]?.text === 'yield' && tokens[k + 1]?.text === 'return' && tokens[k + 2]?.text === variable.text && tokens[k + 3]?.text === ';';
+  if (tokens[close + 1]?.text === '{') return yields(close + 2) && match.get(close + 1) === close + 6 ? { name, end: close + 7 } : null;
+  return yields(close + 1) ? { name, end: close + 5 } : null;
+}
+
+/** A method of the entry plug-in that a step method includes (e.g. GetSharedSteps()): read like a step method. */
+function readHelper(decl: TypeDecl, name: string, where: string, including: string[]): Descriptor[] {
+  if (including.includes(name)) throw new Unknown(`${where} includes ${name}() in a loop`);
+  const member = declaredMethods(decl).filter((m) => m === name).length === 1 ? findMember(decl, name) : null;
+  if (member?.kind !== 'method' || member.parameters) throw new Unknown(`${where} includes ${name}(), which is not one method without parameters`);
+  return readStepMethod(decl, name, including);
+}
+
+/**
+ * The descriptors a step method returns: `yield return new PipelineStepDescriptor { … };` statements, or one
+ * returned collection. It may include a method of the class itself (`=> GetSharedSteps()`,
+ * `return GetSharedSteps();`, `foreach (var step in GetSharedSteps()) yield return step;`), read the same way.
+ */
+function readStepMethod(decl: TypeDecl, method: string, including: string[] = []): Descriptor[] {
   const member = findMember(decl, method);
   if (!member) return [];
   const where = `${decl.name}.${method}`;
   if (member.kind !== 'method') throw new Unknown(`${where} is not a method`);
   const { tokens, match } = decl.file;
   const { from, to } = member.body;
-  if (member.expression) return readCollection(decl.file, from, to, where);
+  const methods = declaredMethods(decl);
+  const include = (name: string) => readHelper(decl, name, where, [...including, method]);
+  if (member.expression) {
+    const helper = helperCall(tokens, from, to, methods);
+    return helper ? include(helper) : readCollection(decl.file, from, to, where);
+  }
 
   const descriptors: Descriptor[] = [];
-  const statements = split(tokens, match, from, to, ';');
-  for (const [index, [a, b]] of statements.entries()) {
-    if (a === b) continue;   // an empty statement
-    const first = tokens[a]?.text;
-    const second = tokens[a + 1]?.text;
-    if (first === 'yield' && second === 'break' && b === a + 2) break;
-    if (first === 'yield' && second === 'return') { descriptors.push(readDescriptor(decl.file, a + 2, b, where)); continue; }
-    if (first === 'return' && statements.length === 1 && index === 0) return readCollection(decl.file, a + 1, b, where);
-    throw new Unknown(`${where} is not a list of "yield return new PipelineStepDescriptor { … }" statements (it has a "${first}" statement)`);
+  for (let k = from, first = true; k < to; first = false) {
+    const word = tokens[k].text;
+    if (word === ';') { k++; continue; }   // an empty statement
+    const loop = helperLoop(tokens, match, k, methods);
+    if (loop) { descriptors.push(...include(loop.name)); k = loop.end; continue; }
+    const end = statementEnd(tokens, match, k, to);
+    if (word === 'yield' && tokens[k + 1]?.text === 'break' && end === k + 2) break;
+    if (word === 'yield' && tokens[k + 1]?.text === 'return') { descriptors.push(readDescriptor(decl.file, k + 2, end, where)); k = end + 1; continue; }
+    if (word === 'return' && first && end + 1 >= to) {
+      const helper = helperCall(tokens, k + 1, end, methods);
+      return helper ? include(helper) : readCollection(decl.file, k + 1, end, where);
+    }
+    throw new Unknown(`${where} is not a list of "yield return new PipelineStepDescriptor { … }" statements (it has a "${word}" statement)`);
   }
   return descriptors;
 }
@@ -319,6 +372,31 @@ function messageOf(decl: TypeDecl, method: string, index: CodeIndex, pluginsPath
 
 const isUnknown = (err: unknown): err is Error => err instanceof Unknown || err instanceof CSharpSyntaxError;
 
+/** Methods of the class that its step methods call (`Name(…)` or `this.Name(…)`), directly or through each other. */
+function includedMethods(decl: TypeDecl, methods: string[]): Set<string> {
+  const { tokens } = decl.file;
+  const included = new Set<string>();
+  const queue = STEP_METHODS.map((s) => s.method);
+  while (queue.length) {
+    const member = findMember(decl, queue.shift()!);
+    if (member?.kind !== 'method') continue;
+    for (let k = member.body.from; k < member.body.to; k++) {
+      const name = tokens[k].text;
+      if (tokens[k].kind !== 'ident' || tokens[k + 1]?.text !== '(' || !methods.includes(name) || included.has(name)) continue;
+      if (tokens[k - 1]?.text === '.' && tokens[k - 2]?.text !== 'this') continue;   // a method of another object
+      included.add(name);
+      queue.push(name);
+    }
+  }
+  return included;
+}
+
+/** The class declares `name` as an override of a base-class method. */
+function overrides(decl: TypeDecl, name: string): boolean {
+  const member = findMember(decl, name);
+  return member?.kind === 'method' && member.modifiers.includes('override');
+}
+
 function pipelineOf(fullName: string, parts: TypeDecl[], index: CodeIndex, pluginsPath: string, registered: boolean): PipelineRecord {
   const decl = parts[0];
   const suffix = ENTRY_SUFFIXES.find((s) => decl.name.endsWith(s.suffix));
@@ -342,7 +420,11 @@ function pipelineOf(fullName: string, parts: TypeDecl[], index: CodeIndex, plugi
     const methods = declaredMethods(decl);
     // the legacy engine: steps in a separate registration object, or stage-specific step methods
     if (methods.includes('GetRegistration')) throw new Unknown(`${decl.name} declares GetRegistration(): the legacy engine's separate registration`);
-    const legacy = methods.filter((m) => /^Get\w*Steps$/.test(m) && !STEP_METHODS.some((s) => s.method === m));
+    // another Get…Steps method is the class's own helper when the step methods include it (e.g. GetSharedSteps());
+    // an override of a base-class method, or one no step method calls, is the legacy engine's stage routing
+    const included = includedMethods(decl, methods);
+    const legacy = [...new Set(methods)].filter((m) => /^Get\w*Steps$/.test(m) && !STEP_METHODS.some((s) => s.method === m)
+      && (overrides(decl, m) || !included.has(m)));
     if (legacy.length) throw new Unknown(`${decl.name} declares ${legacy.join(', ')}: stage-specific step methods of the legacy engine`);
   } catch (err) {
     if (!isUnknown(err)) throw err;

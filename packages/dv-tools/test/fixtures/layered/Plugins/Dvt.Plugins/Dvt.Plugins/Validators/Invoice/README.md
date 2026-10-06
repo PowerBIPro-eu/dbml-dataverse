@@ -5,11 +5,15 @@ Validators of the Invoice table. Synthetic dv-tools test fixture: the method bod
 ## Files
 
 - `InvoiceTotalValidator.cs`: rejects an invoice without a total.
+- `InvoiceProjectValidator.cs`: rejects an invoice without a project.
+- `InvoiceLockedValidator.cs`: rejects changes to a paid invoice.
 
 ## Trigger points
 
-Create, Pre-Operation, Sync.
+- `InvoiceTotalValidator`: Create, Pre-Operation, Sync.
+- `InvoiceProjectValidator`: Create and Update, Pre-Validation, Sync; filtering attributes: dvt_projectid.
+- `InvoiceLockedValidator`: Update, Pre-Validation, Sync; filtering attributes: none.
 
 ## Special assumptions
 
-Stateless.
+Stateless. `InvoiceLockedValidator` needs the PreImage `PreImage` with statuscode.

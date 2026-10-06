@@ -49,6 +49,8 @@ the DDSol plug-in architecture, with the bodies left out and a README in every f
 - a handler that entry plug-ins of all three tables run;
 - both declaration forms (`yield return`, a returned array), a file-scoped namespace, and the
   table as an early-bound constant or a string literal;
+- steps that Create and Update share through a method of the entry plug-in (`GetSharedSteps()`,
+  returned by one step method and included in a `foreach` by the other), read as known;
 - deliberate deviations, each reported as unknown:
   - steps that depend on a condition (one message unknown, the other readable);
   - the legacy engine's `GetRegistration()`;

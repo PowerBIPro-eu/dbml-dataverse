@@ -78,6 +78,14 @@ describe('pipelines (C# entry plug-ins in the Plugins folder)', () => {
     expect(ids(meeting, 'Update')).toEqual([[1, 10, 'validator', 'MeetingDateValidator']]);
   });
 
+  it('reads steps that the step methods share through a method of the entry plug-in (GetSharedSteps)', () => {
+    const shared = pipeline('InvoicePreValidationPlugin');
+    expect(shared).toMatchObject({ entity: 'dvt_invoice', stage: 10, mode: 'sync', composition: 'known', reason: null });
+    // GetCreateSteps() => GetSharedSteps(); GetUpdateSteps() includes them in a foreach, then declares its own step
+    expect(ids(shared, 'Create')).toEqual([[1, 10, 'validator', 'InvoiceProjectValidator']]);
+    expect(ids(shared, 'Update')).toEqual([[1, 5, 'validator', 'InvoiceLockedValidator'], [2, 10, 'validator', 'InvoiceProjectValidator']]);
+  });
+
   it('takes the stage from Pre-Validation and plain Post-Operation names; the mode only when it is certain', () => {
     expect(pipeline('ProjectPreValidationPlugin')).toMatchObject({ stage: 10, stageName: 'preValidation', mode: 'sync', composition: 'known' });   // always synchronous
     expect(pipeline('MeetingPostOperationPlugin')).toMatchObject({ stage: 40, stageName: 'postOperation', mode: null, composition: 'known' });   // no ExecutionMode
@@ -166,6 +174,35 @@ describe('pipeline code that does not follow the architecture', () => {
     expect(legacy[0]).toMatchObject({ composition: 'unknown', messages: [], reason: 'APreOperationPlugin declares GetPreOperationCreateSteps: stage-specific step methods of the legacy engine' });
     const order = pipelinesOf({ 'A.cs': entry(step('Handler', 'X.H', 'Orders.First')), 'H.cs': component('H', 'IEntityHandler') });
     expect(createReason(order)).toBe('APreOperationPlugin.GetCreateSteps: Order of X.H is not a number');
+  });
+
+  it('reads a method of its own that the step methods include; the legacy engine\'s step methods stay unknown', () => {
+    const h = component('H', 'IEntityHandler');
+    const shared = `private static IEnumerable<PipelineStepDescriptor> GetSharedSteps() { ${step('Handler', 'X.H')} }`;
+    for (const [body, extra] of [
+      ['return GetSharedSteps();', shared],
+      ['foreach (PipelineStepDescriptor s in this.GetSharedSteps()) yield return s;', shared],
+      // through another method of its own, the yield in braces
+      ['return GetAllSteps();', `${shared} IEnumerable<PipelineStepDescriptor> GetAllSteps() { foreach (var s in GetSharedSteps()) { yield return s; } }`],
+    ]) {
+      const [p] = pipelinesOf({ 'A.cs': entry(body, extra), 'H.cs': h });
+      expect(p, body).toMatchObject({ composition: 'known', messages: [{ composition: 'known', components: [{ type: 'X.H' }] }] });
+    }
+    // the legacy engine's stage routing: an override of the base class's method, or one no step method calls
+    const legacy = 'APreOperationPlugin declares GetSharedSteps: stage-specific step methods of the legacy engine';
+    expect(pipelinesOf({ 'A.cs': entry('return GetSharedSteps();', shared.replace('private static', 'protected override')), 'H.cs': h })[0])
+      .toMatchObject({ composition: 'unknown', messages: [], reason: legacy });
+    expect(pipelinesOf({ 'A.cs': entry(step('Handler', 'X.H'), shared), 'H.cs': h })[0]).toMatchObject({ composition: 'unknown', reason: legacy });
+  });
+
+  it('an included method it cannot read makes only that message unknown', () => {
+    const reason = (extra: string) => createReason(pipelinesOf({ 'A.cs': entry('return GetSharedSteps();', extra) }));
+    expect(reason('IEnumerable<PipelineStepDescriptor> GetSharedSteps() { if (All) yield break; }'))
+      .toBe('APreOperationPlugin.GetSharedSteps is not a list of "yield return new PipelineStepDescriptor { … }" statements (it has a "if" statement)');
+    expect(reason('IEnumerable<PipelineStepDescriptor> GetSharedSteps(bool all = true) { yield break; }'))
+      .toBe('APreOperationPlugin.GetCreateSteps includes GetSharedSteps(), which is not one method without parameters');
+    expect(reason('IEnumerable<PipelineStepDescriptor> GetSharedSteps() => GetSharedSteps();'))
+      .toBe('APreOperationPlugin.GetSharedSteps includes GetSharedSteps() in a loop');
   });
 
   it('keeps a composition with a description it cannot evaluate, without filtering attributes', () => {
