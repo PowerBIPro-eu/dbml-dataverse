@@ -4,7 +4,7 @@ import { join, relative } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { run } from '../src/run.js';
 import { VERSION } from '../src/version.js';
-import { configFile, coreSolution, fixtures, salesSolution } from './helpers.js';
+import { configFile, coreSolution, fixtures, pluginsFolder, salesSolution } from './helpers.js';
 
 let tmp: string;
 let stdout: string[];
@@ -138,6 +138,14 @@ describe('dv-convert CLI', () => {
     expect(await run(['--config', join(out, 'dv-convert.json'), '--check'])).toBe(0);
   });
 
+  it('--plugins reads the pipelines; --write-config records the folder relative to the output', async () => {
+    const out = join(tmp, 'docs', 'datamodel');
+    expect(await run([coreSolution, salesSolution, '--output', out, '--plugins', pluginsFolder, '--write-config'])).toBe(0);
+    expect(JSON.parse(readFileSync(join(out, 'dv-convert.json'), 'utf-8')).plugins).toBe(portable(out, pluginsFolder));
+    expect(JSON.parse(readFileSync(join(out, 'components.json'), 'utf-8')).pipelines.length).toBeGreaterThan(0);
+    expect(await run(['--config', join(out, 'dv-convert.json'), '--check'])).toBe(0);
+  });
+
   it('discovers <git root>/docs/datamodel/dv-convert.json when no paths are given', async () => {
     const repo = join(tmp, 'repo');
     const out = join(repo, 'docs', 'datamodel');
@@ -182,6 +190,8 @@ describe('dv-convert CLI', () => {
       ['a uniqueName that does not match Solution.xml', () => ({ configVersion: 1, solutions: [{ path: core(), uniqueName: 'SomethingElse' }] })],
       ['a solution folder that does not exist', () => ({ configVersion: 1, solutions: [{ path: 'missing' }] })],
       ['an unknown platformTables value', () => ({ configVersion: 1, solutions: [{ path: core() }], platformTables: 'some' })],
+      ['a Plugins folder that does not exist', () => ({ configVersion: 1, solutions: [{ path: core() }], plugins: 'NoSuchFolder' })],
+      ['plugins that is not a path', () => ({ configVersion: 1, solutions: [{ path: core() }], plugins: true })],
       ['invalid JSON', () => '{ "configVersion": 1, '],
     ])('%s', async (_label, config) => {
       expect(await run(['--config', writeConfig(tmp, config()), '--check'])).toBe(2);
@@ -192,6 +202,7 @@ describe('dv-convert CLI', () => {
       ['an unknown flag', () => [coreSolution, '--output', tmp, '--colours', 'x.json']],
       ['paths without --output', () => [coreSolution]],
       ['a bad --platform-tables value', () => [coreSolution, '--output', tmp, '--platform-tables', 'some']],
+      ['a --plugins folder that does not exist', () => [coreSolution, '--output', tmp, '--plugins', join(tmp, 'missing')]],
       ['--write-config without paths', () => ['--write-config']],
       ['--check without paths or options file', () => ['--check']],
     ])('%s', async (_label, args) => {

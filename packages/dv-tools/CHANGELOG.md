@@ -2,6 +2,30 @@
 
 Each release is tagged `dv-tools/v<version>` in this repository.
 
+## 1.4.0
+
+`model.json` and the `.dv.dbml` files are unchanged: for the same input they are byte-identical
+to 1.3.0, apart from `provenance.generator.version`. `components.json` only gains content.
+
+### Added
+- `pipelines` and `pipelinesSource` in `components.json`: what each entry plug-in of the DDSol
+  plug-in architecture runs, read from the C# code in a `Plugins/` folder named by the new
+  options-file key `plugins` (relative to the file) or `--plugins`. For each entry plug-in:
+  whether a solution step registers it, its table, stage and mode, and per message its
+  validators, mutators and handlers in run order (by `Order`, then full type name, as
+  `PipelinePluginBase` runs them), each with its full type name, kind, declared filtering
+  attributes and file. Nothing is guessed: a plug-in it cannot read (outside the architecture,
+  behind an intermediate base class, the legacy engine, a Custom API implementation, not in the
+  folder) gets `composition: "unknown"` with the reason, and so does a single message whose step
+  method or components it cannot read, while the other messages keep their components.
+- Plug-in steps: `handlerKind` (`plugin`, `webhook` or `serviceEndpoint`) and `serviceEndpoint`
+  (`{ id, name }`), from the step's handler type and the solution's
+  `PluginAssemblies/ServiceEndpoints.xml`. A webhook or service endpoint step no longer has a
+  plug-in type.
+- Business rules (classic workflows of category `businessRule`): `scope` (`entity`, `allForms` or
+  `form`) and `forms` (the form's id), from `ProcessTriggerScope` and `ProcessTriggerFormId`.
+  Other classic workflows get `scope: null` and `forms: []`.
+
 ## 1.3.0
 
 `model.json` and the `.dv.dbml` files are unchanged: for the same input they are byte-identical

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Synthetic fixture: a webhook (Contract 8) and an Azure Service Bus queue (Contract 2); the addresses are placeholders. -->
+<ServiceEndpoints xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ServiceEndpoint ServiceEndpointId="{d7a5e000-0000-4000-8000-000000000801}" Name="Project change webhook">
+    <ConnectionMode>1</ConnectionMode>
+    <Contract>8</Contract>
+    <AuthType>5</AuthType>
+    <MessageFormat>2</MessageFormat>
+    <Url>https://hooks.example.com/dvt/project</Url>
+    <UseKeyVaultConfiguration>0</UseKeyVaultConfiguration>
+    <IsCustomizable>1</IsCustomizable>
+  </ServiceEndpoint>
+  <ServiceEndpoint ServiceEndpointId="{d7a5e000-0000-4000-8000-000000000802}" Name="Project queue">
+    <ConnectionMode>1</ConnectionMode>
+    <Contract>2</Contract>
+    <AuthType>2</AuthType>
+    <MessageFormat>2</MessageFormat>
+    <SolutionNamespace>dvt-example</SolutionNamespace>
+    <Path>projects</Path>
+    <NamespaceFormat>2</NamespaceFormat>
+    <UserClaim>1</UserClaim>
+    <UseKeyVaultConfiguration>0</UseKeyVaultConfiguration>
+    <IsCustomizable>1</IsCustomizable>
+  </ServiceEndpoint>
+</ServiceEndpoints>

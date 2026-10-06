@@ -1,7 +1,11 @@
 import { compareStrings } from '../util.js';
 import type { Provenance } from '../model/finalize.js';
 import { readCustomApis, type CustomApiRecord } from './customApis.js';
-import { readPlugins, type PluginAssemblyRecord, type PluginStepRecord, type PluginTypeRecord } from './plugins.js';
+import type { CustomApiImplementation, PipelineRecord } from './pipelines.js';
+import {
+  readPlugins, WEBHOOK_CONTRACT,
+  type PluginAssemblyRecord, type PluginStepRecord, type PluginTypeRecord, type ServiceEndpointRecord,
+} from './plugins.js';
 import { parseStepName } from './sdkMessages.js';
 import {
   readWorkflows, type BusinessProcessFlowRecord, type ClassicWorkflowRecord, type CloudFlowRecord,
@@ -18,6 +22,7 @@ export interface LayerComponents {
   pluginAssemblies: PluginAssemblyRecord[];
   pluginTypes: PluginTypeRecord[];
   pluginSteps: PluginStepRecord[];
+  serviceEndpoints: ServiceEndpointRecord[];   // not written: they resolve the steps' handlers
   customApis: CustomApiRecord[];
   cloudFlows: CloudFlowRecord[];
   businessProcessFlows: BusinessProcessFlowRecord[];
@@ -36,6 +41,14 @@ export interface Components {
   cloudFlows: FromLayer<CloudFlowRecord>[];
   businessProcessFlows: FromLayer<BusinessProcessFlowRecord>[];
   classicWorkflows: FromLayer<ClassicWorkflowRecord>[];
+  pipelinesSource: string | null;  // the Plugins folder, relative to the components.json folder
+  pipelines: PipelineRecord[];     // from the Plugins folder's C# code; empty without one
+}
+
+/** The Plugins folder (relative to the components.json folder) and how to read its pipelines. */
+export interface PipelinesInput {
+  source: string;
+  read: (registeredTypes: string[], customApis: CustomApiImplementation[]) => PipelineRecord[];
 }
 
 /**
@@ -55,6 +68,7 @@ export function readLayerComponents(
     pluginAssemblies: plugins.assemblies,
     pluginTypes: plugins.types,
     pluginSteps: plugins.steps,
+    serviceEndpoints: plugins.serviceEndpoints,
     customApis: readCustomApis(root, layerPath, warn),
     ...readWorkflows(root, layerPath, entityOf, warn),
   };
@@ -80,12 +94,19 @@ function firstWins<T>(layers: Array<{ name: string; items: T[] }>, key: (item: T
   return [...byKey.values()];
 }
 
-/** Merge the layers (base layer first) into components.json. */
-export function buildComponents(layers: Array<{ name: string; components: LayerComponents }>, provenance: Provenance): Components {
+/**
+ * Merge the layers (base layer first) into components.json; `pipelines` reads the Plugins folder
+ * with the plug-in types the solution registers on steps and its Custom API implementations.
+ */
+export function buildComponents(
+  layers: Array<{ name: string; components: LayerComponents }>,
+  provenance: Provenance,
+  pipelines: PipelinesInput | null = null,
+): Components {
   const fromLayers = <K extends keyof LayerComponents>(key: K) =>
     layers.map((l) => ({ name: l.name, items: l.components[key] as LayerComponents[K][number][] }));
   // every list by name, then id
-  const merge = <K extends Exclude<keyof LayerComponents, 'customApis'>>(key: K) =>
+  const merge = <K extends Exclude<keyof LayerComponents, 'customApis' | 'serviceEndpoints'>>(key: K) =>
     firstWins(fromLayers(key), byIdOrName).sort(byNameThenId);
 
   const pluginTypes = merge('pluginTypes');
@@ -93,12 +114,27 @@ export function buildComponents(layers: Array<{ name: string; components: LayerC
   // may be in another layer); a step of a plugin package only in its name
   const typeById = new Map(pluginTypes.filter((t) => t.id).map((t) => [t.id!, t]));
   const typeOf = (id: string | null) => (id ? typeById.get(id) : undefined);
+  // service endpoints of any layer, first layer first
+  const endpointById = new Map<string, ServiceEndpointRecord>();
+  for (const { components } of layers) {
+    for (const endpoint of components.serviceEndpoints) if (endpoint.id && !endpointById.has(endpoint.id)) endpointById.set(endpoint.id, endpoint);
+  }
 
-  const pluginSteps = merge('pluginSteps').map((step) => ({
-    ...step,
-    pluginType: step.pluginType ?? typeOf(step.pluginTypeId)?.name ?? parseStepName(step.name)?.pluginType ?? null,
-    assembly: step.assembly ?? typeOf(step.pluginTypeId)?.assembly ?? null,
-  }));
+  const pluginSteps = merge('pluginSteps').map((step) => {
+    if (step.handlerKind === 'plugin') {
+      return {
+        ...step,
+        pluginType: step.pluginType ?? typeOf(step.pluginTypeId)?.name ?? parseStepName(step.name)?.pluginType ?? null,
+        assembly: step.assembly ?? typeOf(step.pluginTypeId)?.assembly ?? null,
+      };
+    }
+    const endpoint = step.serviceEndpoint?.id ? endpointById.get(step.serviceEndpoint.id) : undefined;
+    return {
+      ...step,
+      handlerKind: step.handlerKind === 'serviceEndpoint' && endpoint?.contract === WEBHOOK_CONTRACT ? 'webhook' as const : step.handlerKind,
+      serviceEndpoint: step.serviceEndpoint && { id: step.serviceEndpoint.id, name: endpoint?.name ?? null },
+    };
+  });
 
   // custom APIs by unique name (case-insensitive in Dataverse)
   const customApis = firstWins(fromLayers('customApis'), (api) => api.uniqueName.toLowerCase())
@@ -119,6 +155,11 @@ export function buildComponents(layers: Array<{ name: string; components: LayerC
     cloudFlows: merge('cloudFlows'),
     businessProcessFlows: merge('businessProcessFlows'),
     classicWorkflows: merge('classicWorkflows'),
+    pipelinesSource: pipelines?.source ?? null,
+    pipelines: pipelines?.read(
+      [...new Set(pluginSteps.flatMap((s) => (s.handlerKind === 'plugin' && s.pluginType ? [s.pluginType] : [])))],
+      customApis.flatMap((api) => (api.pluginType ? [{ pluginType: api.pluginType, uniqueName: api.uniqueName }] : [])),
+    ) ?? [],
   };
 }
 

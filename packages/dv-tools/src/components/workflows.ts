@@ -41,11 +41,16 @@ export interface BusinessProcessFlowRecord {
 
 export type ClassicCategory = 'workflow' | 'dialog' | 'businessRule' | 'action';
 
+/** Where a business rule runs: on the table (every form and the server), on all forms, or on one form. */
+export type BusinessRuleScope = 'entity' | 'allForms' | 'form';
+
 export interface ClassicWorkflowRecord {
   id: string | null;
   name: string | null;
   category: ClassicCategory;
   primaryEntity: string | null;
+  scope: BusinessRuleScope | null;   // business rules only
+  forms: string[];                   // form ids of a form-scoped business rule
   file: string;
 }
 
@@ -57,8 +62,18 @@ export interface WorkflowFiles {
 
 /** Workflow Category values; 4 is a business process flow, 5 a cloud flow; desktop flows (6) and others are not read. */
 const CLASSIC_CATEGORIES: Record<number, ClassicCategory> = { 0: 'workflow', 1: 'dialog', 2: 'businessRule', 3: 'action' };
+const BUSINESS_RULE_CATEGORY = 2;
 const BPF_CATEGORY = 4;
 const CLOUD_FLOW_CATEGORY = 5;
+
+/** ProcessTriggerScope 2 (Entity), or 1 (Form) with ProcessTriggerFormId for one form and without for all forms. */
+function businessRuleScope(workflow: any): Pick<ClassicWorkflowRecord, 'scope' | 'forms'> {
+  const scope = int(workflow.ProcessTriggerScope);
+  const form = guid(workflow.ProcessTriggerFormId);
+  if (scope === 2) return { scope: 'entity', forms: [] };
+  if (scope === 1) return form ? { scope: 'form', forms: [form] } : { scope: 'allForms', forms: [] };
+  return { scope: null, forms: [] };
+}
 
 const DATA_XML = '.data.xml';
 
@@ -197,7 +212,9 @@ export function readWorkflows(
       }
       out.businessProcessFlows.push({ id, name, uniqueName: logicalName(workflow.UniqueName), primaryEntity, stages, file });
     } else if (category !== null && CLASSIC_CATEGORIES[category]) {
-      out.classicWorkflows.push({ id, name, category: CLASSIC_CATEGORIES[category], primaryEntity, file });
+      // business process flows have a ProcessTriggerScope too: it is read for business rules only
+      const scope = category === BUSINESS_RULE_CATEGORY ? businessRuleScope(workflow) : { scope: null, forms: [] };
+      out.classicWorkflows.push({ id, name, category: CLASSIC_CATEGORIES[category], primaryEntity, ...scope, file });
     }
   }
 

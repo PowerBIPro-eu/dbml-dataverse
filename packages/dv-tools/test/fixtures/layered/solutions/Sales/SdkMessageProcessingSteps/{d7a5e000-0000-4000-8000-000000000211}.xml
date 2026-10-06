@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Synthetic fixture: a service endpoint step whose endpoint is not in the solution: its contract (webhook or not) is unknown. -->
+<SdkMessageProcessingStep Name="External audit: Delete of dvt_invoice" SdkMessageProcessingStepId="{d7a5e000-0000-4000-8000-000000000211}">
+  <SdkMessageId>a1bdbb1b-ea3e-db11-86a7-000a3a5473e8</SdkMessageId>
+  <EventHandler>{d7a5e000-0000-4000-8000-000000000899}</EventHandler>
+  <PrimaryEntity>dvt_invoice</PrimaryEntity>
+  <AsyncAutoDelete>0</AsyncAutoDelete>
+  <Description>External audit: Delete of dvt_invoice</Description>
+  <InvocationSource>0</InvocationSource>
+  <Mode>1</Mode>
+  <Rank>1</Rank>
+  <EventHandlerTypeCode>4618</EventHandlerTypeCode>
+  <Stage>40</Stage>
+  <IsCustomizable>1</IsCustomizable>
+  <IsHidden>0</IsHidden>
+  <SupportedDeployment>0</SupportedDeployment>
+  <IntroducedVersion>2.1</IntroducedVersion>
+  <SdkMessageProcessingStepImages />
+</SdkMessageProcessingStep>

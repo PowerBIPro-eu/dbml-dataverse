@@ -10,6 +10,7 @@ export const datamodel = join(layered, 'docs', 'datamodel');
 export const configFile = join(datamodel, 'dv-convert.json');
 export const coreSolution = join(layered, 'solutions', 'Core');
 export const salesSolution = join(layered, 'solutions', 'Sales');
+export const pluginsFolder = join(layered, 'Plugins');
 
 /** The options the layered fixture's dv-convert.json resolves to. */
 export function layeredOptions(overrides: Partial<ConvertOptions> = {}): ConvertOptions {
@@ -21,6 +22,7 @@ export function layeredOptions(overrides: Partial<ConvertOptions> = {}): Convert
     outputDir: datamodel,
     writeDbml: true,
     writeComponents: true,
+    pluginsPath: pluginsFolder,
     colors: JSON.parse(readFileSync(join(datamodel, 'colors.json'), 'utf-8')),
     platformTables: 'with-our-columns',
     configPath: configFile,

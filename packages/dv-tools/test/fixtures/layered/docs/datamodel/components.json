@@ -3,7 +3,7 @@
   "provenance": {
     "generator": {
       "name": "@powerbipro-eu/dv-tools",
-      "version": "1.3.0"
+      "version": "1.4.0"
     },
     "config": "dv-convert.json",
     "layers": [
@@ -98,9 +98,11 @@
     {
       "id": "d7a5e000-0000-4000-8000-000000000207",
       "name": "Dvt.Packaged.Project.ArchiveProject: Delete of dvt_project",
+      "handlerKind": "plugin",
       "pluginType": "Dvt.Packaged.Project.ArchiveProject",
       "pluginTypeId": null,
       "assembly": null,
+      "serviceEndpoint": null,
       "message": "Delete",
       "messageId": "a1bdbb1b-ea3e-db11-86a7-000a3a5473e8",
       "primaryEntity": "dvt_project",
@@ -114,11 +116,48 @@
       "sourceSolution": "Core"
     },
     {
+      "id": "d7a5e000-0000-4000-8000-000000000212",
+      "name": "Dvt.Plugins.EntityPluginRegistrations.Project.ProjectPreOperationPlugin: Update of dvt_project",
+      "handlerKind": "plugin",
+      "pluginType": "Dvt.Plugins.EntityPluginRegistrations.Project.ProjectPreOperationPlugin",
+      "pluginTypeId": "d7a5e000-0000-4000-8000-000000000108",
+      "assembly": "Dvt.Plugins",
+      "serviceEndpoint": null,
+      "message": "Update",
+      "messageId": "20bebb1b-ea3e-db11-86a7-000a3a5473e8",
+      "primaryEntity": "dvt_project",
+      "stage": 20,
+      "stageName": "preOperation",
+      "mode": "sync",
+      "rank": 1,
+      "filteringAttributes": [
+        "dvt_accountid",
+        "dvt_budget",
+        "ownerid"
+      ],
+      "images": [
+        {
+          "name": "PreImage",
+          "alias": "PreImage",
+          "type": "pre",
+          "attributes": [
+            "dvt_accountid",
+            "dvt_budget",
+            "ownerid"
+          ]
+        }
+      ],
+      "file": "src/SdkMessageProcessingSteps/{d7a5e000-0000-4000-8000-000000000212}.xml",
+      "sourceSolution": "Core"
+    },
+    {
       "id": "d7a5e000-0000-4000-8000-000000000204",
       "name": "Dvt.Plugins.Events.DispatchProjectEvent: dvt_ProjectEvent of any Entity",
+      "handlerKind": "plugin",
       "pluginType": "Dvt.Plugins.Events.DispatchProjectEvent",
       "pluginTypeId": "d7a5e000-0000-4000-8000-000000000104",
       "assembly": "Dvt.Plugins",
+      "serviceEndpoint": null,
       "message": "dvt_ProjectEvent",
       "messageId": "d7a5e000-0000-4000-8000-000000000301",
       "primaryEntity": null,
@@ -134,9 +173,11 @@
     {
       "id": "d7a5e000-0000-4000-8000-000000000206",
       "name": "Dvt.Plugins.Invoice.CheckTotal: Update of dvt_invoice",
+      "handlerKind": "plugin",
       "pluginType": "Dvt.Plugins.Invoice.CheckTotal",
       "pluginTypeId": "d7a5e000-0000-4000-8000-000000000103",
       "assembly": "Dvt.Plugins",
+      "serviceEndpoint": null,
       "message": "Update",
       "messageId": "20bebb1b-ea3e-db11-86a7-000a3a5473e8",
       "primaryEntity": "dvt_invoice",
@@ -154,9 +195,11 @@
     {
       "id": "d7a5e000-0000-4000-8000-000000000203",
       "name": "Dvt.Plugins.Project.SetProjectCode: Create of dvt_project",
+      "handlerKind": "plugin",
       "pluginType": "Dvt.Plugins.Project.SetProjectCode",
       "pluginTypeId": "d7a5e000-0000-4000-8000-000000000102",
       "assembly": "Dvt.Plugins",
+      "serviceEndpoint": null,
       "message": "Create",
       "messageId": "9ebdbb1b-ea3e-db11-86a7-000a3a5473e8",
       "primaryEntity": "dvt_project",
@@ -179,9 +222,11 @@
     {
       "id": "d7a5e000-0000-4000-8000-000000000202",
       "name": "Dvt.Plugins.Project.ValidateBudget: Create of dvt_project",
+      "handlerKind": "plugin",
       "pluginType": "Dvt.Plugins.Project.ValidateBudget",
       "pluginTypeId": "d7a5e000-0000-4000-8000-000000000101",
       "assembly": "Dvt.Plugins",
+      "serviceEndpoint": null,
       "message": "Create",
       "messageId": "9ebdbb1b-ea3e-db11-86a7-000a3a5473e8",
       "primaryEntity": "dvt_project",
@@ -197,9 +242,11 @@
     {
       "id": "d7a5e000-0000-4000-8000-000000000201",
       "name": "Dvt.Plugins.Project.ValidateBudget: Update of dvt_project",
+      "handlerKind": "plugin",
       "pluginType": "Dvt.Plugins.Project.ValidateBudget",
       "pluginTypeId": "d7a5e000-0000-4000-8000-000000000101",
       "assembly": "Dvt.Plugins",
+      "serviceEndpoint": null,
       "message": "Update",
       "messageId": "20bebb1b-ea3e-db11-86a7-000a3a5473e8",
       "primaryEntity": "dvt_project",
@@ -226,11 +273,36 @@
       "sourceSolution": "Core"
     },
     {
+      "id": "d7a5e000-0000-4000-8000-000000000211",
+      "name": "External audit: Delete of dvt_invoice",
+      "handlerKind": "serviceEndpoint",
+      "pluginType": null,
+      "pluginTypeId": null,
+      "assembly": null,
+      "serviceEndpoint": {
+        "id": "d7a5e000-0000-4000-8000-000000000899",
+        "name": null
+      },
+      "message": "Delete",
+      "messageId": "a1bdbb1b-ea3e-db11-86a7-000a3a5473e8",
+      "primaryEntity": "dvt_invoice",
+      "stage": 40,
+      "stageName": "postOperation",
+      "mode": "async",
+      "rank": 1,
+      "filteringAttributes": [],
+      "images": [],
+      "file": "SdkMessageProcessingSteps/{d7a5e000-0000-4000-8000-000000000211}.xml",
+      "sourceSolution": "Sales"
+    },
+    {
       "id": "d7a5e000-0000-4000-8000-000000000208",
       "name": "Notify attendees",
+      "handlerKind": "plugin",
       "pluginType": "Dvt.Plugins.Events.DispatchProjectEvent",
       "pluginTypeId": "d7a5e000-0000-4000-8000-000000000104",
       "assembly": "Dvt.Plugins",
+      "serviceEndpoint": null,
       "message": null,
       "messageId": "d7a5e000-0000-4000-8000-000000000302",
       "primaryEntity": "dvt_meeting",
@@ -244,11 +316,61 @@
       "sourceSolution": "Core"
     },
     {
+      "id": "d7a5e000-0000-4000-8000-000000000209",
+      "name": "Project change webhook: Update of dvt_project",
+      "handlerKind": "webhook",
+      "pluginType": null,
+      "pluginTypeId": null,
+      "assembly": null,
+      "serviceEndpoint": {
+        "id": "d7a5e000-0000-4000-8000-000000000801",
+        "name": "Project change webhook"
+      },
+      "message": "Update",
+      "messageId": "20bebb1b-ea3e-db11-86a7-000a3a5473e8",
+      "primaryEntity": "dvt_project",
+      "stage": 40,
+      "stageName": "postOperation",
+      "mode": "async",
+      "rank": 1,
+      "filteringAttributes": [
+        "dvt_isactive"
+      ],
+      "images": [],
+      "file": "src/SdkMessageProcessingSteps/{d7a5e000-0000-4000-8000-000000000209}.xml",
+      "sourceSolution": "Core"
+    },
+    {
+      "id": "d7a5e000-0000-4000-8000-000000000210",
+      "name": "Project queue: Create of dvt_project",
+      "handlerKind": "serviceEndpoint",
+      "pluginType": null,
+      "pluginTypeId": null,
+      "assembly": null,
+      "serviceEndpoint": {
+        "id": "d7a5e000-0000-4000-8000-000000000802",
+        "name": "Project queue"
+      },
+      "message": "Create",
+      "messageId": "9ebdbb1b-ea3e-db11-86a7-000a3a5473e8",
+      "primaryEntity": "dvt_project",
+      "stage": 40,
+      "stageName": "postOperation",
+      "mode": "async",
+      "rank": 1,
+      "filteringAttributes": [],
+      "images": [],
+      "file": "src/SdkMessageProcessingSteps/{d7a5e000-0000-4000-8000-000000000210}.xml",
+      "sourceSolution": "Core"
+    },
+    {
       "id": "d7a5e000-0000-4000-8000-000000000205",
       "name": "Recalculate effort on reassignment",
+      "handlerKind": "plugin",
       "pluginType": "Dvt.Plugins.Project.SetProjectCode",
       "pluginTypeId": "d7a5e000-0000-4000-8000-000000000102",
       "assembly": "Dvt.Plugins",
+      "serviceEndpoint": null,
       "message": "Assign",
       "messageId": "8cbdbb1b-ea3e-db11-86a7-000a3a5473e8",
       "primaryEntity": "task",
@@ -561,6 +683,8 @@
       "name": "Budget is required for active projects",
       "category": "businessRule",
       "primaryEntity": "dvt_project",
+      "scope": "entity",
+      "forms": [],
       "file": "src/Workflows/Budgetisrequiredforactiveprojects-D7A5E000-0000-4000-8000-000000000602.xaml.data.xml",
       "sourceSolution": "Core"
     },
@@ -569,7 +693,21 @@
       "name": "Close stale projects",
       "category": "workflow",
       "primaryEntity": "dvt_project",
+      "scope": null,
+      "forms": [],
       "file": "src/Workflows/Closestaleprojects-D7A5E000-0000-4000-8000-000000000601.xaml.data.xml",
+      "sourceSolution": "Core"
+    },
+    {
+      "id": "d7a5e000-0000-4000-8000-000000000605",
+      "name": "Lock the budget on the summary form",
+      "category": "businessRule",
+      "primaryEntity": "dvt_project",
+      "scope": "form",
+      "forms": [
+        "d7a5e000-0000-4000-8000-000000000701"
+      ],
+      "file": "src/Workflows/Lockthebudgetonthesummaryform-D7A5E000-0000-4000-8000-000000000605.xaml.data.xml",
       "sourceSolution": "Core"
     },
     {
@@ -577,8 +715,417 @@
       "name": "Project event",
       "category": "action",
       "primaryEntity": null,
+      "scope": null,
+      "forms": [],
       "file": "src/Workflows/Projectevent-D7A5E000-0000-4000-8000-000000000603.xaml.data.xml",
       "sourceSolution": "Core"
+    },
+    {
+      "id": "d7a5e000-0000-4000-8000-000000000604",
+      "name": "Show the end date on closed projects",
+      "category": "businessRule",
+      "primaryEntity": "dvt_project",
+      "scope": "allForms",
+      "forms": [],
+      "file": "src/Workflows/Showtheenddateonclosedprojects-D7A5E000-0000-4000-8000-000000000604.xaml.data.xml",
+      "sourceSolution": "Core"
+    }
+  ],
+  "pipelinesSource": "../../Plugins",
+  "pipelines": [
+    {
+      "pluginType": "Dvt.Packaged.Project.ArchiveProject",
+      "registered": true,
+      "entity": null,
+      "stage": null,
+      "stageName": null,
+      "mode": null,
+      "composition": "unknown",
+      "reason": "not found in the Plugins folder",
+      "messages": [],
+      "file": null
+    },
+    {
+      "pluginType": "Dvt.Plugins.Api.CalculateBudget",
+      "registered": false,
+      "entity": null,
+      "stage": null,
+      "stageName": null,
+      "mode": null,
+      "composition": "unknown",
+      "reason": "implements the Custom API dvt_CalculateBudget; CalculateBudget derives from PluginBase, not PipelinePluginBase",
+      "messages": [],
+      "file": "Dvt.Plugins/Dvt.Plugins/Api/CalculateBudget.cs"
+    },
+    {
+      "pluginType": "Dvt.Plugins.EntityPluginRegistrations.Invoice.InvoicePostOperationAsyncPlugin",
+      "registered": false,
+      "entity": "dvt_invoice",
+      "stage": 40,
+      "stageName": "postOperation",
+      "mode": "async",
+      "composition": "known",
+      "reason": null,
+      "messages": [
+        {
+          "message": "Create",
+          "method": "GetCreateSteps",
+          "composition": "known",
+          "reason": null,
+          "components": [
+            {
+              "position": 1,
+              "order": 10,
+              "type": "Dvt.Plugins.Handlers.Common.AuditTrailHandler",
+              "kind": "handler",
+              "declaredFilteringAttributes": [],
+              "description": "Writes an audit trail entry; Create, Post-Operation, Async; filtering attributes: none; PreImage: none; PostImage: none",
+              "file": "Dvt.Plugins/Dvt.Plugins/Handlers/Common/AuditTrailHandler.cs"
+            }
+          ]
+        }
+      ],
+      "file": "Dvt.Plugins/Dvt.Plugins/EntityPluginRegistrations/Invoice/InvoicePostOperationAsyncPlugin.cs"
+    },
+    {
+      "pluginType": "Dvt.Plugins.EntityPluginRegistrations.Invoice.InvoicePostOperationSyncPlugin",
+      "registered": false,
+      "entity": null,
+      "stage": null,
+      "stageName": null,
+      "mode": null,
+      "composition": "unknown",
+      "reason": "InvoicePostOperationSyncPlugin derives from PipelinePluginBase through AuditedPipelinePluginBase, not directly",
+      "messages": [],
+      "file": "Dvt.Plugins/Dvt.Plugins/EntityPluginRegistrations/Invoice/InvoicePostOperationSyncPlugin.cs"
+    },
+    {
+      "pluginType": "Dvt.Plugins.EntityPluginRegistrations.Invoice.InvoicePreOperationPlugin",
+      "registered": false,
+      "entity": "dvt_invoice",
+      "stage": 20,
+      "stageName": "preOperation",
+      "mode": "sync",
+      "composition": "known",
+      "reason": null,
+      "messages": [
+        {
+          "message": "Create",
+          "method": "GetCreateSteps",
+          "composition": "known",
+          "reason": null,
+          "components": [
+            {
+              "position": 1,
+              "order": 10,
+              "type": "Dvt.Plugins.Validators.Invoice.InvoiceTotalValidator",
+              "kind": "validator",
+              "declaredFilteringAttributes": [],
+              "description": "Rejects an invoice without a total; Create, Pre-Operation, Sync; filtering attributes: none; PreImage: none; PostImage: none",
+              "file": "Dvt.Plugins/Dvt.Plugins/Validators/Invoice/InvoiceTotalValidator.cs"
+            }
+          ]
+        }
+      ],
+      "file": "Dvt.Plugins/Dvt.Plugins/EntityPluginRegistrations/Invoice/InvoicePreOperationPlugin.cs"
+    },
+    {
+      "pluginType": "Dvt.Plugins.EntityPluginRegistrations.Meeting.MeetingPostOperationPlugin",
+      "registered": false,
+      "entity": "dvt_meeting",
+      "stage": 40,
+      "stageName": "postOperation",
+      "mode": null,
+      "composition": "known",
+      "reason": null,
+      "messages": [
+        {
+          "message": "Create",
+          "method": "GetCreateSteps",
+          "composition": "known",
+          "reason": null,
+          "components": [
+            {
+              "position": 1,
+              "order": 10,
+              "type": "Dvt.Plugins.Handlers.Common.AuditTrailHandler",
+              "kind": "handler",
+              "declaredFilteringAttributes": [],
+              "description": "Writes an audit trail entry; Create, Post-Operation; filtering attributes: none; PreImage: none; PostImage: none",
+              "file": "Dvt.Plugins/Dvt.Plugins/Handlers/Common/AuditTrailHandler.cs"
+            }
+          ]
+        }
+      ],
+      "file": "Dvt.Plugins/Dvt.Plugins/EntityPluginRegistrations/Meeting/MeetingPostOperationPlugin.cs"
+    },
+    {
+      "pluginType": "Dvt.Plugins.EntityPluginRegistrations.Meeting.MeetingPreOperationPlugin",
+      "registered": false,
+      "entity": "dvt_meeting",
+      "stage": 20,
+      "stageName": "preOperation",
+      "mode": "sync",
+      "composition": "known",
+      "reason": null,
+      "messages": [
+        {
+          "message": "Create",
+          "method": "GetCreateSteps",
+          "composition": "unknown",
+          "reason": "MeetingPreOperationPlugin.GetCreateSteps is not a list of \"yield return new PipelineStepDescriptor { … }\" statements (it has a \"if\" statement)",
+          "components": []
+        },
+        {
+          "message": "Update",
+          "method": "GetUpdateSteps",
+          "composition": "known",
+          "reason": null,
+          "components": [
+            {
+              "position": 1,
+              "order": 10,
+              "type": "Dvt.Plugins.Validators.Meeting.MeetingDateValidator",
+              "kind": "validator",
+              "declaredFilteringAttributes": [
+                "scheduledend",
+                "scheduledstart"
+              ],
+              "description": "Rejects a meeting that ends before it starts; Update, Pre-Operation, Sync; filtering attributes: scheduledstart,scheduledend; PreImage 'PreImage' with scheduledstart,scheduledend; PostImage: none",
+              "file": "Dvt.Plugins/Dvt.Plugins/Validators/Meeting/MeetingDateValidator.cs"
+            }
+          ]
+        }
+      ],
+      "file": "Dvt.Plugins/Dvt.Plugins/EntityPluginRegistrations/Meeting/MeetingPreOperationPlugin.cs"
+    },
+    {
+      "pluginType": "Dvt.Plugins.EntityPluginRegistrations.Meeting.MeetingPreValidationPlugin",
+      "registered": false,
+      "entity": null,
+      "stage": 10,
+      "stageName": "preValidation",
+      "mode": "sync",
+      "composition": "unknown",
+      "reason": "MeetingPreValidationPlugin declares GetRegistration(): the legacy engine's separate registration",
+      "messages": [],
+      "file": "Dvt.Plugins/Dvt.Plugins/EntityPluginRegistrations/Meeting/MeetingPreValidationPlugin.cs"
+    },
+    {
+      "pluginType": "Dvt.Plugins.EntityPluginRegistrations.Project.ProjectPostOperationAsyncPlugin",
+      "registered": false,
+      "entity": "dvt_project",
+      "stage": 40,
+      "stageName": "postOperation",
+      "mode": "async",
+      "composition": "known",
+      "reason": null,
+      "messages": [
+        {
+          "message": "Update",
+          "method": "GetUpdateSteps",
+          "composition": "known",
+          "reason": null,
+          "components": [
+            {
+              "position": 1,
+              "order": 10,
+              "type": "Dvt.Plugins.Handlers.Common.AuditTrailHandler",
+              "kind": "handler",
+              "declaredFilteringAttributes": [],
+              "description": "Writes an audit trail entry; Update, Post-Operation, Async; filtering attributes: none; PreImage: none; PostImage: none",
+              "file": "Dvt.Plugins/Dvt.Plugins/Handlers/Common/AuditTrailHandler.cs"
+            },
+            {
+              "position": 2,
+              "order": 10,
+              "type": "Dvt.Plugins.Handlers.Project.Async.ProjectNotificationHandler",
+              "kind": "handler",
+              "declaredFilteringAttributes": [
+                "dvt_isactive"
+              ],
+              "description": "Tells the owner that the project was stopped; Update, Post-Operation, Async; filtering attributes: dvt_isactive; PreImage 'PreImage' with dvt_isactive; PostImage: none",
+              "file": "Dvt.Plugins/Dvt.Plugins/Handlers/Project/Async/ProjectNotificationHandler.cs"
+            }
+          ]
+        },
+        {
+          "message": null,
+          "method": "GetSpecialSteps",
+          "composition": "known",
+          "reason": null,
+          "components": [
+            {
+              "position": 1,
+              "order": 10,
+              "type": "Dvt.Plugins.Handlers.Common.AuditTrailHandler",
+              "kind": "handler",
+              "declaredFilteringAttributes": null,
+              "description": "Writes an audit trail entry when the project is assigned; Assign, Post-Operation, Async; PreImage: none; PostImage: none",
+              "file": "Dvt.Plugins/Dvt.Plugins/Handlers/Common/AuditTrailHandler.cs"
+            }
+          ]
+        }
+      ],
+      "file": "Dvt.Plugins/Dvt.Plugins/EntityPluginRegistrations/Project/ProjectPostOperationAsyncPlugin.cs"
+    },
+    {
+      "pluginType": "Dvt.Plugins.EntityPluginRegistrations.Project.ProjectPreOperationPlugin",
+      "registered": true,
+      "entity": "dvt_project",
+      "stage": 20,
+      "stageName": "preOperation",
+      "mode": "sync",
+      "composition": "known",
+      "reason": null,
+      "messages": [
+        {
+          "message": "Create",
+          "method": "GetCreateSteps",
+          "composition": "known",
+          "reason": null,
+          "components": [
+            {
+              "position": 1,
+              "order": 10,
+              "type": "Dvt.Plugins.Validators.Project.ProjectBudgetValidator",
+              "kind": "validator",
+              "declaredFilteringAttributes": [],
+              "description": "Rejects a budget above the approved limit; Create, Pre-Operation, Sync; filtering attributes: none; PreImage: none; PostImage: none",
+              "file": "Dvt.Plugins/Dvt.Plugins/Validators/Project/ProjectBudgetValidator.cs"
+            },
+            {
+              "position": 2,
+              "order": 20,
+              "type": "Dvt.Plugins.Mutators.Project.ProjectCodeMutator",
+              "kind": "mutator",
+              "declaredFilteringAttributes": [],
+              "description": "Sets the project code from the customer; Create, Pre-Operation, Sync; filtering attributes: none; PreImage: none; PostImage: none",
+              "file": "Dvt.Plugins/Dvt.Plugins/Mutators/Project/ProjectCodeMutator.cs"
+            }
+          ]
+        },
+        {
+          "message": "Update",
+          "method": "GetUpdateSteps",
+          "composition": "known",
+          "reason": null,
+          "components": [
+            {
+              "position": 1,
+              "order": 10,
+              "type": "Dvt.Plugins.Validators.Project.ProjectOwnerValidator",
+              "kind": "validator",
+              "declaredFilteringAttributes": [
+                "ownerid"
+              ],
+              "description": "Only the project lead may hand a project over; Update, Pre-Operation, Sync; filtering attributes: ownerid; PreImage 'PreImage' with ownerid; PostImage: none",
+              "file": "Dvt.Plugins/Dvt.Plugins/Validators/Project/ProjectOwnerValidator.cs"
+            },
+            {
+              "position": 2,
+              "order": 20,
+              "type": "Dvt.Plugins.Validators.Project.ProjectBudgetValidator",
+              "kind": "validator",
+              "declaredFilteringAttributes": [
+                "dvt_budget"
+              ],
+              "description": "Rejects a budget above the approved limit; Update, Pre-Operation, Sync; filtering attributes: dvt_budget; PreImage 'PreImage' with dvt_budget; PostImage: none",
+              "file": "Dvt.Plugins/Dvt.Plugins/Validators/Project/ProjectBudgetValidator.cs"
+            },
+            {
+              "position": 3,
+              "order": 30,
+              "type": "Dvt.Plugins.Mutators.Project.ProjectCodeMutator",
+              "kind": "mutator",
+              "declaredFilteringAttributes": [
+                "dvt_accountid"
+              ],
+              "description": "Keeps the project code in step with the customer; Update, Pre-Operation, Sync; filtering attributes: dvt_accountid; PreImage 'PreImage' with dvt_accountid; PostImage: none",
+              "file": "Dvt.Plugins/Dvt.Plugins/Mutators/Project/ProjectCodeMutator.cs"
+            }
+          ]
+        }
+      ],
+      "file": "Dvt.Plugins/Dvt.Plugins/EntityPluginRegistrations/Project/ProjectPreOperationPlugin.cs"
+    },
+    {
+      "pluginType": "Dvt.Plugins.EntityPluginRegistrations.Project.ProjectPreValidationPlugin",
+      "registered": false,
+      "entity": "dvt_project",
+      "stage": 10,
+      "stageName": "preValidation",
+      "mode": "sync",
+      "composition": "known",
+      "reason": null,
+      "messages": [
+        {
+          "message": "Delete",
+          "method": "GetDeleteSteps",
+          "composition": "known",
+          "reason": null,
+          "components": [
+            {
+              "position": 1,
+              "order": 10,
+              "type": "Dvt.Plugins.Validators.Project.ProjectOwnerValidator",
+              "kind": "validator",
+              "declaredFilteringAttributes": [],
+              "description": "Only the project lead may delete a project; Delete, Pre-Validation, Sync; filtering attributes: none; PreImage 'PreImage' with ownerid; PostImage: none",
+              "file": "Dvt.Plugins/Dvt.Plugins/Validators/Project/ProjectOwnerValidator.cs"
+            }
+          ]
+        }
+      ],
+      "file": "Dvt.Plugins/Dvt.Plugins/EntityPluginRegistrations/Project/ProjectPreValidationPlugin.cs"
+    },
+    {
+      "pluginType": "Dvt.Plugins.Events.DispatchProjectEvent",
+      "registered": true,
+      "entity": null,
+      "stage": null,
+      "stageName": null,
+      "mode": null,
+      "composition": "unknown",
+      "reason": "not found in the Plugins folder",
+      "messages": [],
+      "file": null
+    },
+    {
+      "pluginType": "Dvt.Plugins.Invoice.CheckTotal",
+      "registered": true,
+      "entity": null,
+      "stage": null,
+      "stageName": null,
+      "mode": null,
+      "composition": "unknown",
+      "reason": "not found in the Plugins folder",
+      "messages": [],
+      "file": null
+    },
+    {
+      "pluginType": "Dvt.Plugins.Project.SetProjectCode",
+      "registered": true,
+      "entity": null,
+      "stage": null,
+      "stageName": null,
+      "mode": null,
+      "composition": "unknown",
+      "reason": "not found in the Plugins folder",
+      "messages": [],
+      "file": null
+    },
+    {
+      "pluginType": "Dvt.Plugins.Project.ValidateBudget",
+      "registered": true,
+      "entity": null,
+      "stage": null,
+      "stageName": null,
+      "mode": null,
+      "composition": "unknown",
+      "reason": "ValidateBudget derives from PluginBase, not PipelinePluginBase",
+      "messages": [],
+      "file": "Dvt.Plugins/Dvt.Plugins/Legacy/ValidateBudget.cs"
     }
   ]
 }
