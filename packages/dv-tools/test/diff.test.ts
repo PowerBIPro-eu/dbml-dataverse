@@ -58,6 +58,11 @@ describe('diffModels', () => {
       'table added SystemUser',
       'table added Task',
       'column added dvt_project dvt_budget',
+      // computed columns, added to the fixture after model-1.0.3.json was generated
+      'column added dvt_project dvt_daysopen',
+      'column added dvt_project dvt_invoicecount',
+      'column added dvt_project dvt_label',
+      'column added dvt_project dvt_summary',
       'optionSet added dvt_project_dvt_isactive',   // custom Yes/No labels, lost by 1.0.3 on Node 22+
       'optionSet added task_statuscode',
       'relationship added dvt_dvt_project_task',

@@ -59,9 +59,13 @@ export function mapOwnership(raw: string): string {
   return 'None';
 }
 
-/** Map SourceType integer to DBML source_type string. */
+/**
+ * Map SourceType integer to DBML source_type string (AttributeMetadata.SourceType: 0 simple,
+ * 1 calculated, 2 rollup, 3 formula, 4 prompt). Prompt and unknown values stay simple:
+ * source_type has no value for them.
+ */
 export const SOURCE_TYPE_MAP: Record<string, string> = {
-  '0': 'simple', '1': 'calculated', '2': 'rollup', '4': 'formula',
+  '0': 'simple', '1': 'calculated', '2': 'rollup', '3': 'formula',
 };
 
 /** Columns to always exclude (audit, system, owner). */

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Synthetic fixture: the second layer adds one column to a table of the base layer. -->
+<!-- Synthetic fixture: the second layer adds columns to a table of the base layer, one of them a
+     rollup over the invoices this layer brings (its FormulaDefinitionFileName file is left out). -->
 <Entity xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <Name LocalizedName="Project" OriginalName="Project">dvt_project</Name>
   <EntityInfo>
@@ -18,6 +19,22 @@
           <Descriptions>
             <Description description="Approved budget" languagecode="1033" />
           </Descriptions>
+        </attribute>
+        <attribute PhysicalName="dvt_invoicecount">
+          <Type>int</Type>
+          <Name>dvt_invoicecount</Name>
+          <LogicalName>dvt_invoicecount</LogicalName>
+          <RequiredLevel>none</RequiredLevel>
+          <IsCustomField>1</IsCustomField>
+          <SourceType>2</SourceType>
+          <Format>none</Format>
+          <displaynames>
+            <displayname description="Invoices" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="Number of active invoices of the project" languagecode="1033" />
+          </Descriptions>
+          <FormulaDefinitionFileName>/Formulas/dvt_project-dvt_invoicecount.xaml</FormulaDefinitionFileName>
         </attribute>
       </attributes>
     </entity>

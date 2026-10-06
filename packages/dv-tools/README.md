@@ -236,6 +236,7 @@ Columns and option values keep the order of the solution XML. Parser positions (
 | column | `isCustom` | `IsCustomField` is 1: we created the column. The primary key of our own table is platform-made (`false`). |
 | column | `description` | The full description (character references such as `&#xA;` decoded). `note` keeps the 1.0.x value: the description only when it is at most 100 characters and single-line. |
 | column | `isModified`, `modifications` | A platform column we changed: `statuscode` with our status reasons gives `["statusReasons"]`. Omitted when not modified. |
+| column | `sourceType` | How the column is computed, from `SourceType` in the solution XML: `calculated` (1), `rollup` (2) or `formula` (3, Power Fx). Omitted for ordinary columns (0) and AI prompt columns (4). The `.dv.dbml` files have it as `source_type`. Before 1.5.0, formula columns had none and prompt columns had `formula`. |
 | state value | `defaultStatus` | The state's default status reason. |
 | status value | `state` | The state the status reason belongs to. |
 | status value | `isCustom` | `true` on status reasons we added. Omitted otherwise. |

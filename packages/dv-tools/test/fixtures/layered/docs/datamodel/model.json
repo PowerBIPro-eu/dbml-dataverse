@@ -3,7 +3,7 @@
   "provenance": {
     "generator": {
       "name": "@powerbipro-eu/dv-tools",
-      "version": "1.4.0"
+      "version": "1.5.0"
     },
     "config": "dv-convert.json",
     "layers": [
@@ -368,6 +368,28 @@
           "required": "none"
         },
         {
+          "name": "dvt_daysopen",
+          "isCustom": true,
+          "type": {
+            "schemaName": null,
+            "type_name": "int",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "note": {
+            "value": "Days since the project was created"
+          },
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Days open",
+          "description": "Days since the project was created",
+          "format": "none",
+          "sourceSolution": "Core",
+          "required": "none",
+          "sourceType": "calculated"
+        },
+        {
           "name": "dvt_description",
           "isCustom": true,
           "type": {
@@ -405,6 +427,28 @@
           "optionSetName": "dvt_project_dvt_isactive",
           "sourceSolution": "Core",
           "required": "none"
+        },
+        {
+          "name": "dvt_label",
+          "isCustom": true,
+          "type": {
+            "schemaName": null,
+            "type_name": "nvarchar(4000)",
+            "args": "4000"
+          },
+          "pk": false,
+          "unique": false,
+          "note": {
+            "value": "Name and priority, for lists"
+          },
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Label",
+          "description": "Name and priority, for lists",
+          "format": "text",
+          "sourceSolution": "Core",
+          "required": "none",
+          "sourceType": "formula"
         },
         {
           "name": "dvt_name",
@@ -478,6 +522,27 @@
           "checks": [],
           "displayName": "Reviewer",
           "targets": "SystemUser",
+          "sourceSolution": "Core",
+          "required": "none"
+        },
+        {
+          "name": "dvt_summary",
+          "isCustom": true,
+          "type": {
+            "schemaName": null,
+            "type_name": "nvarchar(4000)",
+            "args": "4000"
+          },
+          "pk": false,
+          "unique": false,
+          "note": {
+            "value": "AI summary of the project description"
+          },
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Summary",
+          "description": "AI summary of the project description",
+          "format": "text",
           "sourceSolution": "Core",
           "required": "none"
         },
@@ -567,6 +632,28 @@
           "description": "Approved budget",
           "sourceSolution": "Sales",
           "required": "none"
+        },
+        {
+          "name": "dvt_invoicecount",
+          "isCustom": true,
+          "type": {
+            "schemaName": null,
+            "type_name": "int",
+            "args": null
+          },
+          "pk": false,
+          "unique": false,
+          "note": {
+            "value": "Number of active invoices of the project"
+          },
+          "inline_refs": [],
+          "checks": [],
+          "displayName": "Invoices",
+          "description": "Number of active invoices of the project",
+          "format": "none",
+          "sourceSolution": "Sales",
+          "required": "none",
+          "sourceType": "rollup"
         }
       ],
       "indexes": [

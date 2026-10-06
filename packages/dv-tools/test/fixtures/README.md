@@ -9,7 +9,7 @@ public, so no solution XML from real projects is committed here.
 | `layered/` | A solution repository with two layers (`solutions/Core` with a `src/` folder, `solutions/Sales` without) and its generated ERD in `docs/datamodel/` |
 | `bit-labels/` | Yes/No columns with custom and default labels |
 | `invalid-dbml/` | A column name that breaks the DBML compiler |
-| `diff/model-1.0.3.json` | What dv-tools 1.0.3 generated from `layered/solutions` (without the `dvt_project_systemuser` relationship, which 1.0.3 cannot convert): the schema-1 side of the 1.0.3 → 1.1 diff |
+| `diff/model-1.0.3.json` | What dv-tools 1.0.3 generated from `layered/solutions` (without the `dvt_project_systemuser` relationship, which 1.0.3 cannot convert, and before the computed columns were added): the schema-1 side of the 1.0.3 → 1.1 diff |
 | `diff/v1.1.0-to-v1.2.0.md` | Expected `dv-convert diff` Markdown for the edits `test/diff.test.ts` applies to the layered model |
 
 `layered/` exercises partial platform tables (`Task`, an activity without `<IsActivity>`;
@@ -17,7 +17,11 @@ public, so no solution XML from real projects is committed here.
 left out by default), a fully defined platform table (`Account`), lookup targets outside the
 model, status reasons against both baselines (`dvt_project` modified, `dvt_meeting` activity
 and `dvt_invoice` table unmodified, our 9-digit value on `Task`), two N:N between the same
-tables, case-insensitive colours and a second layer that extends a base-layer table.
+tables, case-insensitive colours, a second layer that extends a base-layer table, and computed
+columns of every `SourceType` on `dvt_project`: calculated, formula (Power Fx) and AI prompt in
+the base layer, a rollup over the invoices in the second layer. Like exported solutions, they
+name their definition files (`FormulaDefinitionFileName`); the fixture leaves those files out,
+dv-tools does not read them.
 
 Its components (`components.json`) are just as fictional: a plugin assembly `Dvt.Plugins` with
 plugin types and a custom workflow activity (`PluginAssemblies/`, without the `.dll`), a webhook

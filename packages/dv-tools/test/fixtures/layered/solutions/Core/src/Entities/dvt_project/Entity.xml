@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Synthetic fixture: custom table with an added status reason, a removed default status reason,
-     a changed default status, custom Yes/No labels, long descriptions and lookups to platform tables. -->
+     a changed default status, custom Yes/No labels, long descriptions, lookups to platform tables
+     and computed columns: calculated, formula and AI prompt (the files they name in
+     FormulaDefinitionFileName are left out; dv-tools does not read them). -->
 <Entity xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <Name LocalizedName="Project" OriginalName="Project">dvt_project</Name>
   <EntityInfo>
@@ -46,6 +48,22 @@
           <Descriptions>
             <Description description="" languagecode="1033" />
           </Descriptions>
+        </attribute>
+        <attribute PhysicalName="dvt_daysopen">
+          <Type>int</Type>
+          <Name>dvt_daysopen</Name>
+          <LogicalName>dvt_daysopen</LogicalName>
+          <RequiredLevel>none</RequiredLevel>
+          <IsCustomField>1</IsCustomField>
+          <SourceType>1</SourceType>
+          <Format>none</Format>
+          <displaynames>
+            <displayname description="Days open" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="Days since the project was created" languagecode="1033" />
+          </Descriptions>
+          <FormulaDefinitionFileName>/Formulas/dvt_project-dvt_daysopen.xaml</FormulaDefinitionFileName>
         </attribute>
         <attribute PhysicalName="dvt_description">
           <Type>ntext</Type>
@@ -98,6 +116,23 @@
           <Descriptions>
             <Description description="Running or stopped.&#xA;Set by the project owner." languagecode="1033" />
           </Descriptions>
+        </attribute>
+        <attribute PhysicalName="dvt_label">
+          <Type>nvarchar</Type>
+          <Name>dvt_label</Name>
+          <LogicalName>dvt_label</LogicalName>
+          <RequiredLevel>none</RequiredLevel>
+          <IsCustomField>1</IsCustomField>
+          <SourceType>3</SourceType>
+          <Format>text</Format>
+          <MaxLength>4000</MaxLength>
+          <displaynames>
+            <displayname description="Label" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="Name and priority, for lists" languagecode="1033" />
+          </Descriptions>
+          <FormulaDefinitionFileName>/Formulas/dvt_project-FormulaDefinitions.yaml</FormulaDefinitionFileName>
         </attribute>
         <attribute PhysicalName="dvt_name">
           <Type>nvarchar</Type>
@@ -160,6 +195,23 @@
           <Descriptions>
             <Description description="" languagecode="1033" />
           </Descriptions>
+        </attribute>
+        <attribute PhysicalName="dvt_summary">
+          <Type>nvarchar</Type>
+          <Name>dvt_summary</Name>
+          <LogicalName>dvt_summary</LogicalName>
+          <RequiredLevel>none</RequiredLevel>
+          <IsCustomField>1</IsCustomField>
+          <SourceType>4</SourceType>
+          <Format>text</Format>
+          <MaxLength>4000</MaxLength>
+          <displaynames>
+            <displayname description="Summary" languagecode="1033" />
+          </displaynames>
+          <Descriptions>
+            <Description description="AI summary of the project description" languagecode="1033" />
+          </Descriptions>
+          <FormulaDefinitionFileName>/Formulas/dvt_project-dvt_summary.xaml</FormulaDefinitionFileName>
         </attribute>
         <attribute PhysicalName="OwnerId">
           <Type>owner</Type>
