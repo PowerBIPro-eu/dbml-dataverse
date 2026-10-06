@@ -308,7 +308,7 @@ function indexOf(tokens: Token[], text: string, from: number, end: number): numb
 // ── Members ────────────────────────────────────────────────────────────────
 
 export type Member =
-  | { kind: 'method'; body: { from: number; to: number }; expression: boolean }
+  | { kind: 'method'; body: { from: number; to: number }; expression: boolean; modifiers: string[]; parameters: boolean }
   | { kind: 'property'; expression: { from: number; to: number } | null }
   | { kind: 'field'; value: { from: number; to: number } | null; modifiers: string[] };
 
@@ -335,8 +335,10 @@ export function findMember(decl: TypeDecl, name: string): Member | null {
       if (next === '(') {
         const closeParams = match.get(i + 1)!;
         const after = tokens[closeParams + 1]?.text;
-        if (after === '{') return { kind: 'method', body: { from: closeParams + 2, to: match.get(closeParams + 1)! }, expression: false };
-        if (after === '=>') return { kind: 'method', body: { from: closeParams + 2, to: statementEnd(tokens, match, closeParams + 2, decl.body.close) }, expression: true };
+        // identifiers before the name (modifiers and the return type), and whether it takes parameters
+        const head = { modifiers: tokens.slice(memberStart, i).filter((x) => x.kind === 'ident').map((x) => x.text), parameters: closeParams > i + 2 };
+        if (after === '{') return { kind: 'method', body: { from: closeParams + 2, to: match.get(closeParams + 1)! }, expression: false, ...head };
+        if (after === '=>') return { kind: 'method', body: { from: closeParams + 2, to: statementEnd(tokens, match, closeParams + 2, decl.body.close) }, expression: true, ...head };
         return null;   // abstract or extern
       }
       if (next === '=>') return { kind: 'property', expression: { from: i + 2, to: statementEnd(tokens, match, i + 2, decl.body.close) } };

@@ -2,6 +2,19 @@
 
 Each release is tagged `dv-tools/v<version>` in this repository.
 
+## 1.5.1
+
+Only pipelines change: for the same input, `model.json`, the `.dv.dbml` files and the rest of
+`components.json` are byte-identical to 1.5.0, apart from `provenance.generator.version`.
+
+### Fixed
+- An entry plug-in whose step methods share steps through a method of its own (for example
+  `GetCreateSteps() => GetSharedSteps();`, or `foreach (var step in GetSharedSteps()) yield return step;`
+  next to its own steps) is read: those steps belong to every message that includes them. 1.4.0
+  and 1.5.0 took any `Get…Steps` method besides the four for the legacy engine's stage routing and
+  reported the whole plug-in as unknown. That is still the reading for a method that overrides a
+  base-class method or that no step method includes.
+
 ## 1.5.0
 
 Only formula and AI prompt columns change: for the same input, `model.json` and the `.dv.dbml`

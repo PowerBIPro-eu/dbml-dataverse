@@ -385,6 +385,10 @@ what each entry plug-in of the DDSol plug-in architecture runs, read from its C#
 plug-in derives from `PipelinePluginBase`, names its table in `EntityLogicalName`, and declares
 its components in `GetCreateSteps()`, `GetUpdateSteps()`, `GetDeleteSteps()` and
 `GetSpecialSteps()` as `PipelineStepDescriptor { Type, ImplementationType, Order, Description }`.
+Steps that several of them share can sit in a method of the entry plug-in itself, such as
+`GetSharedSteps()`, which they include: `GetUpdateSteps() => GetSharedSteps();`,
+`return GetSharedSteps();` or `foreach (var step in GetSharedSteps()) yield return step;` next to
+their own steps. dv-tools reads those steps as part of every message that includes them.
 
 ```json
 "pipelinesSource": "../../Plugins",
@@ -443,13 +447,16 @@ its components in `GetCreateSteps()`, `GetUpdateSteps()`, `GetDeleteSteps()` and
   - **A whole plug-in** (no `messages`) when it is not an entry plug-in it can read: it does not
     derive from `PipelinePluginBase` (a registered plug-in outside the architecture, a Custom API
     implementation), derives from it through an intermediate base class, uses the legacy engine
-    (`GetRegistration()`, or stage-specific step methods), is declared in several files, or is
-    not in the folder.
+    (`GetRegistration()`, or stage-specific step methods: a `Get…Steps` method besides the four
+    that overrides a base-class method or that no step method includes), is declared in several
+    files, or is not in the folder.
   - **A message** (no `components`) when its step method or one of its components cannot be read:
-    the method is not just `yield return new PipelineStepDescriptor { … }` statements (or one
-    returned array or list), a property is not a literal (an `Order` from a constant), a
-    component class cannot be found or two usings make it ambiguous, or a component declared as
-    one kind implements another. The plug-in's other messages keep their components.
+    the method, or a method of its own that it includes, is not just
+    `yield return new PipelineStepDescriptor { … }` statements and includes (or one returned array
+    or list); an included method takes parameters or includes itself; a property is not a literal
+    (an `Order` from a constant); a component class cannot be found or two usings make it
+    ambiguous; or a component declared as one kind implements another. The plug-in's other
+    messages keep their components.
 
 ---
 

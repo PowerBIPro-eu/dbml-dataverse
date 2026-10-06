@@ -3,7 +3,7 @@
   "provenance": {
     "generator": {
       "name": "@powerbipro-eu/dv-tools",
-      "version": "1.5.0"
+      "version": "1.5.1"
     },
     "config": "dv-convert.json",
     "layers": [
@@ -828,6 +828,66 @@
         }
       ],
       "file": "Dvt.Plugins/Dvt.Plugins/EntityPluginRegistrations/Invoice/InvoicePreOperationPlugin.cs"
+    },
+    {
+      "pluginType": "Dvt.Plugins.EntityPluginRegistrations.Invoice.InvoicePreValidationPlugin",
+      "registered": false,
+      "entity": "dvt_invoice",
+      "stage": 10,
+      "stageName": "preValidation",
+      "mode": "sync",
+      "composition": "known",
+      "reason": null,
+      "messages": [
+        {
+          "message": "Create",
+          "method": "GetCreateSteps",
+          "composition": "known",
+          "reason": null,
+          "components": [
+            {
+              "position": 1,
+              "order": 10,
+              "type": "Dvt.Plugins.Validators.Invoice.InvoiceProjectValidator",
+              "kind": "validator",
+              "declaredFilteringAttributes": [
+                "dvt_projectid"
+              ],
+              "description": "Rejects an invoice without a project; Create and Update, Pre-Validation, Sync; filtering attributes: dvt_projectid; PreImage: none; PostImage: none",
+              "file": "Dvt.Plugins/Dvt.Plugins/Validators/Invoice/InvoiceProjectValidator.cs"
+            }
+          ]
+        },
+        {
+          "message": "Update",
+          "method": "GetUpdateSteps",
+          "composition": "known",
+          "reason": null,
+          "components": [
+            {
+              "position": 1,
+              "order": 5,
+              "type": "Dvt.Plugins.Validators.Invoice.InvoiceLockedValidator",
+              "kind": "validator",
+              "declaredFilteringAttributes": [],
+              "description": "Rejects changes to a paid invoice; Update, Pre-Validation, Sync; filtering attributes: none; PreImage 'PreImage' with statuscode; PostImage: none",
+              "file": "Dvt.Plugins/Dvt.Plugins/Validators/Invoice/InvoiceLockedValidator.cs"
+            },
+            {
+              "position": 2,
+              "order": 10,
+              "type": "Dvt.Plugins.Validators.Invoice.InvoiceProjectValidator",
+              "kind": "validator",
+              "declaredFilteringAttributes": [
+                "dvt_projectid"
+              ],
+              "description": "Rejects an invoice without a project; Create and Update, Pre-Validation, Sync; filtering attributes: dvt_projectid; PreImage: none; PostImage: none",
+              "file": "Dvt.Plugins/Dvt.Plugins/Validators/Invoice/InvoiceProjectValidator.cs"
+            }
+          ]
+        }
+      ],
+      "file": "Dvt.Plugins/Dvt.Plugins/EntityPluginRegistrations/Invoice/InvoicePreValidationPlugin.cs"
     },
     {
       "pluginType": "Dvt.Plugins.EntityPluginRegistrations.Meeting.MeetingPostOperationPlugin",
