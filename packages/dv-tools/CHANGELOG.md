@@ -2,6 +2,20 @@
 
 Each release is tagged `dv-tools/v<version>` in this repository.
 
+## 1.5.0
+
+Only formula and AI prompt columns change: for the same input, `model.json` and the `.dv.dbml`
+files are otherwise byte-identical to 1.4.0 and `components.json` is unchanged, apart from
+`provenance.generator.version`.
+
+### Fixed
+- Formula columns (Power Fx, `SourceType` 3) get `sourceType: "formula"` in `model.json` and
+  `source_type: formula` in the `.dv.dbml` file. Since 1.0.0 dv-tools read `SourceType` 3 as an
+  ordinary column and 4 as a formula column; 4 is an AI prompt column, which now has no
+  `sourceType`, like an ordinary column. Calculated (1) and rollup (2) columns keep
+  `sourceType: "calculated"` and `"rollup"`. The README now lists `sourceType` among the
+  `model.json` column facts.
+
 ## 1.4.0
 
 `model.json` and the `.dv.dbml` files are unchanged: for the same input they are byte-identical

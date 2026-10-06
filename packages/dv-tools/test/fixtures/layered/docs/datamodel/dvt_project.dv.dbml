@@ -20,16 +20,20 @@ StatusOptionSet dvt_project_statuscode {
 Table dvt_project [display_name: 'Project', ownership: UserOwned, is_audit_enabled: true, description: 'A piece of work we deliver.&#xA;Owned by one business unit.', source_solution: 'Core', headercolor: #aa3366] {
   dvt_accountid lookup [display_name: 'Customer', required: none, targets: 'Account', note: 'Customer the project is for', source_solution: 'Core']
   dvt_contactid lookup [display_name: 'Sponsor', required: none, targets: 'Contact', source_solution: 'Core']
+  dvt_daysopen int [display_name: 'Days open', required: none, source_type: calculated, format: 'none', note: 'Days since the project was created', source_solution: 'Core']
   dvt_description ntext [display_name: 'Description', required: none, format: 'textarea', source_solution: 'Core']
   dvt_isactive bit [display_name: 'Running', required: none, option_set: 'dvt_project_dvt_isactive', note: 'Running or stopped.&#xA;Set by the project owner.', source_solution: 'Core']
+  dvt_label nvarchar(4000) [display_name: 'Label', required: none, source_type: formula, format: 'text', note: 'Name and priority, for lists', source_solution: 'Core']
   dvt_name nvarchar(100) [display_name: 'Name', required: required, format: 'text', note: 'Short name of the project', source_solution: 'Core']
   dvt_priority picklist [display_name: 'Priority', required: none, option_set: 'dvt_priority', source_solution: 'Core']
   dvt_projectid primarykey [pk, display_name: 'Project', required: systemrequired, note: 'Unique identifier for entity instances', source_solution: 'Core']
   dvt_reviewerid lookup [display_name: 'Reviewer', required: none, targets: 'SystemUser', source_solution: 'Core']
+  dvt_summary nvarchar(4000) [display_name: 'Summary', required: none, format: 'text', note: 'AI summary of the project description', source_solution: 'Core']
   owningbusinessunit lookup [display_name: 'Owning Business Unit', required: none, targets: 'BusinessUnit', note: 'Unique identifier for the business unit that owns the record', source_solution: 'Core']
   statecode state [display_name: 'Status', required: systemrequired, option_set: 'dvt_project_statecode', note: 'Status of the Project', source_solution: 'Core']
   statuscode status [display_name: 'Status Reason', required: none, option_set: 'dvt_project_statuscode', note: 'Reason for the status of the Project', source_solution: 'Core']
   dvt_budget money [display_name: 'Budget', required: none, note: 'Approved budget', source_solution: 'Sales']
+  dvt_invoicecount int [display_name: 'Invoices', required: none, source_type: rollup, format: 'none', note: 'Number of active invoices of the project', source_solution: 'Sales']
 
   indexes {
     (dvt_accountid, dvt_name) [name: 'dvt_project_account_key', unique]

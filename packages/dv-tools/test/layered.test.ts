@@ -59,8 +59,8 @@ describe('model.json schema 2', () => {
     for (const list of [model.refs, model.optionSets, model.statusOptionSets, table('dvt_project').indexes]) {
       expect(names(list)).toEqual([...names(list)].sort());
     }
-    // field order stays as in the source: base layer first, then the column the second layer adds
-    expect(table('dvt_project').fields.at(-1).name).toBe('dvt_budget');
+    // field order stays as in the source: base layer first, then the columns the second layer adds
+    expect(table('dvt_project').fields.slice(-2).map((f: any) => f.name)).toEqual(['dvt_budget', 'dvt_invoicecount']);
   });
 
   it('marks our tables (publisher prefix) and our columns (IsCustomField)', () => {
@@ -69,6 +69,14 @@ describe('model.json schema 2', () => {
     expect(field('dvt_project', 'dvt_name').isCustom).toBe(true);
     expect(field('dvt_project', 'dvt_projectid').isCustom).toBe(false);   // the primary key of our table is platform-made
     expect(field('dvt_project', 'owningbusinessunit').isCustom).toBe(false);
+  });
+
+  it('names the computation of calculated, rollup and formula columns (sourceType)', () => {
+    expect(field('dvt_project', 'dvt_daysopen').sourceType).toBe('calculated');   // SourceType 1
+    expect(field('dvt_project', 'dvt_invoicecount').sourceType).toBe('rollup');   // 2, added by the second layer
+    expect(field('dvt_project', 'dvt_label').sourceType).toBe('formula');         // 3
+    expect(field('dvt_project', 'dvt_summary')).not.toHaveProperty('sourceType'); // 4, AI prompt column
+    expect(field('dvt_project', 'dvt_name')).not.toHaveProperty('sourceType');    // 0
   });
 
   it('keeps platform tables that carry our columns as partial tables with a primary key', () => {
