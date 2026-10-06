@@ -11,7 +11,7 @@ export function readText(path: string): string {
   return readFileSync(path, 'utf-8').replace(/^﻿/, '');
 }
 
-const ARRAYS = new Set(['SdkMessageProcessingStepImage', 'PluginType', 'LocalizedName', 'label']);
+const ARRAYS = new Set(['SdkMessageProcessingStepImage', 'PluginType', 'LocalizedName', 'label', 'ServiceEndpoint']);
 
 export const componentXmlParser = new XMLParser({
   ignoreAttributes: false,

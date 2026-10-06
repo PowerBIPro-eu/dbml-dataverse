@@ -144,6 +144,7 @@ export interface ConvertOptions {
   outputDir: string;           // absolute
   writeDbml: boolean;
   writeComponents: boolean;    // components.json (plugins, flows, processes)
+  pluginsPath: string | null;  // absolute Plugins/ folder whose C# pipelines go into components.json
   colors: Record<string, string>;
   platformTables: PlatformTables;
   configPath: string | null;   // absolute path of the options file, recorded in provenance

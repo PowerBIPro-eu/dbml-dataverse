@@ -31,6 +31,7 @@ Options:
   --platform-tables <mode>     with-our-columns (default), all or none
   --no-dbml                    Skip writing .dv.dbml files
   --no-components              Skip writing components.json (plugins, flows, processes)
+  --plugins <dir>              Plugins/ folder whose C# pipelines go into components.json
   --version                    Print the dv-tools version and exit
   --help, -h                   Show this help
 
@@ -67,6 +68,7 @@ function parseCli(argv: string[]) {
         'platform-tables': { type: 'string' },
         'no-dbml':         { type: 'boolean', default: false },
         'no-components':   { type: 'boolean', default: false },
+        plugins:           { type: 'string' },
         version:           { type: 'boolean', default: false },
         help:              { type: 'boolean', short: 'h', default: false },
       },
@@ -103,6 +105,12 @@ function splitNames(arg: string | undefined, count: number): string[] | undefine
     throw new UsageError(`--solution-names has ${names.length} entries but ${count} solutions were given.`);
   }
   return names;
+}
+
+/** The Plugins folder, which must exist. */
+function pluginsFolder(path: string | null): string | null {
+  if (path && !existsSync(path)) throw new UsageError(`Plugins folder not found: ${path}`);
+  return path;
 }
 
 function platformTablesFlag(value: string | undefined): PlatformTables | undefined {
@@ -149,6 +157,7 @@ function resolveInvocation(args: CliArgs, argv: string[], cwd: string): Invocati
         outputDir: values.output ? resolve(cwd, values.output) : resolve(dir, config.output ?? '.'),
         writeDbml: values['no-dbml'] ? false : config.dbml ?? true,
         writeComponents: !values['no-components'],
+        pluginsPath: pluginsFolder(values.plugins ? resolve(cwd, values.plugins) : config.plugins ? resolve(dir, config.plugins) : null),
         colors: loadColors(colorsPath),
         platformTables: platformTables ?? config.platformTables ?? 'with-our-columns',
         configPath: configFile,
@@ -181,6 +190,7 @@ function resolveInvocation(args: CliArgs, argv: string[], cwd: string): Invocati
       outputDir,
       writeDbml: !values['no-dbml'],
       writeComponents: !values['no-components'],
+      pluginsPath: pluginsFolder(values.plugins ? resolve(cwd, values.plugins) : null),
       colors: loadColors(colorsPath),
       platformTables: platformTables ?? 'with-our-columns',
       configPath: values['write-config'] ? join(outputDir, CONFIG_FILE) : null,
@@ -263,6 +273,7 @@ export async function run(argv: string[], cwd: string = process.cwd()): Promise<
         colorsPath: invocation.colorsPath,
         dbml: invocation.options.writeDbml,
         platformTables: invocation.options.platformTables,
+        pluginsPath: invocation.options.pluginsPath,
       });
       writeFileSync(join(outputDir, CONFIG_FILE), serializeConfig(config), 'utf-8');
       console.error(`Written: ${CONFIG_FILE}`);

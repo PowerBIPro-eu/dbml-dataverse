@@ -134,13 +134,15 @@ Options:
   --platform-tables <mode>     with-our-columns (default), all or none
   --no-dbml                    Skip writing .dv.dbml files
   --no-components              Skip writing components.json (plugins, flows, processes)
+  --plugins <dir>              Plugins/ folder whose C# pipelines go into components.json
   --version                    Print the dv-tools version and exit
   --help, -h                   Show this help
 ```
 
 **Exit codes:** `0` ok · `1` `--check` found stale output · `2` usage or options-file error
-(unknown key, newer `configVersion`, invalid JSON, a solution folder that does not exist, a
-`uniqueName` that does not match `Solution.xml`) · `3` the model could not be built (DBML error).
+(unknown key, newer `configVersion`, invalid JSON, a solution or Plugins folder that does not
+exist, a `uniqueName` that does not match `Solution.xml`) · `3` the model could not be built
+(DBML error).
 
 ### Options file `dv-convert.json`
 
@@ -154,7 +156,8 @@ Options:
   "output": ".",
   "colors": "colors.json",
   "dbml": true,
-  "platformTables": "with-our-columns"
+  "platformTables": "with-our-columns",
+  "plugins": "../../Plugins"
 }
 ```
 
@@ -166,12 +169,13 @@ Options:
 | `colors` | colors.json, relative to the options file. Optional. |
 | `dbml` | Write `.dv.dbml` files. Default `true`. |
 | `platformTables` | See [Platform tables](#platform-tables). Default `with-our-columns`. |
+| `plugins` | The `Plugins/` folder with the plug-in C# code, relative to the options file. Optional: without it, `components.json` has no [pipelines](#pipelines). dv-tools before 1.4.0 rejects this key. |
 
 - Unknown keys are an error (exit code 2), so typos do not go unnoticed.
 - Without solution paths or `--config`, dv-convert uses `./dv-convert.json`, otherwise
   `<git root>/docs/datamodel/dv-convert.json`.
 - Command-line flags override the file's values (`--output`, `--colors`, `--no-dbml`,
-  `--platform-tables`, `--solution-names`).
+  `--platform-tables`, `--solution-names`, `--plugins`).
 - `--write-config` writes the file into the `--output` folder with paths relative to it and
   each solution's `uniqueName` from its `Solution.xml`.
 
@@ -272,8 +276,8 @@ they carry our columns (or with `all`).
 
 The solution's components outside the data model, read from the same solution folders (every
 layer) and written in the same run as `model.json`: plugin assemblies, plugin types and their
-steps, custom APIs, cloud flows, business process flows and classic workflows.
-`--no-components` skips it.
+steps, custom APIs, cloud flows, business process flows and classic workflows; with a `plugins`
+folder, also the [pipelines](#pipelines) of the plug-in code. `--no-components` skips it.
 
 ```json
 {
@@ -289,7 +293,9 @@ steps, custom APIs, cloud flows, business process flows and classic workflows.
   ],
   "pluginSteps": [
     { "id": "d7a5e000-…-000000000201", "name": "Dvt.Plugins.Project.ValidateBudget: Update of dvt_project",
+      "handlerKind": "plugin",
       "pluginType": "Dvt.Plugins.Project.ValidateBudget", "pluginTypeId": "d7a5e000-…-000000000101", "assembly": "Dvt.Plugins",
+      "serviceEndpoint": null,
       "message": "Update", "messageId": "20bebb1b-ea3e-db11-86a7-000a3a5473e8", "primaryEntity": "dvt_project",
       "stage": 20, "stageName": "preOperation", "mode": "sync", "rank": 1,
       "filteringAttributes": ["dvt_accountid", "dvt_budget"],
@@ -325,9 +331,11 @@ steps, custom APIs, cloud flows, business process flows and classic workflows.
       "file": "src/Workflows/Projectlifecycle-….xaml", "sourceSolution": "Core" }
   ],
   "classicWorkflows": [
-    { "id": "d7a5e000-…-000000000601", "name": "Close stale projects", "category": "workflow",
-      "primaryEntity": "dvt_project", "file": "src/Workflows/Closestaleprojects-….xaml", "sourceSolution": "Core" }
-  ]
+    { "id": "d7a5e000-…-000000000605", "name": "Lock the budget on the summary form", "category": "businessRule",
+      "primaryEntity": "dvt_project", "scope": "form", "forms": ["d7a5e000-…-000000000701"],
+      "file": "src/Workflows/Lockthebudgetonthesummaryform-….xaml", "sourceSolution": "Core" }
+  ],
+  "pipelines": [ … ]
 }
 ```
 
@@ -346,7 +354,9 @@ steps, custom APIs, cloud flows, business process flows and classic workflows.
 | Where | Field | Meaning |
 |---|---|---|
 | plugin type | `name`, `kind` | The full type name (from the assembly-qualified name); `plugin`, or `workflowActivity` for a custom workflow activity. |
-| plugin step | `pluginType`, `assembly` | From the step's assembly-qualified `PluginTypeName`, else from its plugin type id, else the type from the step name. A step of a plugin package names its type only by an export key, so its `assembly` is `null`; plugin packages themselves are not read. |
+| plugin step | `handlerKind` | What the step runs: `plugin` (a plug-in type, `EventHandlerTypeCode` 4602), `webhook` (a service endpoint with contract 8 in `PluginAssemblies/ServiceEndpoints.xml`) or `serviceEndpoint` (any other service endpoint, 4618, and one that is not in the solution). |
+| plugin step | `serviceEndpoint` | For webhook and service endpoint steps: `{ id, name }` of the endpoint (`name` is `null` when it is not in the solution); `null` for plug-ins. |
+| plugin step | `pluginType`, `assembly` | Plug-in steps only (`null` for the others). From the step's assembly-qualified `PluginTypeName`, else from its plugin type id, else the type from the step name. A step of a plugin package names its type only by an export key, so its `assembly` is `null`; plugin packages themselves are not read. |
 | plugin step | `message` | The SDK message: by `messageId` for the 14 platform messages Microsoft Learn lists (Create, Update, Delete, Assign, Retrieve, RetrieveMultiple, SetState, …), else from the step name `<type>: <Message> of <table>`. `null` when neither names it. |
 | plugin step | `primaryEntity` | The table the step is registered on; `null` for a message without a table (an event registration, e.g. on a custom API or action). |
 | plugin step | `stage`, `stageName` | `10` `preValidation`, `20` `preOperation`, `30` `mainOperation`, `40` `postOperation`. |
@@ -362,9 +372,83 @@ steps, custom APIs, cloud flows, business process flows and classic workflows.
 | cloud flow | `connectionReferences` | The connections the flow uses: the key its actions name, the connection reference's logical name and the connector. |
 | cloud flow | `dataverseActions` | Every Dataverse action, nested ones included: `operation` (e.g. `ListRecords`), the table (`entity`, from the entity set name when that table is in the solution; `entitySetName` is `null` when the flow computes it) and `actionName` for bound and unbound actions. |
 | business process flow | `uniqueName`, `stages` | The table that holds the process instances; each stage with its position (`order`, from 1), `category` (the StageCategory option value, custom values included), its table (`entity`), `nextStage` (`null` for the last stage) and `branches`: the conditions that lead out of the stage, each with its label and target (`nextStage` is then the stage when no condition applies). |
-| classic workflow | `category` | `workflow`, `dialog`, `businessRule` or `action`. Only id, name, category and table are read. |
+| classic workflow | `category` | `workflow`, `dialog`, `businessRule` or `action`. Only id, name, category, table and a business rule's scope are read. |
+| business rule | `scope`, `forms` | Where it runs (`ProcessTriggerScope`): `entity` (the table: every form, and the server), `allForms`, or `form` with the form's id in `forms` (`ProcessTriggerFormId`). `null` and `[]` for other categories. |
 
 Desktop flows and other process categories are not read.
+
+### Pipelines
+
+With a `plugins` folder (options file or `--plugins`), `components.json` also has `pipelines`:
+what each entry plug-in of the DDSol plug-in architecture runs, read from its C# code. An entry
+plug-in derives from `PipelinePluginBase`, names its table in `EntityLogicalName`, and declares
+its components in `GetCreateSteps()`, `GetUpdateSteps()`, `GetDeleteSteps()` and
+`GetSpecialSteps()` as `PipelineStepDescriptor { Type, ImplementationType, Order, Description }`.
+
+```json
+"pipelinesSource": "../../Plugins",
+"pipelines": [
+  { "pluginType": "Dvt.Plugins.EntityPluginRegistrations.Project.ProjectPreOperationPlugin", "registered": true,
+    "entity": "dvt_project", "stage": 20, "stageName": "preOperation", "mode": "sync",
+    "composition": "known", "reason": null,
+    "messages": [
+      { "message": "Update", "method": "GetUpdateSteps", "composition": "known", "reason": null,
+        "components": [
+          { "position": 1, "order": 10, "type": "Dvt.Plugins.Validators.Project.ProjectOwnerValidator", "kind": "validator",
+            "declaredFilteringAttributes": ["ownerid"], "description": "Only the project lead may hand a project over; Update, …",
+            "file": "Dvt.Plugins/Dvt.Plugins/Validators/Project/ProjectOwnerValidator.cs" } ] } ],
+    "file": "Dvt.Plugins/Dvt.Plugins/EntityPluginRegistrations/Project/ProjectPreOperationPlugin.cs" },
+  { "pluginType": "Dvt.Plugins.Project.ValidateBudget", "registered": true,
+    "entity": null, "stage": null, "stageName": null, "mode": null,
+    "composition": "unknown", "reason": "ValidateBudget derives from PluginBase, not PipelinePluginBase",
+    "messages": [], "file": "Dvt.Plugins/Dvt.Plugins/Legacy/ValidateBudget.cs" }
+]
+```
+
+- **`pipelinesSource`:** the Plugins folder, relative to the folder of `components.json`; `null`
+  (and `pipelines: []`) without one. Every `file` in `pipelines` is relative to it. `bin/`,
+  `obj/` and hidden folders are not read.
+- **Which plug-ins:** every class that derives from `PipelinePluginBase`, every plug-in type the
+  solution registers on a step, and every Custom API's implementing plug-in type. Sorted by
+  `pluginType`. **`registered`** is `true` when a plug-in step of the solution runs it.
+- **`entity`:** a string literal, or the `EntityLogicalName` constant of an early-bound class in
+  the folder; otherwise `null`.
+- **`stage`, `stageName`, `mode`:** from the entry plug-in's name:
+
+  | Name ends with | `stage` | `mode` |
+  |---|---|---|
+  | `PreValidationPlugin` | 10 `preValidation` | `sync` (Pre-Validation is always synchronous) |
+  | `PreOperationPlugin` | 20 `preOperation` | `sync` |
+  | `PostOperationSyncPlugin` | 40 `postOperation` | `sync` |
+  | `PostOperationAsyncPlugin` | 40 `postOperation` | `async` |
+  | `PostOperationPlugin` | 40 `postOperation` | `null` |
+
+  A declared `ExecutionMode` sets `mode`. `null` for other names. The solution's plug-in steps
+  remain the authority for how a plug-in is registered.
+- **`messages`:** one per step method that declares components, in the order Create, Update,
+  Delete, then `GetSpecialSteps` (`message: null`: every other message the plug-in is
+  registered on).
+- **Run order:** by `Order`, then by full type name, as the pipeline engine (`PipelinePluginBase`)
+  sorts them. `position` is the place in that order, from 1.
+- **Components:**
+  - `type` is the full type name, resolved from `typeof(…)` the way C# looks names up.
+  - `kind` is the descriptor's `Type` (`validator`, `mutator`, `handler`), checked against the
+    `IEntityValidator`/`IEntityMutator`/`IEntityHandler` the class implements. The folder is not
+    used.
+  - `declaredFilteringAttributes` comes from the description's `filtering attributes: a,b`
+    (`[]` for `none`; `null` when it does not say).
+- **`composition: "unknown"`:** dv-tools reads only code that follows the architecture and never
+  guesses; `reason` says why.
+  - **A whole plug-in** (no `messages`) when it is not an entry plug-in it can read: it does not
+    derive from `PipelinePluginBase` (a registered plug-in outside the architecture, a Custom API
+    implementation), derives from it through an intermediate base class, uses the legacy engine
+    (`GetRegistration()`, or stage-specific step methods), is declared in several files, or is
+    not in the folder.
+  - **A message** (no `components`) when its step method or one of its components cannot be read:
+    the method is not just `yield return new PipelineStepDescriptor { … }` statements (or one
+    returned array or list), a property is not a literal (an `Order` from a constant), a
+    component class cannot be found or two usings make it ambiguous, or a component declared as
+    one kind implements another. The plug-in's other messages keep their components.
 
 ---
 

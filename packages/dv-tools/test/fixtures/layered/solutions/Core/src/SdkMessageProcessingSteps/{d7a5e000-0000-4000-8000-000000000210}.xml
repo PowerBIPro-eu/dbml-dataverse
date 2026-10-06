@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Synthetic fixture: a step whose handler is an Azure Service Bus queue (a service endpoint). -->
+<SdkMessageProcessingStep Name="Project queue: Create of dvt_project" SdkMessageProcessingStepId="{d7a5e000-0000-4000-8000-000000000210}">
+  <SdkMessageId>9ebdbb1b-ea3e-db11-86a7-000a3a5473e8</SdkMessageId>
+  <EventHandler>{d7a5e000-0000-4000-8000-000000000802}</EventHandler>
+  <PrimaryEntity>dvt_project</PrimaryEntity>
+  <AsyncAutoDelete>1</AsyncAutoDelete>
+  <Description>Project queue: Create of dvt_project</Description>
+  <InvocationSource>0</InvocationSource>
+  <Mode>1</Mode>
+  <Rank>1</Rank>
+  <EventHandlerTypeCode>4618</EventHandlerTypeCode>
+  <Stage>40</Stage>
+  <IsCustomizable>1</IsCustomizable>
+  <IsHidden>0</IsHidden>
+  <SupportedDeployment>0</SupportedDeployment>
+  <IntroducedVersion>1.0.0.0</IntroducedVersion>
+  <SdkMessageProcessingStepImages />
+</SdkMessageProcessingStep>

@@ -20,8 +20,10 @@ and `dvt_invoice` table unmodified, our 9-digit value on `Task`), two N:N betwee
 tables, case-insensitive colours and a second layer that extends a base-layer table.
 
 Its components (`components.json`) are just as fictional: a plugin assembly `Dvt.Plugins` with
-plugin types and a custom workflow activity (`PluginAssemblies/`, without the `.dll`); plugin
-steps on platform messages, on a custom action without a table, of a plugin package, with
+plugin types and a custom workflow activity (`PluginAssemblies/`, without the `.dll`), a webhook
+and a Service Bus queue (`PluginAssemblies/ServiceEndpoints.xml`, placeholder addresses); plugin
+steps on platform messages, on a custom action without a table, of a plugin package, on the
+webhook, the queue and an endpoint outside the solution, with
 images and filtering attributes, with and without names in the Plugin Registration Tool
 convention, and one step that both layers contain (`SdkMessageProcessingSteps/`); custom APIs
 that are global, bound to a table and bound to a table collection, naming their plug-in type by
@@ -30,9 +32,26 @@ properties, and one that both layers contain (`customapis/`, in the layout of Mi
 a custom API with solution files"); cloud flows
 with a Dataverse row trigger, a recurrence and a Power Apps trigger, nested Dataverse actions
 and connection references; a business process flow over two tables with a branch; classic
-workflows (a background workflow, a business rule, an action) and a desktop flow, which is not
-read (`Workflows/`). The classic workflows have only their `.data.xml`, the one file dv-tools
+workflows (a background workflow, business rules on the table, on all forms and on one form, an
+action) and a desktop flow, which is not read (`Workflows/`). The classic workflows have only their `.data.xml`, the one file dv-tools
 reads. Their formats follow public unpacked solutions (Microsoft samples on GitHub).
+
+`layered/Plugins/` is the plug-in C# code that `dv-convert.json` names (`plugins`), laid out like
+the DDSol plug-in architecture, with the bodies left out and a README in every folder:
+- entry plug-ins for `dvt_project`, `dvt_invoice` and `dvt_meeting` with validators, mutators and
+  handlers, at Pre-Validation, Pre-Operation and Post-Operation (one without sync or async in its
+  name); one of them registered by a step of the solution;
+- Update steps declared out of order and two handlers with the same `Order`;
+- a handler that entry plug-ins of all three tables run;
+- both declaration forms (`yield return`, a returned array), a file-scoped namespace, and the
+  table as an early-bound constant or a string literal;
+- deliberate deviations, each reported as unknown:
+  - steps that depend on a condition (one message unknown, the other readable);
+  - the legacy engine's `GetRegistration()`;
+  - an entry plug-in behind an intermediate base class;
+  - a registered plug-in from before the architecture (`Legacy/`);
+  - a Custom API implementation (`Api/`);
+- build output in `obj/`, which is not read.
 
 ## Golden files
 

@@ -22,9 +22,10 @@ export interface DvConvertConfig {
   colors?: string | null;
   dbml?: boolean;
   platformTables?: PlatformTables;
+  plugins?: string;      // the Plugins/ folder whose C# pipelines go into components.json
 }
 
-const TOP_KEYS = ['configVersion', 'solutions', 'output', 'colors', 'dbml', 'platformTables'];
+const TOP_KEYS = ['configVersion', 'solutions', 'output', 'colors', 'dbml', 'platformTables', 'plugins'];
 const SOLUTION_KEYS = ['path', 'name', 'uniqueName'];
 
 function isObject(value: unknown): value is Record<string, unknown> {
@@ -68,6 +69,7 @@ export function validateConfig(raw: unknown, file: string): DvConvertConfig {
   if (config.platformTables !== undefined && !PLATFORM_TABLES_VALUES.includes(config.platformTables as PlatformTables)) {
     fail(`platformTables must be one of: ${PLATFORM_TABLES_VALUES.join(', ')}`);
   }
+  if (config.plugins !== undefined && !isNonEmptyString(config.plugins)) fail('plugins must be a folder path');
   return config as unknown as DvConvertConfig;
 }
 
@@ -102,6 +104,7 @@ export function makeConfig(opts: {
   colorsPath: string | null;
   dbml: boolean;
   platformTables: PlatformTables;
+  pluginsPath: string | null;
 }): DvConvertConfig {
   return {
     configVersion: CONFIG_VERSION,
@@ -114,6 +117,8 @@ export function makeConfig(opts: {
     ...(opts.colorsPath ? { colors: portableRelative(opts.outputDir, opts.colorsPath) } : {}),
     dbml: opts.dbml,
     platformTables: opts.platformTables,
+    // only when set: dv-tools before 1.4.0 rejects the key
+    ...(opts.pluginsPath ? { plugins: portableRelative(opts.outputDir, opts.pluginsPath) } : {}),
   };
 }
 

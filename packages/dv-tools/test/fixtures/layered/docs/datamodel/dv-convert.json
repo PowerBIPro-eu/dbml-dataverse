@@ -7,5 +7,6 @@
   "output": ".",
   "colors": "colors.json",
   "dbml": true,
-  "platformTables": "with-our-columns"
+  "platformTables": "with-our-columns",
+  "plugins": "../../Plugins"
 }

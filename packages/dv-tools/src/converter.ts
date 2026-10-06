@@ -16,6 +16,7 @@ import {
 import { type SolutionLayer, mergeSolutions } from './merge.js';
 import { readSolutionXml, resolvePaths, type SolutionPaths } from './solution.js';
 import { buildComponents, COMPONENTS_FILE, readLayerComponents, serializeComponents } from './components/components.js';
+import { readPipelines, type CustomApiImplementation } from './components/pipelines.js';
 import { InputError, UsageError } from './errors.js';
 import { compareStrings, portableRelative } from './util.js';
 import { VERSION } from './version.js';
@@ -352,13 +353,26 @@ function entityLookup(solutions: ParsedSolution[]): (name: string) => string | n
   };
 }
 
-function componentsFile(solutions: ParsedSolution[], provenance: Provenance): OutputFile {
+function componentsFile(solutions: ParsedSolution[], provenance: Provenance, options: ConvertOptions): OutputFile {
   const entityOf = entityLookup(solutions);
   const layers = solutions.map(({ input, paths }) => ({
     name: input.name,
     components: readLayerComponents(input.name, paths.rootPath, input.path, entityOf),
   }));
-  return { name: COMPONENTS_FILE, content: serializeComponents(buildComponents(layers, provenance)) };
+  const pluginsPath = options.pluginsPath;
+  const pipelines = pluginsPath
+    ? {
+      source: portableRelative(options.outputDir, pluginsPath),
+      read: (registeredTypes: string[], customApis: CustomApiImplementation[]) => {
+        const found = readPipelines(pluginsPath, registeredTypes, customApis, (message) => console.error(`[Plugins] Warning: ${message}`));
+        const unknownMessages = found.flatMap((p) => p.messages).filter((m) => m.composition === 'unknown').length;
+        console.error(`[Plugins] Read ${found.length} plug-ins: ${found.filter((p) => p.composition === 'unknown').length} unknown, `
+          + `${unknownMessages} unknown messages`);
+        return found;
+      },
+    }
+    : null;
+  return { name: COMPONENTS_FILE, content: serializeComponents(buildComponents(layers, provenance, pipelines)) };
 }
 
 // ── Main converter ─────────────────────────────────────────────────────────
@@ -410,7 +424,7 @@ export function buildOutputs(options: ConvertOptions): BuildResult {
   );
 
   // 6. components.json, from the same solution folders (written before model.json)
-  const components = options.writeComponents ? [componentsFile(solutions, provenance)] : [];
+  const components = options.writeComponents ? [componentsFile(solutions, provenance, options)] : [];
 
   return {
     files: [...(options.writeDbml ? dbmlFiles : []), ...components, { name: 'model.json', content: serializeModel(model) }],

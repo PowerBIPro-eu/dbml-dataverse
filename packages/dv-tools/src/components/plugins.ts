@@ -29,12 +29,16 @@ export interface StepImageRecord {
   attributes: string[];            // empty: all columns
 }
 
+export type HandlerKind = 'plugin' | 'webhook' | 'serviceEndpoint';
+
 export interface PluginStepRecord {
   id: string | null;
   name: string | null;
+  handlerKind: HandlerKind | null;  // a service endpoint becomes 'webhook' (contract 8) when merging
   pluginType: string | null;
   pluginTypeId: string | null;
   assembly: string | null;
+  serviceEndpoint: { id: string | null; name: string | null } | null;   // webhook and service endpoint steps
   message: string | null;
   messageId: string | null;
   primaryEntity: string | null;    // null: no table (registered on a message without one)
@@ -47,13 +51,26 @@ export interface PluginStepRecord {
   file: string;
 }
 
+/** PluginAssemblies/ServiceEndpoints.xml: webhooks, Azure Service Bus, Event Hub, Event Grid, … */
+export interface ServiceEndpointRecord {
+  id: string | null;
+  name: string | null;
+  contract: number | null;         // 8: webhook
+}
+
 export interface PluginFiles {
   assemblies: PluginAssemblyRecord[];
   types: PluginTypeRecord[];
   steps: PluginStepRecord[];
+  serviceEndpoints: ServiceEndpointRecord[];
 }
 
-const STAGES: Record<number, string> = { 10: 'preValidation', 20: 'preOperation', 30: 'mainOperation', 40: 'postOperation' };
+export const STAGES: Record<number, string> = { 10: 'preValidation', 20: 'preOperation', 30: 'mainOperation', 40: 'postOperation' };
+
+/** EventHandlerTypeCode: the object type the step's handler is. */
+const PLUGIN_TYPE_CODE = 4602;
+const SERVICE_ENDPOINT_TYPE_CODE = 4618;
+export const WEBHOOK_CONTRACT = 8;
 const MODES: Record<number, 'sync' | 'async'> = { 0: 'sync', 1: 'async' };
 const IMAGE_TYPES: Record<number, 'pre' | 'post' | 'both'> = { 0: 'pre', 1: 'post', 2: 'both' };
 
@@ -117,21 +134,33 @@ function readImages(step: any): StepImageRecord[] {
       compareStrings(a.name ?? '', b.name ?? '') || compareStrings(a.alias ?? '', b.alias ?? ''));
 }
 
+/** 4602: a plugin type; 4618: a service endpoint, by `<EventHandler>` id. Old exports without the code name a plugin type. */
+function handlerOf(step: any): Pick<PluginStepRecord, 'handlerKind' | 'serviceEndpoint'> {
+  const code = int(step.EventHandlerTypeCode);
+  if (code === SERVICE_ENDPOINT_TYPE_CODE) return { handlerKind: 'serviceEndpoint', serviceEndpoint: { id: guid(step.EventHandler), name: null } };
+  const namesPluginType = 'PluginTypeName' in step || 'PluginTypeId' in step || 'PluginTypeExportKey' in step;
+  return { handlerKind: code === PLUGIN_TYPE_CODE || (code === null && namesPluginType) ? 'plugin' : null, serviceEndpoint: null };
+}
+
 function readStep(path: string, layerPath: string, warn: (message: string) => void): PluginStepRecord | null {
   const step = parseXmlFile(path, warn)?.SdkMessageProcessingStep;
   if (!step) return null;
   const name = text(step['@_Name']);
   const fromName = parseStepName(name);
   const messageId = guid(step.SdkMessageId);
+  const handler = handlerOf(step);
+  const plugin = handler.handlerKind === 'plugin';
   // a step of a plugin package has a PluginTypeExportKey instead of PluginTypeName and PluginTypeId
-  const { parts } = nameParts(text(step.PluginTypeName));
+  const { parts } = nameParts(plugin ? text(step.PluginTypeName) : null);
   const stage = int(step.Stage);
   return {
     id: guid(step['@_SdkMessageProcessingStepId']),
     name,
+    handlerKind: handler.handlerKind,
     pluginType: parts[0] ?? null,     // completed from the type id or the step name when merging
-    pluginTypeId: guid(step.PluginTypeId),
+    pluginTypeId: plugin ? guid(step.PluginTypeId) : null,
     assembly: parts[1] ?? null,
+    serviceEndpoint: handler.serviceEndpoint,
     message: sdkMessageName(messageId) ?? fromName?.message ?? null,
     messageId,
     primaryEntity: logicalName(step.PrimaryEntity),   // left out for a message without a table
@@ -145,7 +174,18 @@ function readStep(path: string, layerPath: string, warn: (message: string) => vo
   };
 }
 
-/** Plugin assemblies, their types and the plugin steps of one solution folder. */
+/** PluginAssemblies/ServiceEndpoints.xml, which holds every service endpoint of the solution. */
+function readServiceEndpoints(root: string, warn: (message: string) => void): ServiceEndpointRecord[] {
+  const path = join(root, 'PluginAssemblies', 'ServiceEndpoints.xml');
+  if (!existsSync(path)) return [];
+  return (parseXmlFile(path, warn)?.ServiceEndpoints?.ServiceEndpoint ?? []).map((endpoint: any): ServiceEndpointRecord => ({
+    id: guid(endpoint['@_ServiceEndpointId']),
+    name: text(endpoint['@_Name']),
+    contract: int(endpoint.Contract),
+  }));
+}
+
+/** Plugin assemblies, their types, service endpoints and the plugin steps of one solution folder. */
 export function readPlugins(root: string, layerPath: string, warn: (message: string) => void): PluginFiles {
   const { assemblies, types } = readAssemblies(root, layerPath, warn);
   const steps: PluginStepRecord[] = [];
@@ -157,5 +197,5 @@ export function readPlugins(root: string, layerPath: string, warn: (message: str
       if (step) steps.push(step);
     }
   }
-  return { assemblies, types, steps };
+  return { assemblies, types, steps, serviceEndpoints: readServiceEndpoints(root, warn) };
 }

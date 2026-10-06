@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Synthetic fixture: a business rule (Category 2). -->
+<!-- Synthetic fixture: a business rule (Category 2) on the table (ProcessTriggerScope 2): it runs on every form and on the server. -->
 <Workflow WorkflowId="{d7a5e000-0000-4000-8000-000000000602}" Name="Budget is required for active projects" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <XamlFileName>/Workflows/Budgetisrequiredforactiveprojects-D7A5E000-0000-4000-8000-000000000602.xaml</XamlFileName>
   <Type>1</Type>
   <Subprocess>0</Subprocess>
   <Category>2</Category>
+  <ProcessTriggerScope>2</ProcessTriggerScope>
   <Mode>0</Mode>
   <Scope>4</Scope>
   <OnDemand>0</OnDemand>

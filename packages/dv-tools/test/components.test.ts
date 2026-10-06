@@ -16,7 +16,7 @@ describe('components.json', () => {
   it('starts with componentsSchema and the provenance of model.json, and is written before model.json', () => {
     expect(Object.keys(components)).toEqual([
       'componentsSchema', 'provenance', 'pluginAssemblies', 'pluginTypes', 'pluginSteps', 'customApis',
-      'cloudFlows', 'businessProcessFlows', 'classicWorkflows',
+      'cloudFlows', 'businessProcessFlows', 'classicWorkflows', 'pipelinesSource', 'pipelines',
     ]);
     expect(components.componentsSchema).toBe(1);
     expect(components.provenance).toEqual(modelOf(result).provenance);
@@ -60,9 +60,11 @@ describe('components.json', () => {
     expect(step('201')).toEqual({
       id: 'd7a5e000-0000-4000-8000-000000000201',
       name: 'Dvt.Plugins.Project.ValidateBudget: Update of dvt_project',
+      handlerKind: 'plugin',
       pluginType: 'Dvt.Plugins.Project.ValidateBudget',
       pluginTypeId: 'd7a5e000-0000-4000-8000-000000000101',
       assembly: 'Dvt.Plugins',
+      serviceEndpoint: null,
       message: 'Update',
       messageId: '20bebb1b-ea3e-db11-86a7-000a3a5473e8',
       primaryEntity: 'dvt_project',
@@ -95,6 +97,20 @@ describe('components.json', () => {
     expect(step('207')).toMatchObject({
       pluginType: 'Dvt.Packaged.Project.ArchiveProject', pluginTypeId: null, assembly: null, message: 'Delete', stageName: 'preValidation',
     });
+  });
+
+  it('tells plug-in steps from webhook and service endpoint steps', () => {
+    expect(step('209')).toMatchObject({
+      handlerKind: 'webhook', pluginType: null, pluginTypeId: null, assembly: null,
+      serviceEndpoint: { id: 'd7a5e000-0000-4000-8000-000000000801', name: 'Project change webhook' },
+      message: 'Update', primaryEntity: 'dvt_project', stageName: 'postOperation', mode: 'async',
+    });
+    expect(step('210')).toMatchObject({ handlerKind: 'serviceEndpoint', serviceEndpoint: { name: 'Project queue' } });
+    // an endpoint that is not in the solution: a service endpoint, webhook or not
+    expect(step('211')).toMatchObject({ handlerKind: 'serviceEndpoint', serviceEndpoint: { id: 'd7a5e000-0000-4000-8000-000000000899', name: null } });
+    expect(components.pluginSteps.filter((s: any) => s.handlerKind !== 'plugin').map((s: any) => s.id.slice(-3)).sort()).toEqual(['209', '210', '211']);
+    // they are not plug-in types, so they are not pipelines either
+    expect(components.pipelines.map((p: any) => p.pluginType)).not.toContain('Project change webhook');
   });
 
   it('takes a component that is in several layers from the first one', () => {
@@ -245,13 +261,15 @@ describe('components.json', () => {
     }]);
   });
 
-  it('lists classic workflows with id, name, category and table only; desktop flows are not read', () => {
-    expect(components.classicWorkflows.map((w: any) => [w.name, w.category, w.primaryEntity])).toEqual([
-      ['Budget is required for active projects', 'businessRule', 'dvt_project'],
-      ['Close stale projects', 'workflow', 'dvt_project'],
-      ['Project event', 'action', null],
+  it('lists classic workflows with id, name, category and table, and the scope of business rules; desktop flows are not read', () => {
+    expect(components.classicWorkflows.map((w: any) => [w.name, w.category, w.primaryEntity, w.scope, w.forms])).toEqual([
+      ['Budget is required for active projects', 'businessRule', 'dvt_project', 'entity', []],
+      ['Close stale projects', 'workflow', 'dvt_project', null, []],
+      ['Lock the budget on the summary form', 'businessRule', 'dvt_project', 'form', ['d7a5e000-0000-4000-8000-000000000701']],
+      ['Project event', 'action', null, null, []],
+      ['Show the end date on closed projects', 'businessRule', 'dvt_project', 'allForms', []],
     ]);
-    expect(Object.keys(components.classicWorkflows[0])).toEqual(['id', 'name', 'category', 'primaryEntity', 'file', 'sourceSolution']);
+    expect(Object.keys(components.classicWorkflows[0])).toEqual(['id', 'name', 'category', 'primaryEntity', 'scope', 'forms', 'file', 'sourceSolution']);
     expect(JSON.stringify(components)).not.toContain('Export invoices');
   });
 });
